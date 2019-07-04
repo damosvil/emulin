@@ -228,13 +228,9 @@ void ldf::process_statement(uint8_t *statement)
 		else if (strcmp(p, "LIN_speed") == 0)
 		{
 			p = strtok(NULL, "=" BLANK_CHARACTERS);
-			if (p && strcmp(p, "19.2") == 0)
+			if (p)
 			{
-				lin_speed = 19200;
-			}
-			else if (p && strcmp(p, "9.6") == 0)
-			{
-				lin_speed = 9600;
+				lin_speed = atof(p) * 1000;
 			}
 		}
 		break;
