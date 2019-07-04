@@ -2,7 +2,7 @@
  * ldfnode.h
  *
  *  Created on: 3 jul. 2019
- *      Author: ctag
+ *      Author: iso9660
  */
 
 #ifndef LIN_LDFNODE_H_
