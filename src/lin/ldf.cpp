@@ -15,7 +15,7 @@
 
 using namespace std;
 
-#define TOKEN_SPLITTER					" =:;,\r\n\t"
+#define BLANK_CHARACTERS					" \t\r\n"
 
 
 namespace lin
@@ -23,13 +23,12 @@ namespace lin
 
 ldf::ldf(uint8_t *filename)
 {
-	char *p = NULL;
-	char line[1000];
+	int32_t c = EOF;
 
 	// Initialize all parameters
 	parsing_state = LDF_PARSING_STATE_NONE;
 	is_lin_description_file = false;
-	bracket_level = 0;
+	group_level = 0;
 	lin_protocol_version = LIN_PROTOCOL_VERSION_NONE;
 	lin_language_version = LIN_LANGUAGE_VERSION_NONE;
 	lin_speed = 0;
@@ -44,41 +43,10 @@ ldf::ldf(uint8_t *filename)
 		throw runtime_error("Filename does not exist");
 	}
 
-	// Parse file line by line
-	while (fgets(line, sizeof(line), ldf_file))
+	// Parse file by character
+	while ((c = getc(ldf_file)) != EOF)
 	{
-		// Convert string to uppercase
-		for (p = line; *p; p++) *p = toupper(*p);
-
-		// String tokenization
-		p = strtok(line, TOKEN_SPLITTER);
-
-		// Skip comment lines or empty lines
-		if (!p || *p == '/' || *p == 0) continue;
-
-		// Parsing first argument
-		if (strcmp(p, "{") == 0)
-		{
-			bracket_level++;
-		}
-		else if (strcmp(p, "}") == 0)
-		{
-			if (bracket_level)
-				bracket_level--;
-
-			if (bracket_level == 0)
-			{
-				parsing_state = LDF_PARSING_STATE_NONE;
-			}
-		}
-		else if (parsing_state == LDF_PARSING_STATE_NODES)
-		{
-			parse_state_nodes(p);
-		}
-		else
-		{
-			parse_state_none(p);
-		}
+		parse_char(c);
 	}
 
 	// Close file
@@ -120,93 +88,171 @@ ldf::~ldf()
 	slaves_count = 0;
 }
 
-void ldf::parse_state_none(char *token)
+bool ldf::char_in_set(uint8_t c, const char *set)
 {
-	if (strcmp(token, "LIN_DESCRIPTION_FILE") == 0)
-	{
-		is_lin_description_file = true;
-	}
-	else if (strcmp(token, "LIN_PROTOCOL_VERSION") == 0)
-	{
-		token = strtok(NULL, TOKEN_SPLITTER);
-		if (token && strcmp(token, "\"2.1\"") == 0)
-		{
-			lin_protocol_version = LIN_PROTOCOL_VERSION_2_1;
-		}
-	}
-	else if (strcmp(token, "LIN_LANGUAGE_VERSION") == 0)
-	{
-		token = strtok(NULL, TOKEN_SPLITTER);
-		if (token && strcmp(token, "\"2.1\"") == 0)
-		{
-			lin_language_version = LIN_LANGUAGE_VERSION_2_1;
-		}
-	}
-	else if (strcmp(token, "LIN_SPEED") == 0)
-	{
-		token = strtok(NULL, TOKEN_SPLITTER);
-		if (token && strcmp(token, "19.2") == 0)
-		{
-			lin_speed = 19200;
-		}
-		else if (token && strcmp(token, "9.6") == 0)
-		{
-			lin_speed = 9600;
-		}
-	}
-	else if (strcmp(token, "NODES") == 0)
-	{
-		parsing_state = LDF_PARSING_STATE_NODES;
-	}
-	else if (strcmp(token, "SIGNALS") == 0)
-	{
-		parsing_state = LDF_PARSING_STATE_SIGNALS;
-	}
+	for (const char *p = set; *p; p++)
+		if (c == *p)
+			return true;
+
+	return false;
 }
 
-void ldf::parse_state_nodes(char *token)
+void ldf::parse_char(uint8_t c)
 {
-	char name[1000];
-	uint16_t timebase;
-	float jitter;
+	static uint8_t line[10000];
+	static uint32_t line_length = 0;
+	static bool skip = false;
 
-	if (strcmp(token, "MASTER") == 0)
+	if (c == ';')
 	{
-		// Name
-		token = strtok(NULL, TOKEN_SPLITTER);
-		if (token) strcpy(name, token);
-
-		// Timebase
-		if (token) token = strtok(NULL, TOKEN_SPLITTER);
-		if (token) timebase = atoi(token);
-
-		// Jitter
-		if (token) token = strtok(NULL, TOKEN_SPLITTER);		// Skip ms
-		if (token) token = strtok(NULL, TOKEN_SPLITTER);
-		if (token) jitter = (uint16_t)(atof(token) * 10);
-
-		// Add master
-		if (master == NULL)
-		{
-			master = new ldfmasternode((uint8_t *)name, timebase, jitter);
-		}
+		process_statement(line);
+		line[0] = 0;
+		line_length = 0;
 	}
-	else if (strcmp(token, "SLAVES") == 0)
+	else if (c == '{')
 	{
-		// Add slaves
-		while (token)
+		process_group_start(line);
+		line[0] = 0;
+		line_length = 0;
+		group_level++;
+	}
+	else if (c == '}')
+	{
+		process_group_end(line);
+		line[0] = 0;
+		line_length = 0;
+		group_level--;
+	}
+	else if (c == '/')
+	{
+		skip = true;
+	}
+	else if (c == '\n')
+	{
+		skip = false;
+	}
+	else if (!skip && (line_length != 0 || !char_in_set(c, BLANK_CHARACTERS)))
+	{
+		if (line_length < sizeof(line) - 1)
 		{
-			token = strtok(NULL, TOKEN_SPLITTER);
-			if (token) slaves[slaves_count++] = new ldfnode((uint8_t *)token);
+			line[line_length++] = c;
+			line[line_length] = 0;
 		}
 	}
 }
 
-void ldf::parse_state_signals(char *token)
+void ldf::process_statement(uint8_t *statement)
 {
+	char *p = NULL;
+	char *name = NULL;
+	uint16_t timebase = 0;
+	uint16_t jitter = 0;
 
+	switch (parsing_state)
+	{
+
+	case LDF_PARSING_STATE_NODES:
+		// Isolate first token
+		p = strtok((char *)statement, ":" BLANK_CHARACTERS);
+
+		if (strcmp(p, "Master") == 0)
+		{
+			// Name
+			p = strtok(NULL, "," BLANK_CHARACTERS);
+			if (p) name = p;
+
+			// Timebase
+			if (p) p = strtok(NULL, "," BLANK_CHARACTERS);
+			if (p) timebase = atoi(p);
+
+			// Jitter
+			if (p) p = strtok(NULL, "," BLANK_CHARACTERS);	// Skip word ms
+			if (p) p = strtok(NULL, "," BLANK_CHARACTERS);
+			if (p) jitter = atof(p) * 10;
+
+			// Add master
+			if (master == NULL && name != NULL)
+				master = new ldfmasternode((uint8_t *)name, timebase, jitter);
+		}
+		else if (strcmp(p, "Slaves") == 0)
+		{
+			while (p)
+			{
+				p = strtok(NULL, "," BLANK_CHARACTERS);
+				if (p) slaves[slaves_count++] = new ldfnode((uint8_t *)p);
+			}
+		}
+		break;
+
+	case LDF_PARSING_STATE_NONE:
+	default:
+		// Isolate first token
+		p = strtok((char *)statement, "=" BLANK_CHARACTERS);
+
+		// Check token
+		if (strcmp(p, "LIN_description_file") == 0)
+		{
+			is_lin_description_file = true;
+		}
+		else if (strcmp(p, "LIN_protocol_version") == 0)
+		{
+			p = strtok(NULL, "=" BLANK_CHARACTERS);
+			if (p && strcmp(p, "\"2.1\"") == 0)
+			{
+				lin_protocol_version = LIN_PROTOCOL_VERSION_2_1;
+			}
+		}
+		else if (strcmp(p, "LIN_language_version") == 0)
+		{
+			p = strtok(NULL, "=" BLANK_CHARACTERS);
+			if (p && strcmp(p, "\"2.1\"") == 0)
+			{
+				lin_language_version = LIN_LANGUAGE_VERSION_2_1;
+			}
+		}
+		else if (strcmp(p, "LIN_speed") == 0)
+		{
+			p = strtok(NULL, "=" BLANK_CHARACTERS);
+			if (p && strcmp(p, "19.2") == 0)
+			{
+				lin_speed = 19200;
+			}
+			else if (p && strcmp(p, "9.6") == 0)
+			{
+				lin_speed = 9600;
+			}
+		}
+		break;
+	}
 }
 
+void ldf::process_group_start(uint8_t *start)
+{
+	char *p;
 
+	switch (parsing_state)
+	{
+
+	case LDF_PARSING_STATE_NONE:
+	default:
+		p = strtok((char *)start, BLANK_CHARACTERS);
+		if (strcmp(p, "Nodes") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_NODES;
+		}
+		else if (strcmp(p, "Signals") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_SIGNALS;
+		}
+		break;
+
+	}
+}
+
+void ldf::process_group_end(uint8_t *end)
+{
+	if (group_level == 1)
+		parsing_state = LDF_PARSING_STATE_NONE;
+}
 
 } /* namespace ldf */

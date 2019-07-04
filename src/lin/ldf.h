@@ -45,7 +45,7 @@ private:
 	// State
 	bool is_lin_description_file;
 	ldf_parsing_state_e parsing_state;
-	uint32_t bracket_level;
+	uint32_t group_level;
 
 	// Global parameters
 	lin_protocol_version_e lin_protocol_version;
@@ -58,9 +58,11 @@ private:
 	uint8_t slaves_count;
 
 private:
-	void parse_state_none(char *token);
-	void parse_state_nodes(char *token);
-	void parse_state_signals(char *token);
+	bool char_in_set(uint8_t c, const char *set);
+	void parse_char(uint8_t c);
+	void process_statement(uint8_t *statement);
+	void process_group_start(uint8_t *start);
+	void process_group_end(uint8_t *end);
 
 };
 
