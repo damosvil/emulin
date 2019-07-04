@@ -105,12 +105,14 @@ void ldf::parse_char(uint8_t c)
 
 	if (c == ';')
 	{
+		line[line_length] = 0;
 		process_statement(line);
 		line[0] = 0;
 		line_length = 0;
 	}
 	else if (c == '{')
 	{
+		line[line_length] = 0;
 		process_group_start(line);
 		line[0] = 0;
 		line_length = 0;
@@ -118,6 +120,7 @@ void ldf::parse_char(uint8_t c)
 	}
 	else if (c == '}')
 	{
+		line[line_length] = 0;
 		process_group_end(line);
 		line[0] = 0;
 		line_length = 0;
@@ -125,10 +128,12 @@ void ldf::parse_char(uint8_t c)
 	}
 	else if (c == '/')
 	{
+		// Skip comments
 		skip = true;
 	}
 	else if (c == '\n')
 	{
+		// Comments are valid to the end of the line
 		skip = false;
 	}
 	else if (!skip && (line_length != 0 || !char_in_set(c, BLANK_CHARACTERS)))
@@ -136,7 +141,6 @@ void ldf::parse_char(uint8_t c)
 		if (line_length < sizeof(line) - 1)
 		{
 			line[line_length++] = c;
-			line[line_length] = 0;
 		}
 	}
 }
