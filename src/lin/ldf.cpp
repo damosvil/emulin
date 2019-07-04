@@ -155,6 +155,9 @@ void ldf::process_statement(uint8_t *statement)
 	switch (parsing_state)
 	{
 
+	case LDF_PARSING_STATE_SIGNALS:
+		break;
+
 	case LDF_PARSING_STATE_NODES:
 		// Isolate first token
 		p = strtok((char *)statement, ":" BLANK_CHARACTERS);
@@ -205,6 +208,10 @@ void ldf::process_statement(uint8_t *statement)
 			{
 				lin_protocol_version = LIN_PROTOCOL_VERSION_2_1;
 			}
+			else if (p && strcmp(p, "\"2.0\"") == 0)
+			{
+				lin_protocol_version = LIN_PROTOCOL_VERSION_2_0;
+			}
 		}
 		else if (strcmp(p, "LIN_language_version") == 0)
 		{
@@ -212,6 +219,10 @@ void ldf::process_statement(uint8_t *statement)
 			if (p && strcmp(p, "\"2.1\"") == 0)
 			{
 				lin_language_version = LIN_LANGUAGE_VERSION_2_1;
+			}
+			else if (p && strcmp(p, "\"2.0\"") == 0)
+			{
+				lin_language_version = LIN_LANGUAGE_VERSION_2_0;
 			}
 		}
 		else if (strcmp(p, "LIN_speed") == 0)

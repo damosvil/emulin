@@ -19,12 +19,14 @@ private:
 	enum lin_protocol_version_e
 	{
 		LIN_PROTOCOL_VERSION_NONE,
+		LIN_PROTOCOL_VERSION_2_0,
 		LIN_PROTOCOL_VERSION_2_1
 	};
 
 	enum lin_language_version_e
 	{
 		LIN_LANGUAGE_VERSION_NONE,
+		LIN_LANGUAGE_VERSION_2_0,
 		LIN_LANGUAGE_VERSION_2_1
 	};
 
