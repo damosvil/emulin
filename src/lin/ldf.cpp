@@ -25,10 +25,12 @@ ldf::ldf(uint8_t *filename)
 {
 	int32_t c = EOF;
 
-	// Initialize all parameters
+	// Initialize state parameters
 	parsing_state = LDF_PARSING_STATE_NONE;
 	is_lin_description_file = false;
 	group_level = 0;
+
+	// Initialize attributes
 	lin_protocol_version = LIN_PROTOCOL_VERSION_NONE;
 	lin_language_version = LIN_LANGUAGE_VERSION_NONE;
 	lin_speed = 0;
@@ -36,6 +38,7 @@ ldf::ldf(uint8_t *filename)
 	master = NULL;
 	slaves_count = 0;
 	signals_count = 0;
+	frames_count = 0;
 
 	// Open file
 	FILE *ldf_file = fopen((char *)filename, "rb");
@@ -53,6 +56,20 @@ ldf::ldf(uint8_t *filename)
 	// Close file
 	fclose(ldf_file);
 
+	// Validate data
+	Validate();
+}
+
+ldf::~ldf()
+{
+	if (master) delete master;
+	while (slaves_count--) delete slaves[slaves_count];
+	while (signals_count--) delete signals[signals_count];
+	while (frames_count--) delete frames[frames_count];
+}
+
+void ldf::Validate(void)
+{
 	// Validate results
 	if (!is_lin_description_file)
 	{
@@ -78,15 +95,6 @@ ldf::ldf(uint8_t *filename)
 	{
 		throw runtime_error("LIN slaves not found in database");
 	}
-}
-
-ldf::~ldf()
-{
-	uint8_t i;
-
-	if (master) delete master;
-	for (i = 0; i < slaves_count; i++) delete slaves[i];
-	slaves_count = 0;
 }
 
 bool ldf::char_in_set(uint8_t c, const char *set)
@@ -151,9 +159,24 @@ void ldf::process_statement(uint8_t *statement)
 	char *p = NULL;
 	ldfsignal *signal = NULL;
 	ldfmasternode *masternode = NULL;
+	ldfframe *frame = NULL;
+	ldfframesignal *framesignal = NULL;
 
 	switch (parsing_state)
 	{
+
+	case LDF_PARSING_STATE_FRAMES:
+		if (group_level == 1)
+		{
+			frame = ldfframe::FromLdfStatement(statement);
+			if (frame) frames[frames_count++] = frame;
+		}
+		else if (group_level == 2)
+		{
+			framesignal = ldfframesignal::FromLdfStatement(statement);
+			if (framesignal) frames[frames_count - 1]->AddSignal(framesignal);
+		}
+		break;
 
 	case LDF_PARSING_STATE_SIGNALS:
 		signal = ldfsignal::FromLdfStatement(statement);
@@ -239,9 +262,9 @@ void ldf::process_group_start(uint8_t *start)
 	{
 
 	case LDF_PARSING_STATE_FRAMES:
+		process_statement(start);
 		break;
 
-	case LDF_PARSING_STATE_NONE:
 	default:
 		// Isolate first token
 		p = strtok((char *)start, BLANK_CHARACTERS);

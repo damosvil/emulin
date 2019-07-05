@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include <ldfmasternode.h>
 #include <ldfsignal.h>
+#include <ldfframe.h>
+#include <ldfframesignal.h>
+
 
 namespace lin {
 
@@ -44,6 +47,9 @@ public:
 	ldf(uint8_t *filename);
 	virtual ~ldf();
 
+	void Validate(void);
+
+
 private:
 	// State
 	bool is_lin_description_file;
@@ -63,6 +69,10 @@ private:
 	// Signals
 	ldfsignal *signals[10000];
 	uint32_t signals_count;
+
+	// Frames
+	ldfframe *frames[1000];
+	uint32_t frames_count;
 
 
 private:
