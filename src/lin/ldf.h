@@ -9,10 +9,12 @@
 #define LIN_LDF_H_
 
 #include <stdint.h>
+#include <ldfcommon.h>
 #include <ldfmasternode.h>
 #include <ldfsignal.h>
 #include <ldfframe.h>
 #include <ldfframesignal.h>
+#include <ldfnodeattributes.h>
 
 
 namespace lin {
@@ -20,13 +22,6 @@ namespace lin {
 class ldf {
 
 private:
-	enum lin_protocol_version_e
-	{
-		LIN_PROTOCOL_VERSION_NONE,
-		LIN_PROTOCOL_VERSION_2_0,
-		LIN_PROTOCOL_VERSION_2_1
-	};
-
 	enum lin_language_version_e
 	{
 		LIN_LANGUAGE_VERSION_NONE,
@@ -41,6 +36,7 @@ private:
 		LDF_PARSING_STATE_SIGNALS,
 		LDF_PARSING_STATE_FRAMES,
 		LDF_PARSING_STATE_NODES_ATTRIBUTES,
+		LDF_PARSING_STATE_CONFIGURABLE_FRAMES
 	};
 
 public:
@@ -73,6 +69,10 @@ private:
 	// Frames
 	ldfframe *frames[1000];
 	uint32_t frames_count;
+
+	// Node attributes
+	ldfnodeattributes *node_attributes[1000];
+	uint32_t node_attributes_count;
 
 
 private:

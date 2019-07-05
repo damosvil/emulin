@@ -7,9 +7,8 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ldfcommon.h>
 #include <ldfframe.h>
-
-#define BLANK_CHARACTERS					" \t\r\n"
 
 
 namespace lin {

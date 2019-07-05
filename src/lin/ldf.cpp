@@ -5,17 +5,16 @@
  *      Author: iso9660
  */
 
-#include "ldf.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdexcept>
 #include <stdlib.h>
+#include "ldf.h"
+#include "ldfcommon.h"
+
 
 using namespace std;
-
-#define BLANK_CHARACTERS					" \t\r\n"
 
 
 namespace lin
@@ -39,6 +38,7 @@ ldf::ldf(uint8_t *filename)
 	slaves_count = 0;
 	signals_count = 0;
 	frames_count = 0;
+	node_attributes_count = 0;
 
 	// Open file
 	FILE *ldf_file = fopen((char *)filename, "rb");
@@ -63,9 +63,10 @@ ldf::ldf(uint8_t *filename)
 ldf::~ldf()
 {
 	if (master) delete master;
-	while (slaves_count--) delete slaves[slaves_count];
-	while (signals_count--) delete signals[signals_count];
-	while (frames_count--) delete frames[frames_count];
+	while (slaves_count > 0) delete slaves[--slaves_count];
+	while (signals_count > 0) delete signals[--signals_count];
+	while (frames_count > 0) delete frames[--frames_count];
+	while (node_attributes_count > 0) delete node_attributes[--node_attributes_count];
 }
 
 void ldf::Validate(void)
@@ -161,9 +162,31 @@ void ldf::process_statement(uint8_t *statement)
 	ldfmasternode *masternode = NULL;
 	ldfframe *frame = NULL;
 	ldfframesignal *framesignal = NULL;
+	ldfconfigurableframe *configurable_frame = NULL;
 
 	switch (parsing_state)
 	{
+
+	case LDF_PARSING_STATE_CONFIGURABLE_FRAMES:
+		configurable_frame = ldfconfigurableframe::FromUdsStatement(statement);
+		if (configurable_frame) node_attributes[node_attributes_count - 1]->AddConfigurableFrame(configurable_frame);
+		break;
+
+	case LDF_PARSING_STATE_NODES_ATTRIBUTES:
+		if (group_level == 1)
+		{
+			// Isolate node name
+			p = strtok((char *)statement, BLANK_CHARACTERS);
+
+			// Add new node attributes
+			node_attributes[node_attributes_count++] = new ldfnodeattributes((uint8_t *)p);
+		}
+		else if (group_level == 2)
+		{
+			// Update node attributes directly from statement
+			node_attributes[node_attributes_count - 1]->UpdateFromLdfStatement(statement);
+		}
+		break;
 
 	case LDF_PARSING_STATE_FRAMES:
 		if (group_level == 1)
@@ -193,7 +216,7 @@ void ldf::process_statement(uint8_t *statement)
 			p += 6;
 			while (!(*p)) p++;
 
-			// Parse masternose
+			// Parse master node
 			masternode = ldfmasternode::FromLdfStatement((uint8_t *)p);
 			if (master == NULL && masternode)
 				master = masternode;
@@ -282,6 +305,14 @@ void ldf::process_group_start(uint8_t *start)
 		{
 			parsing_state = LDF_PARSING_STATE_FRAMES;
 		}
+		else if (strcmp(p, "Node_attributes") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_NODES_ATTRIBUTES;
+		}
+		else if (strcmp(p, "configurable_frames") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_CONFIGURABLE_FRAMES;
+		}
 		break;
 
 	}
@@ -289,8 +320,14 @@ void ldf::process_group_start(uint8_t *start)
 
 void ldf::process_group_end(uint8_t *end)
 {
-	if (group_level == 1)
+	if (parsing_state == LDF_PARSING_STATE_CONFIGURABLE_FRAMES)
+	{
+		parsing_state = LDF_PARSING_STATE_NODES_ATTRIBUTES;
+	}
+	else if (group_level == 1)
+	{
 		parsing_state = LDF_PARSING_STATE_NONE;
+	}
 }
 
 } /* namespace ldf */
