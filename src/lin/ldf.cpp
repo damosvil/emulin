@@ -39,6 +39,7 @@ ldf::ldf(uint8_t *filename)
 	signals_count = 0;
 	frames_count = 0;
 	node_attributes_count = 0;
+	schedule_tables_count = 0;
 
 	// Open file
 	FILE *ldf_file = fopen((char *)filename, "rb");
@@ -67,6 +68,7 @@ ldf::~ldf()
 	while (signals_count > 0) delete signals[--signals_count];
 	while (frames_count > 0) delete frames[--frames_count];
 	while (node_attributes_count > 0) delete node_attributes[--node_attributes_count];
+	while (schedule_tables_count > 0) delete schedule_tables[--schedule_tables_count];
 }
 
 void ldf::Validate(void)
@@ -163,9 +165,23 @@ void ldf::process_statement(uint8_t *statement)
 	ldfframe *frame = NULL;
 	ldfframesignal *framesignal = NULL;
 	ldfconfigurableframe *configurable_frame = NULL;
+	ldfschedulecommand *schedule_command = NULL;
 
 	switch (parsing_state)
 	{
+
+	case LDF_PARSING_STATE_SCHEDULE_TABLES:
+		if (group_level == 1)
+		{
+			p = strtok((char *)statement, BLANK_CHARACTERS);
+			if (p) schedule_tables[schedule_tables_count++] = new ldfscheduletable((uint8_t *)p);
+		}
+		else if (group_level == 2)
+		{
+			schedule_command = ldfschedulecommand::FromLdfStatement(statement);
+			if (schedule_command) schedule_tables[schedule_tables_count - 1]->AddCommand(schedule_command);
+		}
+		break;
 
 	case LDF_PARSING_STATE_CONFIGURABLE_FRAMES:
 		if (group_level == 3)
@@ -287,6 +303,10 @@ void ldf::process_group_start(uint8_t *start)
 	switch (parsing_state)
 	{
 
+	case LDF_PARSING_STATE_SCHEDULE_TABLES:
+		process_statement(start);
+		break;
+
 	case LDF_PARSING_STATE_NODES_ATTRIBUTES:
 		if (strstr((char *)start, "configurable_frames") == (char *)start)
 		{
@@ -322,6 +342,10 @@ void ldf::process_group_start(uint8_t *start)
 		else if (strcmp(p, "Node_attributes") == 0)
 		{
 			parsing_state = LDF_PARSING_STATE_NODES_ATTRIBUTES;
+		}
+		else if (strcmp(p, "Schedule_tables") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_SCHEDULE_TABLES;
 		}
 		break;
 
