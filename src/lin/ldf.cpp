@@ -35,6 +35,7 @@ ldf::ldf(uint8_t *filename)
 	slaves_count = 0;
 	master = NULL;
 	slaves_count = 0;
+	signals_count = 0;
 
 	// Open file
 	FILE *ldf_file = fopen((char *)filename, "rb");
@@ -148,14 +149,15 @@ void ldf::parse_char(uint8_t c)
 void ldf::process_statement(uint8_t *statement)
 {
 	char *p = NULL;
-	char *name = NULL;
-	uint16_t timebase = 0;
-	uint16_t jitter = 0;
+	ldfsignal *signal = NULL;
+	ldfmasternode *masternode = NULL;
 
 	switch (parsing_state)
 	{
 
 	case LDF_PARSING_STATE_SIGNALS:
+		signal = ldfsignal::FromLdfStatement(statement);
+		if (signal) signals[signals_count++] = signal;
 		break;
 
 	case LDF_PARSING_STATE_NODES:
@@ -164,22 +166,14 @@ void ldf::process_statement(uint8_t *statement)
 
 		if (strcmp(p, "Master") == 0)
 		{
-			// Name
-			p = strtok(NULL, "," BLANK_CHARACTERS);
-			if (p) name = p;
+			// Go to the next string position
+			p += 6;
+			while (!(*p)) p++;
 
-			// Timebase
-			if (p) p = strtok(NULL, "," BLANK_CHARACTERS);
-			if (p) timebase = atoi(p);
-
-			// Jitter
-			if (p) p = strtok(NULL, "," BLANK_CHARACTERS);	// Skip word ms
-			if (p) p = strtok(NULL, "," BLANK_CHARACTERS);
-			if (p) jitter = atof(p) * 10;
-
-			// Add master
-			if (master == NULL && name != NULL)
-				master = new ldfmasternode((uint8_t *)name, timebase, jitter);
+			// Parse masternose
+			masternode = ldfmasternode::FromLdfStatement((uint8_t *)p);
+			if (master == NULL && masternode)
+				master = masternode;
 		}
 		else if (strcmp(p, "Slaves") == 0)
 		{
@@ -244,9 +238,15 @@ void ldf::process_group_start(uint8_t *start)
 	switch (parsing_state)
 	{
 
+	case LDF_PARSING_STATE_FRAMES:
+		break;
+
 	case LDF_PARSING_STATE_NONE:
 	default:
+		// Isolate first token
 		p = strtok((char *)start, BLANK_CHARACTERS);
+
+		// Analyze group
 		if (strcmp(p, "Nodes") == 0)
 		{
 			parsing_state = LDF_PARSING_STATE_NODES;
@@ -254,6 +254,10 @@ void ldf::process_group_start(uint8_t *start)
 		else if (strcmp(p, "Signals") == 0)
 		{
 			parsing_state = LDF_PARSING_STATE_SIGNALS;
+		}
+		else if (strcmp(p, "Frames") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_FRAMES;
 		}
 		break;
 

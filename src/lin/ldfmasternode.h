@@ -23,6 +23,8 @@ public:
 	ldfmasternode(uint8_t *name, uint16_t timebase, uint16_t jitter);
 	virtual ~ldfmasternode();
 
+	static ldfmasternode *FromLdfStatement(uint8_t *statement);
+
 };
 
 }

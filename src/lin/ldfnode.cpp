@@ -11,17 +11,8 @@
 namespace lin {
 
 ldfnode::ldfnode(uint8_t *name) {
-	// Store the name length
-	uint32_t length = name ? strlen((char *)name) : 0;
-
-	// Make room to copy the name
-	this->name = name ? new uint8_t[length + 1] : NULL;
-
 	// Copy the name
-	if (length)
-	{
-		strcpy((char *)this->name, (char *)name);
-	}
+	this->name = name != NULL ? (uint8_t *)strdup((char *)name) : NULL;
 }
 
 ldfnode::~ldfnode() {

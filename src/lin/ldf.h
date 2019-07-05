@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <ldfmasternode.h>
+#include <ldfsignal.h>
 
 namespace lin {
 
@@ -58,6 +59,11 @@ private:
 	ldfmasternode *master;
 	ldfnode *slaves[128];
 	uint8_t slaves_count;
+
+	// Signals
+	ldfsignal *signals[10000];
+	uint32_t signals_count;
+
 
 private:
 	bool char_in_set(uint8_t c, const char *set);
