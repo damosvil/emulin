@@ -41,13 +41,13 @@ void ldfnodeattributes::UpdateFromLdfStatement(uint8_t *statement)
 	char *p = NULL;
 
 	// Isolate parameter name
-	p = strtok((char *) statement, "=,");
+	p = strtok((char *) statement, "=," BLANK_CHARACTERS);
 	if (!p) return;
 
 	// Isolate and parse parameter value
 	if (strcmp(p, "LIN_protocol") == 0)
 	{
-		p = strtok(NULL, "=,");
+		p = strtok(NULL, "=," BLANK_CHARACTERS);
 		if (!p) return;
 
 		if (strcmp(p, "\"2.1\"") == 0)
@@ -57,26 +57,26 @@ void ldfnodeattributes::UpdateFromLdfStatement(uint8_t *statement)
 	}
 	else if (strcmp(p, "configured_NAD") == 0)
 	{
-		p = strtok(NULL, "=,");
+		p = strtok(NULL, "=," BLANK_CHARACTERS);
 		if (p) configured_NAD = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
 	}
 	else if (strcmp(p, "initial_NAD") == 0)
 	{
-		p = strtok(NULL, "=,");
+		p = strtok(NULL, "=," BLANK_CHARACTERS);
 		if (p) initial_NAD = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
 	}
 	else if (strcmp(p, "product_id") == 0)
 	{
 		// Supplier ID
-		p = strtok(NULL, "=,");
+		p = strtok(NULL, "=," BLANK_CHARACTERS);
 		if (p) product_id.supplier_id = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
 
 		// Function ID
-		if (p) p = strtok(NULL, "=,");
+		if (p) p = strtok(NULL, "=," BLANK_CHARACTERS);
 		if (p) product_id.function_id = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
 
 		// Variant
-		if (p) p = strtok(NULL, "=,");
+		if (p) p = strtok(NULL, "=," BLANK_CHARACTERS);
 		if (p) product_id.variant = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
 	}
 	else if (strcmp(p, "response_error") == 0)

@@ -88,12 +88,17 @@ Frames {
 }
 Node_attributes {
     iStars_LINSlave {
-        LIN_protocol = 2.0 ;
+        LIN_protocol = "2.0" ;
         configured_NAD = 0x05 ;
-       }
+        
+        configurable_frames {
+        	ID_DATA = 0x00;
+        	LIN_STATE = 0x30;
+        }
+    }
 }
 Schedule_tables {
-    Nissan {
+    Normal {
         LIN_CONTROL delay 10.0000 ms ;
         LIN_STATE delay 10.0000 ms ;
     }

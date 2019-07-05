@@ -168,8 +168,11 @@ void ldf::process_statement(uint8_t *statement)
 	{
 
 	case LDF_PARSING_STATE_CONFIGURABLE_FRAMES:
-		configurable_frame = ldfconfigurableframe::FromUdsStatement(statement);
-		if (configurable_frame) node_attributes[node_attributes_count - 1]->AddConfigurableFrame(configurable_frame);
+		if (group_level == 3)
+		{
+			configurable_frame = ldfconfigurableframe::FromUdsStatement(statement);
+			if (configurable_frame) node_attributes[node_attributes_count - 1]->AddConfigurableFrame(configurable_frame);
+		}
 		break;
 
 	case LDF_PARSING_STATE_NODES_ATTRIBUTES:
@@ -284,6 +287,17 @@ void ldf::process_group_start(uint8_t *start)
 	switch (parsing_state)
 	{
 
+	case LDF_PARSING_STATE_NODES_ATTRIBUTES:
+		if (strstr((char *)start, "configurable_frames") == (char *)start)
+		{
+			parsing_state = LDF_PARSING_STATE_CONFIGURABLE_FRAMES;
+		}
+		else
+		{
+			process_statement(start);
+		}
+		break;
+
 	case LDF_PARSING_STATE_FRAMES:
 		process_statement(start);
 		break;
@@ -308,10 +322,6 @@ void ldf::process_group_start(uint8_t *start)
 		else if (strcmp(p, "Node_attributes") == 0)
 		{
 			parsing_state = LDF_PARSING_STATE_NODES_ATTRIBUTES;
-		}
-		else if (strcmp(p, "configurable_frames") == 0)
-		{
-			parsing_state = LDF_PARSING_STATE_CONFIGURABLE_FRAMES;
 		}
 		break;
 
