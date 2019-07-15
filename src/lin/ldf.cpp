@@ -40,6 +40,7 @@ ldf::ldf(uint8_t *filename)
 	frames_count = 0;
 	node_attributes_count = 0;
 	schedule_tables_count = 0;
+	signal_encodings_count = 0;
 
 	// Open file
 	FILE *ldf_file = fopen((char *)filename, "rb");
@@ -69,6 +70,7 @@ ldf::~ldf()
 	while (frames_count > 0) delete frames[--frames_count];
 	while (node_attributes_count > 0) delete node_attributes[--node_attributes_count];
 	while (schedule_tables_count > 0) delete schedule_tables[--schedule_tables_count];
+	while (signal_encodings_count > 0) delete signal_encodings[--signal_encodings_count];
 }
 
 void ldf::Validate(void)
@@ -186,7 +188,7 @@ void ldf::process_statement(uint8_t *statement)
 	case LDF_PARSING_STATE_CONFIGURABLE_FRAMES:
 		if (group_level == 3)
 		{
-			configurable_frame = ldfconfigurableframe::FromUdsStatement(statement);
+			configurable_frame = ldfconfigurableframe::FromLdfStatement(statement);
 			if (configurable_frame) node_attributes[node_attributes_count - 1]->AddConfigurableFrame(configurable_frame);
 		}
 		break;
@@ -247,6 +249,19 @@ void ldf::process_statement(uint8_t *statement)
 				p = strtok(NULL, "," BLANK_CHARACTERS);
 				if (p) slaves[slaves_count++] = new ldfnode((uint8_t *)p);
 			}
+		}
+		break;
+
+	case LDF_PARSING_STATE_SIGNAL_ENCODINGS:
+		if (group_level == 1)
+		{
+			p = strtok((char *)statement, BLANK_CHARACTERS);
+			if (p) signal_encodings[signal_encodings_count++] = new ldfsignalencoding((uint8_t *)p);
+
+		}
+		else if (group_level == 2)
+		{
+			signal_encodings[signal_encodings_count - 1]->UpdateFromLdfStatement(statement);
 		}
 		break;
 
@@ -322,6 +337,10 @@ void ldf::process_group_start(uint8_t *start)
 		process_statement(start);
 		break;
 
+	case LDF_PARSING_STATE_SIGNAL_ENCODINGS:
+		process_statement(start);
+		break;
+
 	default:
 		// Isolate first token
 		p = strtok((char *)start, BLANK_CHARACTERS);
@@ -346,6 +365,10 @@ void ldf::process_group_start(uint8_t *start)
 		else if (strcmp(p, "Schedule_tables") == 0)
 		{
 			parsing_state = LDF_PARSING_STATE_SCHEDULE_TABLES;
+		}
+		else if (strcmp(p, "Signal_encoding_types") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_SIGNAL_ENCODINGS;
 		}
 		break;
 

@@ -23,7 +23,7 @@ ldfconfigurableframe::~ldfconfigurableframe()
 	if (name) delete name;
 }
 
-ldfconfigurableframe *ldfconfigurableframe::FromUdsStatement(uint8_t *statement)
+ldfconfigurableframe *ldfconfigurableframe::FromLdfStatement(uint8_t *statement)
 {
 	char *p;
 	char *name = NULL;

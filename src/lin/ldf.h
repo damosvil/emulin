@@ -17,6 +17,7 @@
 #include <ldfnodeattributes.h>
 #include <ldfscheduletable.h>
 #include <ldfschedulecommand.h>
+#include <ldfsignalencoding.h>
 
 
 namespace lin {
@@ -39,7 +40,8 @@ private:
 		LDF_PARSING_STATE_FRAMES,
 		LDF_PARSING_STATE_NODES_ATTRIBUTES,
 		LDF_PARSING_STATE_CONFIGURABLE_FRAMES,
-		LDF_PARSING_STATE_SCHEDULE_TABLES
+		LDF_PARSING_STATE_SCHEDULE_TABLES,
+		LDF_PARSING_STATE_SIGNAL_ENCODINGS
 	};
 
 public:
@@ -80,6 +82,10 @@ private:
 	// Schedule tables
 	ldfscheduletable *schedule_tables[100];
 	uint32_t schedule_tables_count;
+
+	// Signal encodings
+	ldfsignalencoding *signal_encodings[1000];
+	uint32_t signal_encodings_count;
 
 
 private:

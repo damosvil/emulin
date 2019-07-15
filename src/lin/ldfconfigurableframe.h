@@ -22,7 +22,7 @@ public:
 	ldfconfigurableframe(uint8_t *name, uint8_t id);
 	virtual ~ldfconfigurableframe();
 
-	static ldfconfigurableframe *FromUdsStatement(uint8_t *statement);
+	static ldfconfigurableframe *FromLdfStatement(uint8_t *statement);
 
 };
 
