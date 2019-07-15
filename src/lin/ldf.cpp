@@ -257,7 +257,6 @@ void ldf::process_statement(uint8_t *statement)
 		{
 			p = strtok((char *)statement, BLANK_CHARACTERS);
 			if (p) signal_encodings[signal_encodings_count++] = new ldfsignalencoding((uint8_t *)p);
-
 		}
 		else if (group_level == 2)
 		{
