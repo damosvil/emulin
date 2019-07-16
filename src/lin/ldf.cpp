@@ -40,7 +40,8 @@ ldf::ldf(uint8_t *filename)
 	frames_count = 0;
 	node_attributes_count = 0;
 	schedule_tables_count = 0;
-	signal_encodings_count = 0;
+	encoding_types_count = 0;
+	encoding_signals_count = 0;
 
 	// Open file
 	FILE *ldf_file = fopen((char *)filename, "rb");
@@ -70,7 +71,8 @@ ldf::~ldf()
 	while (frames_count > 0) delete frames[--frames_count];
 	while (node_attributes_count > 0) delete node_attributes[--node_attributes_count];
 	while (schedule_tables_count > 0) delete schedule_tables[--schedule_tables_count];
-	while (signal_encodings_count > 0) delete signal_encodings[--signal_encodings_count];
+	while (encoding_types_count > 0) delete encoding_types[--encoding_types_count];
+	while (encoding_signals_count > 0) delete encoding_signals[--encoding_signals_count];
 }
 
 void ldf::Validate(void)
@@ -168,6 +170,7 @@ void ldf::process_statement(uint8_t *statement)
 	ldfframesignal *framesignal = NULL;
 	ldfconfigurableframe *configurable_frame = NULL;
 	ldfschedulecommand *schedule_command = NULL;
+	ldfencodingsignals *encoding_signal = NULL;
 
 	switch (parsing_state)
 	{
@@ -223,8 +226,11 @@ void ldf::process_statement(uint8_t *statement)
 		break;
 
 	case LDF_PARSING_STATE_SIGNALS:
-		signal = ldfsignal::FromLdfStatement(statement);
-		if (signal) signals[signals_count++] = signal;
+		if (group_level == 1)
+		{
+			signal = ldfsignal::FromLdfStatement(statement);
+			if (signal) signals[signals_count++] = signal;
+		}
 		break;
 
 	case LDF_PARSING_STATE_NODES:
@@ -252,15 +258,23 @@ void ldf::process_statement(uint8_t *statement)
 		}
 		break;
 
-	case LDF_PARSING_STATE_SIGNAL_ENCODINGS:
+	case LDF_PARSING_STATE_ENCODING_TYPES:
 		if (group_level == 1)
 		{
 			p = strtok((char *)statement, BLANK_CHARACTERS);
-			if (p) signal_encodings[signal_encodings_count++] = new ldfsignalencoding((uint8_t *)p);
+			if (p) encoding_types[encoding_types_count++] = new ldfencodingtype((uint8_t *)p);
 		}
 		else if (group_level == 2)
 		{
-			signal_encodings[signal_encodings_count - 1]->UpdateFromLdfStatement(statement);
+			encoding_types[encoding_types_count - 1]->UpdateFromLdfStatement(statement);
+		}
+		break;
+
+	case LDF_PARSING_STATE_ENCODING_SIGNALS:
+		if (group_level == 1)
+		{
+			encoding_signal = ldfencodingsignals::FromLdfStatement(statement);
+			if (encoding_signal) encoding_signals[encoding_signals_count++] = encoding_signal;
 		}
 		break;
 
@@ -336,7 +350,7 @@ void ldf::process_group_start(uint8_t *start)
 		process_statement(start);
 		break;
 
-	case LDF_PARSING_STATE_SIGNAL_ENCODINGS:
+	case LDF_PARSING_STATE_ENCODING_TYPES:
 		process_statement(start);
 		break;
 
@@ -367,7 +381,11 @@ void ldf::process_group_start(uint8_t *start)
 		}
 		else if (strcmp(p, "Signal_encoding_types") == 0)
 		{
-			parsing_state = LDF_PARSING_STATE_SIGNAL_ENCODINGS;
+			parsing_state = LDF_PARSING_STATE_ENCODING_TYPES;
+		}
+		else if (strcmp(p, "Signal_representation") == 0)
+		{
+			parsing_state = LDF_PARSING_STATE_ENCODING_SIGNALS;
 		}
 		break;
 

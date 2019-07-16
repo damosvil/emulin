@@ -5,8 +5,8 @@
  *      Author: iso9660
  */
 
-#ifndef LIN_LDFSIGNALENCODING_H_
-#define LIN_LDFSIGNALENCODING_H_
+#ifndef LIN_LDFENCODINGTYPE_H_
+#define LIN_LDFENCODINGTYPE_H_
 
 #include <ldflogicalvalue.h>
 #include <ldfphysicalvalue.h>
@@ -14,7 +14,7 @@
 
 namespace lin {
 
-class ldfsignalencoding {
+class ldfencodingtype {
 
 private:
 	uint8_t *name;
@@ -26,8 +26,8 @@ private:
 
 
 public:
-	ldfsignalencoding(uint8_t *name);
-	virtual ~ldfsignalencoding();
+	ldfencodingtype(uint8_t *name);
+	virtual ~ldfencodingtype();
 
 	void UpdateFromLdfStatement(uint8_t *statement);
 
@@ -35,4 +35,4 @@ public:
 
 } /* namespace lin */
 
-#endif /* LIN_LDFSIGNALENCODING_H_ */
+#endif /* LIN_LDFENCODINGTYPE_H_ */

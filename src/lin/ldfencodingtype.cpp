@@ -7,11 +7,11 @@
 
 #include <string.h>
 #include <ldfcommon.h>
-#include <ldfsignalencoding.h>
+#include <ldfencodingtype.h>
 
 namespace lin {
 
-ldfsignalencoding::ldfsignalencoding(uint8_t *name)
+ldfencodingtype::ldfencodingtype(uint8_t *name)
 {
 	this->name = (uint8_t *)strdup((char *)name);
 	treat_as_bcd = false;
@@ -20,14 +20,14 @@ ldfsignalencoding::ldfsignalencoding(uint8_t *name)
 	logical_values_count = 0;
 }
 
-ldfsignalencoding::~ldfsignalencoding()
+ldfencodingtype::~ldfencodingtype()
 {
 	if (name) delete name;
 	if (physical_value) delete physical_value;
 	while (logical_values_count > 0) delete logical_values[--logical_values_count];
 }
 
-void ldfsignalencoding::UpdateFromLdfStatement(uint8_t *statement)
+void ldfencodingtype::UpdateFromLdfStatement(uint8_t *statement)
 {
 	// Type name
 	char *p = strtok((char *)statement, "," BLANK_CHARACTERS);
