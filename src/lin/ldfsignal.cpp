@@ -95,7 +95,7 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 
 	if (!ldfnode::CheckNodeName(publisher, master, slaves, &slaves_count))
 	{
-		sprintf(str, "%sPublisher %s not defined in database", STR_ERR, publisher);
+		sprintf(str, STR_ERR "Publisher '%s' not defined in database", publisher);
 		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
 	}
 
@@ -103,7 +103,7 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 	{
 		if (!ldfnode::CheckNodeName(subscribers[i], master, slaves, &slaves_count))
 		{
-			sprintf(str, "%sPublisher %s not defined in database", STR_ERR, publisher);
+			sprintf(str, STR_ERR "Subscriber '%s' not defined in database", subscribers[i]);
 			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
 		}
 	}

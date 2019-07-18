@@ -107,7 +107,7 @@ bool ldf::Validate(void)
 		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN slaves not found in database";
 	}
 
-	// Check publishers and subscriptors of signals
+	// Check publishers and subscribers of signals
 	for (ix = 0; ix < signals_count; ix++)
 	{
 		signals[ix]->ValidateNodes(master, slaves, slaves_count, validation_messages, &validation_messages_count);
