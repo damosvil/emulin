@@ -9,6 +9,7 @@
 #define LIN_LDFSIGNAL_H_
 
 #include <stdint.h>
+#include <ldfnode.h>
 
 namespace lin {
 
@@ -27,6 +28,8 @@ public:
 	virtual ~ldfsignal();
 
 	static ldfsignal *FromLdfStatement(uint8_t *statement);
+
+	void ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
 };
 

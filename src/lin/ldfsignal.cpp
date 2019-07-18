@@ -7,8 +7,10 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ldfcommon.h>
 #include <ldfsignal.h>
+#include <ldfnode.h>
 
 
 namespace lin {
@@ -47,19 +49,23 @@ ldfsignal *ldfsignal::FromLdfStatement(uint8_t *statement)
 
 	// Signal name
 	p = strtok((char *)statement, ":," BLANK_CHARACTERS);
-	if (p) name = p;
+	if (!p) return NULL;
+	name = p;
 
 	// Bit size
-	if (p) p = strtok(NULL, ":," BLANK_CHARACTERS);
-	if (p) bit_size = atoi(p);
+	p = strtok(NULL, ":," BLANK_CHARACTERS);
+	if (!p) return NULL;
+	bit_size = atoi(p);
 
 	// Default value
-	if (p) p = strtok(NULL, ":," BLANK_CHARACTERS);
-	if (p) default_value = (p[1] == 'x' || p[1] == 'X') ? strtol(p, NULL, 16) : atoi(p);
+	p = strtok(NULL, ":," BLANK_CHARACTERS);
+	if (!p) return NULL;
+	default_value = (p[1] == 'x' || p[1] == 'X') ? strtol(p, NULL, 16) : atoi(p);
 
 	// Publisher
-	if (p) p = strtok(NULL, ":," BLANK_CHARACTERS);
-	if (p) publisher = p;
+	p = strtok(NULL, ":," BLANK_CHARACTERS);
+	if (!p) return NULL;
+	publisher = p;
 
 	// Subscribers
 	while (p)
@@ -79,6 +85,27 @@ ldfsignal *ldfsignal::FromLdfStatement(uint8_t *statement)
 	else
 	{
 		return NULL;
+	}
+}
+
+void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	uint32_t i;
+	char str[1000];
+
+	if (!ldfnode::CheckNodeName(publisher, master, slaves, &slaves_count))
+	{
+		sprintf(str, "%sPublisher %s not defined in database", STR_ERR, publisher);
+		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+	}
+
+	for (i = 0; i < subscribers_count; i++)
+	{
+		if (!ldfnode::CheckNodeName(subscribers[i], master, slaves, &slaves_count))
+		{
+			sprintf(str, "%sPublisher %s not defined in database", STR_ERR, publisher);
+			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		}
 	}
 }
 

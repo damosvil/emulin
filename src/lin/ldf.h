@@ -50,7 +50,7 @@ public:
 	ldf(uint8_t *filename);
 	virtual ~ldf();
 
-	void Validate(void);
+	bool Validate(void);
 
 
 private:
@@ -92,6 +92,10 @@ private:
 	// Relationships between encodings and signals
 	ldfencodingsignals *encoding_signals[1000];
 	uint32_t encoding_signals_count;
+
+	// Validation messages
+	uint8_t *validation_messages[10000];
+	uint32_t validation_messages_count;
 
 
 private:

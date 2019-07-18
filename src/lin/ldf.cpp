@@ -42,6 +42,7 @@ ldf::ldf(uint8_t *filename)
 	schedule_tables_count = 0;
 	encoding_types_count = 0;
 	encoding_signals_count = 0;
+	validation_messages_count = 0;
 
 	// Open file
 	FILE *ldf_file = fopen((char *)filename, "rb");
@@ -73,35 +74,46 @@ ldf::~ldf()
 	while (schedule_tables_count > 0) delete schedule_tables[--schedule_tables_count];
 	while (encoding_types_count > 0) delete encoding_types[--encoding_types_count];
 	while (encoding_signals_count > 0) delete encoding_signals[--encoding_signals_count];
+	while (validation_messages_count > 0) delete validation_messages[--validation_messages_count];
 }
 
-void ldf::Validate(void)
+bool ldf::Validate(void)
 {
+	uint32_t ix;
+
 	// Validate results
 	if (!is_lin_description_file)
 	{
-		throw runtime_error("Not a LIN definition file");
+		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "Not a LIN definition file";
 	}
-	else if (lin_protocol_version == LIN_PROTOCOL_VERSION_NONE)
+	if (lin_protocol_version == LIN_PROTOCOL_VERSION_NONE)
 	{
-		throw runtime_error("Protocol version not supported");
+		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "Protocol version not supported";
 	}
-	else if (lin_language_version == LIN_LANGUAGE_VERSION_NONE)
+	if (lin_language_version == LIN_LANGUAGE_VERSION_NONE)
 	{
-		throw runtime_error("Language version not supported");
+		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "Language version not supported";
 	}
-	else if (lin_speed == 0)
+	if (lin_speed == 0)
 	{
-		throw runtime_error("LIN speed no defined");
+		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN speed no defined";
 	}
-	else if (master == NULL)
+	if (master == NULL)
 	{
-		throw runtime_error("LIN master not found in database");
+		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN master not found in database";
 	}
-	else if (slaves_count == 0)
+	if (slaves_count == 0)
 	{
-		throw runtime_error("LIN slaves not found in database");
+		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN slaves not found in database";
 	}
+
+	// Check publishers and subscriptors of signals
+	for (ix = 0; ix < signals_count; ix++)
+	{
+		signals[ix]->ValidateNodes(master, slaves, slaves_count, validation_messages, &validation_messages_count);
+	}
+
+	return validation_messages_count == 0;
 }
 
 bool ldf::char_in_set(uint8_t c, const char *set)

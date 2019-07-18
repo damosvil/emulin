@@ -21,6 +21,10 @@ public:
 	ldfnode(uint8_t *name);
 	virtual ~ldfnode();
 
+	static bool CheckNodeName(uint8_t *name, ldfnode *master_node, ldfnode **slave_nodes, uint32_t *slave_nodes_count);
+
+	uint8_t *GetName();
+
 };
 
 }

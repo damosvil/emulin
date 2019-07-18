@@ -13,7 +13,7 @@
 
 namespace lin {
 
-class ldfmasternode : private lin::ldfnode {
+class ldfmasternode : public lin::ldfnode {
 
 private:
 	uint16_t timebase;

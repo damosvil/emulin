@@ -10,6 +10,9 @@
 
 #define BLANK_CHARACTERS					" \t\r\n"
 
+#define STR_ERR								"ERR: "
+#define STR_WARN							"WARN: "
+
 namespace lin
 {
 
