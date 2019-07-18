@@ -79,7 +79,8 @@ ldf::~ldf()
 
 bool ldf::Validate(void)
 {
-	uint32_t ix;
+	uint32_t i, j;
+	char str[1000];
 
 	// Validate results
 	if (!is_lin_description_file)
@@ -108,9 +109,22 @@ bool ldf::Validate(void)
 	}
 
 	// Check publishers and subscribers of signals
-	for (ix = 0; ix < signals_count; ix++)
+	for (i = 0; i < signals_count; i++)
 	{
-		signals[ix]->ValidateNodes(master, slaves, slaves_count, validation_messages, &validation_messages_count);
+		signals[i]->ValidateNodes(master, slaves, slaves_count, validation_messages, &validation_messages_count);
+	}
+
+	// Check signals are not repeated
+	for (i = 0; i < signals_count; i++)
+	{
+		for (j = i + 1; j < signals_count; j++)
+		{
+			if (strcmp((char *)signals[i]->GetName(), (char *)signals[j]->GetName()) == 0)
+			{
+				sprintf(str, STR_ERR "Signal '%s' is defined twice", signals[i]->GetName());
+				validation_messages[validation_messages_count++] = (uint8_t *)str;
+			}
+		}
 	}
 
 	return validation_messages_count == 0;

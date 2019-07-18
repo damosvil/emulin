@@ -109,5 +109,10 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 	}
 }
 
+uint8_t *ldfsignal::GetName()
+{
+	return name;
+}
+
 
 } /* namespace lin */
