@@ -30,7 +30,9 @@ public:
 	static ldfsignal *FromLdfStatement(uint8_t *statement);
 
 	void ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
+	void ValidateUnicity(ldfsignal *signal, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	uint8_t *GetName();
+	uint8_t GetBitSize();
 
 };
 

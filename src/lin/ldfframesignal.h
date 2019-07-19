@@ -24,6 +24,9 @@ public:
 
 	static ldfframesignal *FromLdfStatement(uint8_t *statement);
 
+	uint8_t *GetName();
+	uint16_t GetOffset();
+
 };
 
 } /* namespace lin */

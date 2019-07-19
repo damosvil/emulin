@@ -80,7 +80,6 @@ ldf::~ldf()
 bool ldf::Validate(void)
 {
 	uint32_t i, j;
-	char str[1000];
 
 	// Validate results
 	if (!is_lin_description_file)
@@ -108,23 +107,35 @@ bool ldf::Validate(void)
 		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN slaves not found in database";
 	}
 
-	// Check publishers and subscribers of signals
+	// Validate publishers and subscribers of signals
 	for (i = 0; i < signals_count; i++)
 	{
 		signals[i]->ValidateNodes(master, slaves, slaves_count, validation_messages, &validation_messages_count);
 	}
 
-	// Check signals are not repeated
+	// Validate signals are not repeated
 	for (i = 0; i < signals_count; i++)
 	{
 		for (j = i + 1; j < signals_count; j++)
 		{
-			if (strcmp((char *)signals[i]->GetName(), (char *)signals[j]->GetName()) == 0)
-			{
-				sprintf(str, STR_ERR "Signal '%s' is defined twice", signals[i]->GetName());
-				validation_messages[validation_messages_count++] = (uint8_t *)str;
-			}
+			signals[i]->ValidateUnicity(signals[j], validation_messages, &validation_messages_count);
 		}
+	}
+
+	// Validate frames
+	for (i = 0; i < frames_count; i++)
+	{
+		// Validate frame publisher
+		frames[i]->ValidatePublisher(master, slaves, slaves_count, validation_messages, &validation_messages_count);
+
+		// Validate frame unicity
+		for (j = i + 1; j < frames_count; j++)
+		{
+			frames[i]->ValidateUnicity(frames[j], validation_messages, &validation_messages_count);
+		}
+
+		// Validate frame signals and size
+		frames[i]->Validate(signals, signals_count, validation_messages, &validation_messages_count);
 	}
 
 	return validation_messages_count == 0;

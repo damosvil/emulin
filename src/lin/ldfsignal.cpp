@@ -93,7 +93,7 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 	uint32_t i;
 	char str[1000];
 
-	if (!ldfnode::CheckNodeName(publisher, master, slaves, &slaves_count))
+	if (!ldfnode::CheckNodeName(publisher, master, slaves, slaves_count))
 	{
 		sprintf(str, STR_ERR "Publisher '%s' not defined in database", publisher);
 		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
@@ -101,7 +101,7 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 
 	for (i = 0; i < subscribers_count; i++)
 	{
-		if (!ldfnode::CheckNodeName(subscribers[i], master, slaves, &slaves_count))
+		if (!ldfnode::CheckNodeName(subscribers[i], master, slaves, slaves_count))
 		{
 			sprintf(str, STR_ERR "Subscriber '%s' not defined in database", subscribers[i]);
 			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
@@ -109,10 +109,27 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 	}
 }
 
+void ldfsignal::ValidateUnicity(ldfsignal *signal, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	char str[1000];
+
+	if (strcmp((char *)name, (char *)signal->name) == 0)
+	{
+		sprintf(str, STR_ERR "Signal '%s' is defined twice", name);
+		validation_messages[*validation_messages_count++] = (uint8_t *)str;
+	}
+}
+
 uint8_t *ldfsignal::GetName()
 {
 	return name;
 }
+
+uint8_t ldfsignal::GetBitSize()
+{
+	return bit_size;
+}
+
 
 
 } /* namespace lin */

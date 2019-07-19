@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ldfcommon.h>
 #include <ldfframesignal.h>
 
@@ -46,8 +47,19 @@ ldfframesignal *ldfframesignal::FromLdfStatement(uint8_t *statement)
 	{
 		return NULL;
 	}
-
 }
+
+uint8_t *ldfframesignal::GetName()
+{
+	return name;
+}
+
+uint16_t ldfframesignal::GetOffset()
+{
+	return offset;
+}
+
+
 
 
 } /* namespace lin */
