@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 #include <ldfcommon.h>
+#include <ldfnode.h>
+#include <ldfframe.h>
 #include <ldfconfigurableframe.h>
 
 
@@ -47,6 +49,9 @@ public:
 
 	void UpdateFromLdfStatement(uint8_t *statement);
 	void AddConfigurableFrame(ldfconfigurableframe *frame);
+	void ValidateNode(ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
+	void ValidateUnicity(ldfnodeattributes *attributes, uint8_t **validation_messages, uint32_t *validation_messages_count);
+	void ValidateFrames(ldfframe **frames, uint32_t frames_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
 };
 

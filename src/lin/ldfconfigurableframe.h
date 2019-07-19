@@ -24,6 +24,11 @@ public:
 
 	static ldfconfigurableframe *FromLdfStatement(uint8_t *statement);
 
+	uint8_t *GetName();
+	uint8_t GetId();
+
+	void ValidateUnicity(uint8_t *attributes, ldfconfigurableframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count);
+
 };
 
 } /* namespace lin */

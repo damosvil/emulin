@@ -34,6 +34,8 @@ public:
 	static ldfframe *FromLdfStatement(uint8_t *statement);
 
 	void AddSignal(ldfframesignal *signal);
+	uint8_t *GetName();
+
 	void ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateUnicity(ldfframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void Validate(ldfsignal **signals, uint32_t signals_count, uint8_t **validation_messages, uint32_t *validation_messages_count);

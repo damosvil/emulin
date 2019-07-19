@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ldfcommon.h>
 #include <ldfconfigurableframe.h>
 
@@ -44,5 +45,33 @@ ldfconfigurableframe *ldfconfigurableframe::FromLdfStatement(uint8_t *statement)
 		return NULL;
 	}
 }
+
+uint8_t *ldfconfigurableframe::GetName()
+{
+	return name;
+}
+
+uint8_t ldfconfigurableframe::GetId()
+{
+	return id;
+}
+
+void ldfconfigurableframe::ValidateUnicity(uint8_t *attributes, ldfconfigurableframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	char str[1000];
+
+	if (strcmp((char *)name, (char *)frame->name) == 0)
+	{
+		sprintf(str, STR_ERR "Node_attributes '%s' configurable frame name '%s' repeated.", attributes, name);
+		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+	}
+
+	if (id == frame->id)
+	{
+		sprintf(str, STR_ERR "Node_attributes '%s' configurable frame ID 0x%X repeated.", attributes, id);
+		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+	}
+}
+
 
 } /* namespace lin */

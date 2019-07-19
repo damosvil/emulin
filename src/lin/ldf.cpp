@@ -138,6 +138,22 @@ bool ldf::Validate(void)
 		frames[i]->Validate(signals, signals_count, validation_messages, &validation_messages_count);
 	}
 
+	// Validate node attributes
+	for (i = 0; i < node_attributes_count; i++)
+	{
+		// Validate node name in between slaves
+		node_attributes[i]->ValidateNode(slaves, slaves_count, validation_messages, &validation_messages_count);
+
+		// Validate frame unicity
+		for (j = i + 1; j < node_attributes_count; j++)
+		{
+			node_attributes[i]->ValidateUnicity(node_attributes[j], validation_messages, &validation_messages_count);
+		}
+
+		// Validate configurable frames
+		node_attributes[i]->ValidateFrames(frames, frames_count, validation_messages, &validation_messages_count);
+	}
+
 	return validation_messages_count == 0;
 }
 

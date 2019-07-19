@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ldfcommon.h>
 #include <ldfnodeattributes.h>
 
@@ -118,5 +119,65 @@ void ldfnodeattributes::AddConfigurableFrame(ldfconfigurableframe *frame)
 {
 	configurable_frames[configurable_frames_count++] = frame;
 }
+
+void ldfnodeattributes::ValidateNode(ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	char str[1000];
+
+	if (this->protocol == LIN_PROTOCOL_VERSION_NONE)
+	{
+		sprintf(str, STR_ERR "Node_attributes '%s' protocol not defined.", name);
+		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+	}
+
+	if (!ldfnode::CheckNodeName(name, NULL, slaves, slaves_count))
+	{
+		sprintf(str, STR_ERR "Node_attributes '%s' node not defined in database's slaves", name);
+		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+	}
+}
+
+void ldfnodeattributes::ValidateUnicity(ldfnodeattributes *attributes, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	char str[1000];
+
+	if (strcmp((char *)name, (char *)attributes->name) == 0)
+	{
+		sprintf(str, STR_ERR "Node_attributes '%s' node defined twice", name);
+		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+	}
+}
+
+void ldfnodeattributes::ValidateFrames(ldfframe **frames, uint32_t frames_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	char str[1000];
+	uint32_t i, j;
+
+	for (i = 0; i < configurable_frames_count; i++)
+	{
+		ldfframe *f = NULL;
+
+		// Look for frame definition
+		for (j = 0; (f == NULL) && (j < frames_count); j++)
+		{
+			f = (strcmp((char *)frames[j]->GetName(), (char *)configurable_frames[i]->GetName()) == 0) ? frames[j] : NULL;
+		}
+
+		// Check frame exists
+		if (f == NULL)
+		{
+			sprintf(str, STR_ERR "Node_attributes '%s' configurable frame '%s' not defined.", name, configurable_frames[i]->GetName());
+			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+			continue;
+		}
+
+		// Check configurable frame repeated
+		for (j = i + 1; j < configurable_frames_count; j++)
+		{
+			configurable_frames[i]->ValidateUnicity(name, configurable_frames[j], validation_messages, validation_messages_count);
+		}
+	}
+}
+
 
 } /* namespace lin */

@@ -70,6 +70,11 @@ void ldfframe::AddSignal(ldfframesignal *signal)
 	signals[signals_count++] = signal;
 }
 
+uint8_t *ldfframe::GetName()
+{
+	return name;
+}
+
 void ldfframe::ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
 {
 	char str[1000];

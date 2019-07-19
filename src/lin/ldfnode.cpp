@@ -26,7 +26,10 @@ bool ldfnode::CheckNodeName(uint8_t *name, ldfnode *master, ldfnode **slaves, ui
 	uint32_t i;
 
 	// Check publisher is master
-	name_ok = (master == NULL) || (strcmp((char *)name, (char *)master->GetName()) == 0);
+	if (master != NULL)
+	{
+		name_ok = strcmp((char *)name, (char *)master->GetName()) == 0;
+	}
 
 	// Check publisher in slaves
 	for (i = 0; !name_ok && (i < slaves_count); i++)
