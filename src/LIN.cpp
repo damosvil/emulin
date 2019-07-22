@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <gtk/gtk.h>
 #include "ldf.h"
 
 using namespace std;
@@ -17,7 +18,9 @@ using namespace std;
 #define FILENAME				"config/database.ldf"
 
 int main(void) {
+	GtkBuilder *builder;
 	lin::ldf *db = NULL;
+
 
 	// Instantiate database
 	try
