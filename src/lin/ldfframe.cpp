@@ -104,7 +104,7 @@ void ldfframe::ValidateUnicity(ldfframe *frame, uint8_t **validation_messages, u
 	}
 }
 
-void ldfframe::Validate(ldfsignal **signals, uint32_t signals_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
+void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
 {
 	bool overlapping;
 	uint32_t i, j;

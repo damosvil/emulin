@@ -9,6 +9,7 @@
 #define LIN_LDFENCODINGSIGNALS_H_
 
 #include <stdint.h>
+#include <ldfsignal.h>
 
 
 namespace lin {
@@ -27,6 +28,9 @@ public:
 	void AddSignal(uint8_t *signal);
 
 	static ldfencodingsignals *FromLdfStatement(uint8_t *statement);
+
+	void ValidateUnicity(ldfencodingsignals *encoding, uint8_t **validation_messages, uint32_t *validation_messages_count);
+	void ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
 };
 

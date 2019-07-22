@@ -135,7 +135,7 @@ bool ldf::Validate(void)
 		}
 
 		// Validate frame signals and size
-		frames[i]->Validate(signals, signals_count, validation_messages, &validation_messages_count);
+		frames[i]->ValidateSignals(signals, signals_count, validation_messages, &validation_messages_count);
 	}
 
 	// Validate node attributes
@@ -165,6 +165,19 @@ bool ldf::Validate(void)
 
 		// Check frames
 		schedule_tables[i]->ValidateFrames(frames, frames_count, validation_messages, &validation_messages_count);
+	}
+
+	// Validate signal representations
+	for (i = 0; i < encoding_signals_count; i++)
+	{
+		// Check encoding signals unicity
+		for (j = i + 1; j < encoding_signals_count; j++)
+		{
+			encoding_signals[i]->ValidateUnicity(encoding_signals[j], validation_messages, &validation_messages_count);
+		}
+
+		// Check signals
+		encoding_signals[i]->ValidateSignals(signals, signals_count, validation_messages, &validation_messages_count);
 	}
 
 	return validation_messages_count == 0;

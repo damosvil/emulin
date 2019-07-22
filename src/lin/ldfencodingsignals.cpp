@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ldfcommon.h>
 #include <ldfencodingsignals.h>
 
@@ -57,6 +58,40 @@ ldfencodingsignals *ldfencodingsignals::FromLdfStatement(uint8_t *statement)
 	return s;
 }
 
+void ldfencodingsignals::ValidateUnicity(ldfencodingsignals *encoding, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	char str[1000];
+
+	if (strcmp((char *)encoding_name, (char *)encoding->encoding_name) == 0)
+	{
+		sprintf(str, STR_ERR "Encoding name '%s' repeated.", encoding_name);
+		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+	}
+}
+
+void ldfencodingsignals::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
+{
+	uint32_t i, j;
+	char str[1000];
+
+	for (i = 0; i < this->signals_count; i++)
+	{
+		ldfsignal *s = NULL;
+
+		// Look for signal
+		for (j = 0; (s == NULL) && (j < signals_count); j++)
+		{
+			s = (strcmp((char *)this->signals[i], (char *)signals[j]->GetName()) == 0) ? signals[j] : NULL;
+		}
+
+		// Check signal is defined
+		if (s == NULL)
+		{
+			sprintf(str, STR_ERR "Signal representation '%s' uses signal '%s' not defined.", encoding_name, this->signals[i]);
+			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		}
+	}
+}
 
 
 } /* namespace lin */
