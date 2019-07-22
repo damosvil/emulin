@@ -25,6 +25,11 @@ public:
 
 	static ldfschedulecommand *FromLdfStatement(uint8_t *statement);
 
+	uint8_t *GetFrameName();
+	uint16_t GetTimeoutMs();
+
+	void ValidateUnicity(uint8_t *schedule_table, ldfschedulecommand *command, uint8_t **validation_messages, uint32_t *validation_messages_count);
+
 };
 
 } /* namespace lin */

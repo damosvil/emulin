@@ -9,6 +9,7 @@
 #define LIN_LDFSCHEDULETABLE_H_
 
 #include <stdint.h>
+#include <ldfframe.h>
 #include <ldfschedulecommand.h>
 
 
@@ -29,6 +30,8 @@ public:
 	virtual ~ldfscheduletable();
 
 	void AddCommand(ldfschedulecommand *command);
+	void ValidateUnicity(ldfscheduletable *table, uint8_t **validation_messages, uint32_t *validation_messages_count);
+	void ValidateFrames(ldfframe **frames, uint32_t frames_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
 };
 

@@ -154,6 +154,19 @@ bool ldf::Validate(void)
 		node_attributes[i]->ValidateFrames(frames, frames_count, validation_messages, &validation_messages_count);
 	}
 
+	// Validate schedule tables
+	for (i = 0; i < schedule_tables_count; i++)
+	{
+		// Validate schedule table unicity
+		for (j = i + 1; j < schedule_tables_count; j++)
+		{
+			schedule_tables[j]->ValidateUnicity(schedule_tables[j], validation_messages, &validation_messages_count);
+		}
+
+		// Check frames
+		schedule_tables[i]->ValidateFrames(frames, frames_count, validation_messages, &validation_messages_count);
+	}
+
 	return validation_messages_count == 0;
 }
 
