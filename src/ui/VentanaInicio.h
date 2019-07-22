@@ -8,12 +8,21 @@
 #ifndef UI_VENTANAINICIO_H_
 #define UI_VENTANAINICIO_H_
 
-namespace lin {
+#include <gtk/gtk.h>
+
+
+namespace ui {
 
 class VentanaInicio {
+
+private:
+	GtkBuilder *builder;
+	GObject *handler;
+
 public:
-	VentanaInicio();
+	VentanaInicio(GtkBuilder *builder);
 	virtual ~VentanaInicio();
+
 };
 
 } /* namespace lin */

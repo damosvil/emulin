@@ -11,9 +11,14 @@
 #include <iostream>
 #include <stdexcept>
 #include <gtk/gtk.h>
-#include "ldf.h"
+#include <ldf.h>
+#include <VentanaInicio.h>
+
 
 using namespace std;
+using namespace lin;
+using namespace ui;
+
 
 #define FILENAME				"config/database.ldf"
 
@@ -22,7 +27,7 @@ int main(int argc, char *argv[]) {
 	GError *error = NULL;
 	lin::ldf *db = NULL;
 
-	// Initialize gtk
+	// Initialize GTK
 	gtk_init(&argc, &argv);
 	builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, "src/ui/Emulin.glade", &error);
@@ -30,7 +35,14 @@ int main(int argc, char *argv[]) {
 	// Instantiate database
 	db = new lin::ldf((uint8_t *)FILENAME);
 
+	// Instantiate VentanaInicio
+	VentanaInicio *v = new VentanaInicio(builder);
+
+	// Run GTK's main loop
+	gtk_main();
+
 	// Resource erasing
+	delete v;
 	delete db;
 
 	return 0;
