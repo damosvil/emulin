@@ -17,24 +17,21 @@ using namespace std;
 
 #define FILENAME				"config/database.ldf"
 
-int main(void) {
+int main(int argc, char *argv[]) {
 	GtkBuilder *builder;
+	GError *error = NULL;
 	lin::ldf *db = NULL;
 
+	// Initialize gtk
+	gtk_init(&argc, &argv);
+	builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, "src/ui/Emulin.glade", &error);
 
 	// Instantiate database
-	try
-	{
-		db = new lin::ldf((uint8_t *)FILENAME);
-	}
-	catch (runtime_error &e)
-	{
-		cout << e.what() << endl;
-		cout << "Error parsing " << FILENAME << endl; /* prints Hello World */
-	}
+	db = new lin::ldf((uint8_t *)FILENAME);
 
 	// Resource erasing
-	if (db) delete db;
+	delete db;
 
 	return 0;
 }
