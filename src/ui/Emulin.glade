@@ -12,14 +12,40 @@
     <property name="window_position">center</property>
     <property name="icon_name">network-wired</property>
     <child>
+      <placeholder/>
+    </child>
+    <child>
       <object class="GtkNotebook">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="tab_pos">left</property>
         <child>
-          <object class="GtkFixed">
+          <object class="GtkFixed" id="PanelConfiguration">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Database</property>
+              </object>
+              <packing>
+                <property name="x">10</property>
+                <property name="y">17</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFileChooserButton" id="PanelConfiguracionDatabase">
+                <property name="width_request">580</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="title" translatable="yes"/>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">10</property>
+              </packing>
+            </child>
           </object>
         </child>
         <child type="tab">
@@ -33,7 +59,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkNotebook">
+          <object class="GtkNotebook" id="PanelDatabase">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
@@ -149,7 +175,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel">
+          <object class="GtkLabel" id="PanelSimulation">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">TODO</property>

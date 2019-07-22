@@ -9,13 +9,16 @@
 #define UI_VENTANAINICIO_H_
 
 #include <gtk/gtk.h>
+#include <ldf.h>
 
+using namespace lin;
 
 namespace ui {
 
 class VentanaInicio {
 
 private:
+	ldf *db;
 	GtkBuilder *builder;
 	GObject *handler;
 
