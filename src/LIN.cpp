@@ -22,7 +22,8 @@ using namespace ui;
 
 #define FILENAME				"config/database.ldf"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	GtkBuilder *builder;
 	GError *error = NULL;
 	lin::ldf *db = NULL;
