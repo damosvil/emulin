@@ -24,6 +24,8 @@ private:
 
 	static void OnDatabaseFileSelected(GtkFileChooserButton *widget, gpointer user_data);
 
+	void ReloadDatabase();
+
 public:
 	VentanaInicio(GtkBuilder *builder);
 	virtual ~VentanaInicio();

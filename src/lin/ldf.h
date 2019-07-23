@@ -26,13 +26,6 @@ namespace lin {
 class ldf {
 
 private:
-	enum lin_language_version_e
-	{
-		LIN_LANGUAGE_VERSION_NONE,
-		LIN_LANGUAGE_VERSION_2_0,
-		LIN_LANGUAGE_VERSION_2_1
-	};
-
 	enum ldf_parsing_state_e
 	{
 		LDF_PARSING_STATE_NONE,
@@ -45,13 +38,6 @@ private:
 		LDF_PARSING_STATE_ENCODING_TYPES,
 		LDF_PARSING_STATE_ENCODING_SIGNALS
 	};
-
-public:
-	ldf(const uint8_t *filename);
-	virtual ~ldf();
-
-	bool Validate(void);
-
 
 private:
 	// State
@@ -104,6 +90,22 @@ private:
 	void process_statement(uint8_t *statement);
 	void process_group_start(uint8_t *start);
 	void process_group_end(uint8_t *end);
+
+public:
+	ldf(const uint8_t *filename);
+	virtual ~ldf();
+
+	bool Validate(void);
+
+	lin_protocol_version_e GetLinProtocolVersion();
+	void SetLinProtocolVersion(lin_protocol_version_e v);
+
+	lin_language_version_e GetLinLanguageVersion();
+	void SetLinLanguageVersion(lin_language_version_e v);
+
+	uint16_t GetLinSpeed();
+	void SetLinSpeed(uint16_t s);
+
 
 };
 

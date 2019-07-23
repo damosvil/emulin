@@ -8,8 +8,7 @@
  ============================================================================
  */
 
-#include <iostream>
-#include <stdexcept>
+#include <locale.h>
 #include <gtk/gtk.h>
 #include <ldf.h>
 #include <VentanaInicio.h>
@@ -32,6 +31,9 @@ int main(int argc, char *argv[])
 	gtk_init(&argc, &argv);
 	builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, "src/ui/Emulin.glade", &error);
+
+	// Change locale because gtk changes it to the system one
+	setlocale(LC_ALL, "en_US");
 
 	// Instantiate database
 	db = new lin::ldf((uint8_t *)FILENAME);

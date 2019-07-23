@@ -483,4 +483,35 @@ void ldf::process_group_end(uint8_t *end)
 	}
 }
 
+lin_protocol_version_e ldf::GetLinProtocolVersion()
+{
+	return lin_protocol_version;
+}
+
+void ldf::SetLinProtocolVersion(lin_protocol_version_e v)
+{
+	lin_protocol_version = v;
+}
+
+lin_language_version_e ldf::GetLinLanguageVersion()
+{
+	return lin_language_version;
+}
+
+void ldf::SetLinLanguageVersion(lin_language_version_e v)
+{
+	lin_language_version = v;
+}
+
+uint16_t ldf::GetLinSpeed()
+{
+	return lin_speed;
+}
+
+void ldf::SetLinSpeed(uint16_t s)
+{
+	lin_speed = s;
+}
+
+
 } /* namespace ldf */

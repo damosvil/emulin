@@ -67,6 +67,90 @@
               <object class="GtkFixed">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">LIN protocol version</property>
+                  </object>
+                  <packing>
+                    <property name="x">20</property>
+                    <property name="y">20</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">LIN language version</property>
+                  </object>
+                  <packing>
+                    <property name="x">20</property>
+                    <property name="y">50</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="PanelDatabaseLinProtocolVersion">
+                    <property name="width_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="active">0</property>
+                    <property name="active_id">0</property>
+                    <items>
+                      <item id="0" translatable="yes">2.1</item>
+                      <item id="1" translatable="yes">2.0</item>
+                    </items>
+                  </object>
+                  <packing>
+                    <property name="x">180</property>
+                    <property name="y">15</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="PanelDatabaseLinLanguageVersion">
+                    <property name="width_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="active">0</property>
+                    <property name="active_id">0</property>
+                    <items>
+                      <item id="0" translatable="yes">2.1</item>
+                      <item id="1" translatable="yes">2.0</item>
+                    </items>
+                  </object>
+                  <packing>
+                    <property name="x">180</property>
+                    <property name="y">45</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">LIN speed</property>
+                  </object>
+                  <packing>
+                    <property name="x">20</property>
+                    <property name="y">80</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="PanelDatabaseLinSpeed">
+                    <property name="width_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="active">0</property>
+                    <property name="active_id">0</property>
+                    <items>
+                      <item id="19200" translatable="yes">19200 bps</item>
+                      <item id="1" translatable="yes">9600 bps</item>
+                    </items>
+                  </object>
+                  <packing>
+                    <property name="x">180</property>
+                    <property name="y">75</property>
+                  </packing>
+                </child>
               </object>
             </child>
             <child type="tab">
@@ -199,4 +283,5 @@
       </object>
     </child>
   </object>
+  <object class="GtkListStore" id="listaVersionProtocolo"/>
 </interface>
