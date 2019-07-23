@@ -47,7 +47,7 @@ private:
 	};
 
 public:
-	ldf(uint8_t *filename);
+	ldf(const uint8_t *filename);
 	virtual ~ldf();
 
 	bool Validate(void);

@@ -20,17 +20,22 @@ private:
 	uint8_t *home_path;
 	uint8_t *database_path;
 
+private:
 	ManagerConfig();
 	virtual ~ManagerConfig();
+
+	void CleanParameters();
 
 	static ManagerConfig *manager;
 
 public:
 	static ManagerConfig *GetManager();
 
-	uint8_t *GetDatabasePath();
 	void Load();
 	void Store();
+
+	const uint8_t *GetDatabasePath();
+	void SetDatabasePath(const uint8_t *path);
 
 };
 

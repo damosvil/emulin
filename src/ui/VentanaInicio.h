@@ -22,6 +22,8 @@ private:
 	GtkBuilder *builder;
 	GObject *handler;
 
+	static void OnDatabaseFileSelected(GtkFileChooserButton *widget, gpointer user_data);
+
 public:
 	VentanaInicio(GtkBuilder *builder);
 	virtual ~VentanaInicio();

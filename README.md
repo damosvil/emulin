@@ -7,8 +7,9 @@ The main milestones of this project are:
 * Create another open source, fast and robust LIN node emulator / analyzer.
 
 Prerequisites:
-* Eclipse CDT Photon
-* Pkg-config Eclipse plugin
-* GTK3
+* Eclipse CDT Photon - Project's Official IDE
+* Pkg-config Eclipse plugin 
+* GTK3 - For user interfaces
+* Glade - To design the user interfaces
 
 The aproach to meet the goals is to start with a basic emulator (only to emulate a LIN 2.1 compliant slave node), and little by little adding more features.

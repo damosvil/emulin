@@ -20,7 +20,7 @@ using namespace std;
 namespace lin
 {
 
-ldf::ldf(uint8_t *filename)
+ldf::ldf(const uint8_t *filename)
 {
 	int32_t c = EOF;
 
