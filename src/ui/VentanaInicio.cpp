@@ -64,18 +64,19 @@ void VentanaInicio::ReloadDatabase()
 	const uint16_t lin_speeds[] = { 9600, 19200, 0 };
 	const char *lin_speed_ids[] = { "1", "0", "0" };
 	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
-	GObject *o = gtk_builder_get_object(builder, "PanelConfiguracionDatabase");
+	GObject *o;
 	uint32_t ix;
 
-	// Release previous database
-	if (db != NULL) delete db;
+	// Check database path is valid
+	if (database_path == NULL) return;
 
-	// Set database path & load database
-	if (database_path != NULL)
-	{
-		gtk_file_chooser_set_filename((GtkFileChooser *)o, (char *)database_path);
-		db = new ldf(database_path);
-	}
+	// If database is loaded delete it and create a new one
+	if (db != NULL) delete db;
+	db = new ldf(database_path);
+
+	// Set database path in file chooser
+	o = gtk_builder_get_object(builder, "PanelConfiguracionDatabase");
+	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(o), (char *)database_path);
 
 	// Database LIN protocol version
 	o = gtk_builder_get_object(builder, "PanelDatabaseLinProtocolVersion");
