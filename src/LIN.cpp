@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
 {
 	GtkBuilder *builder;
 	GError *error = NULL;
-	lin::ldf *db = NULL;
 
 	// Initialize GTK
 	gtk_init(&argc, &argv);
@@ -35,9 +34,6 @@ int main(int argc, char *argv[])
 	// Change locale because gtk changes it to the system one
 	setlocale(LC_ALL, "en_US");
 
-	// Instantiate database
-	db = new lin::ldf((uint8_t *)FILENAME);
-
 	// Instantiate VentanaInicio
 	VentanaInicio *v = new VentanaInicio(builder);
 
@@ -46,7 +42,6 @@ int main(int argc, char *argv[])
 
 	// Resource erasing
 	delete v;
-	delete db;
 
 	return 0;
 }
