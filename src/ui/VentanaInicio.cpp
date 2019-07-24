@@ -27,11 +27,11 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	this->builder = builder;
 	this->handler = gtk_builder_get_object(builder, "VentanaInicio");
 
-	// Store widget pointers
-	G_STORE(PanelConfiguracionDatabase);
-	G_STORE(PanelDatabaseLinProtocolVersion);
-	G_STORE(PanelDatabaseLinLanguageVersion);
-	G_STORE(PanelDatabaseLinSpeed);
+	// Pin widget pointers
+	G_PIN(PanelConfiguracionDatabase);
+	G_PIN(PanelDatabaseLinProtocolVersion);
+	G_PIN(PanelDatabaseLinLanguageVersion);
+	G_PIN(PanelDatabaseLinSpeed);
 
 	// Initialize db
 	db = NULL;
@@ -45,8 +45,6 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	gtk_file_filter_add_pattern(p, "*.ldf");
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), p);
 
-	ReloadDatabase();
-
 	// Connect widget signals
 	G_CONNECT(PanelConfiguracionDatabase, FileSet, "file-set");
 	G_CONNECT(PanelDatabaseLinProtocolVersion, Changed, "changed");
@@ -55,6 +53,10 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 
 	// Connect input filters on events
 	g_signal_connect(g_PanelDatabaseLinSpeed, "key-press-event", G_CALLBACK(KeyFilterNumbers), NULL);
+
+	// Load database
+	ReloadDatabase();
+
 }
 
 VentanaInicio::~VentanaInicio()
@@ -110,6 +112,12 @@ void VentanaInicio::ReloadDatabase()
 	if (db != NULL) delete db;
 	db = new ldf(database_path);
 
+	// Stop all signal handlers
+	G_STOP(PanelConfiguracionDatabase);
+	G_STOP(PanelDatabaseLinProtocolVersion);
+	G_STOP(PanelDatabaseLinLanguageVersion);
+	G_STOP(PanelDatabaseLinSpeed);
+
 	// Set database path in file chooser
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
 
@@ -122,6 +130,12 @@ void VentanaInicio::ReloadDatabase()
 	// Database LIN speed
 	sprintf(str, "%d", db->GetLinSpeed());
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), str);
+
+	// Run all signal handlers
+	G_RUN(PanelConfiguracionDatabase);
+	G_RUN(PanelDatabaseLinProtocolVersion);
+	G_RUN(PanelDatabaseLinLanguageVersion);
+	G_RUN(PanelDatabaseLinSpeed);
 }
 
 } /* namespace lin */
