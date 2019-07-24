@@ -5,40 +5,56 @@
  *      Author: iso9660
  */
 
-#include "VentanaInicio.h"
+#include "tools.h"
 #include "ManagerConfig.h"
+#include "VentanaInicio.h"
+
 
 using namespace managers;
 
 
 namespace ui {
 
+static const char *lin_protocol_ids[] = { NULL, "1", "0" };
+static const char *lin_language_ids[] = { NULL, "1", "0" };
+
+
 VentanaInicio::VentanaInicio(GtkBuilder *builder)
 {
-	GObject *o;
 	GtkFileFilter *p;
-
-	// Inicialize db
-	db = NULL;
 
 	// Get window handler
 	this->builder = builder;
 	this->handler = gtk_builder_get_object(builder, "VentanaInicio");
 
+	// Store widget pointers
+	G_STORE(PanelConfiguracionDatabase);
+	G_STORE(PanelDatabaseLinProtocolVersion);
+	G_STORE(PanelDatabaseLinLanguageVersion);
+	G_STORE(PanelDatabaseLinSpeed);
+
+	// Initialize db
+	db = NULL;
+
 	// Connect Window signals
 	g_signal_connect(this->handler, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
 	// Set file filter pattern to file chooser button (setting it in glade didn't work for me)
-	o = gtk_builder_get_object(builder, "PanelConfiguracionDatabase");
 	p = gtk_file_filter_new();
 	gtk_file_filter_set_name(p, "LIN definition files");
 	gtk_file_filter_add_pattern(p, "*.ldf");
-	gtk_file_chooser_add_filter((GtkFileChooser *)o, p);
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), p);
 
 	ReloadDatabase();
 
-	// Connect file chooser signals
-	g_signal_connect(o, "file-set", G_CALLBACK(OnDatabaseFileSelected), this);
+	// Connect widget signals
+	G_CONNECT(PanelConfiguracionDatabase, FileSet, "file-set");
+	G_CONNECT(PanelDatabaseLinProtocolVersion, Changed, "changed");
+	G_CONNECT(PanelDatabaseLinLanguageVersion, Changed, "changed");
+	G_CONNECT(PanelDatabaseLinSpeed, Changed, "changed");
+
+	// Connect input filters on events
+	g_signal_connect(g_PanelDatabaseLinSpeed, "key-press-event", G_CALLBACK(KeyFilterNumbers), NULL);
 }
 
 VentanaInicio::~VentanaInicio()
@@ -46,7 +62,7 @@ VentanaInicio::~VentanaInicio()
 	if (db != NULL) delete db;
 }
 
-void VentanaInicio::OnDatabaseFileSelected(GtkFileChooserButton *widget, gpointer user_data)
+void VentanaInicio::OnPanelConfiguracionDatabaseFileSet(GtkFileChooserButton *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
@@ -57,15 +73,35 @@ void VentanaInicio::OnDatabaseFileSelected(GtkFileChooserButton *widget, gpointe
 	v->ReloadDatabase();
 }
 
+void VentanaInicio::OnPanelDatabaseLinProtocolVersionChanged(GtkComboBox *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	v->db->SetLinProtocolVersion((lin_protocol_version_e)GetStrIndexByID(
+			lin_protocol_ids, ARR_SIZE(lin_protocol_ids),
+			gtk_combo_box_get_active_id(widget)));
+}
+
+void VentanaInicio::OnPanelDatabaseLinLanguageVersionChanged(GtkComboBox *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	v->db->SetLinLanguageVersion((lin_language_version_e)GetStrIndexByID(
+			lin_language_ids, ARR_SIZE(lin_language_ids),
+			gtk_combo_box_get_active_id(widget)));
+}
+
+void VentanaInicio::OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	v->db->SetLinSpeed(atoi(gtk_entry_get_text(GTK_ENTRY(widget)))); // @suppress("Invalid arguments")
+}
+
 void VentanaInicio::ReloadDatabase()
 {
-	const char *lin_protocol_ids[] = { "", "1", "0" };
-	const char *lin_language_ids[] = { "", "1", "0" };
-	const uint16_t lin_speeds[] = { 9600, 19200, 0 };
-	const char *lin_speed_ids[] = { "1", "0", "0" };
 	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
-	GObject *o;
-	uint32_t ix;
+	char str[1000];
 
 	// Check database path is valid
 	if (database_path == NULL) return;
@@ -75,21 +111,17 @@ void VentanaInicio::ReloadDatabase()
 	db = new ldf(database_path);
 
 	// Set database path in file chooser
-	o = gtk_builder_get_object(builder, "PanelConfiguracionDatabase");
-	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(o), (char *)database_path);
+	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
 
 	// Database LIN protocol version
-	o = gtk_builder_get_object(builder, "PanelDatabaseLinProtocolVersion");
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(o), lin_protocol_ids[db->GetLinProtocolVersion()]);
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinProtocolVersion), lin_protocol_ids[db->GetLinProtocolVersion()]);
 
 	// Database LIN language version
-	o = gtk_builder_get_object(builder, "PanelDatabaseLinLanguageVersion");
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(o), lin_language_ids[db->GetLinLanguageVersion()]);
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinLanguageVersion), lin_language_ids[db->GetLinLanguageVersion()]);
 
 	// Database LIN speed
-	o = gtk_builder_get_object(builder, "PanelDatabaseLinSpeed");
-	while ((lin_speeds[ix] != 0) && (lin_speeds[ix] != db->GetLinSpeed())) ix++;	// << Select combo box speed
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(o), lin_speed_ids[ix]);
+	sprintf(str, "%d", db->GetLinSpeed());
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), str);
 }
 
 } /* namespace lin */

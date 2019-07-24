@@ -127,7 +127,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">LIN speed</property>
+                    <property name="label" translatable="yes">LIN speed (bps)</property>
                   </object>
                   <packing>
                     <property name="x">20</property>
@@ -135,16 +135,16 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText" id="PanelDatabaseLinSpeed">
-                    <property name="width_request">100</property>
+                  <object class="GtkEntry" id="PanelDatabaseLinSpeed">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="active">0</property>
-                    <property name="active_id">0</property>
-                    <items>
-                      <item id="19200" translatable="yes">19200 bps</item>
-                      <item id="1" translatable="yes">9600 bps</item>
-                    </items>
+                    <property name="can_focus">True</property>
+                    <property name="max_length">5</property>
+                    <property name="width_chars">5</property>
+                    <property name="max_width_chars">5</property>
+                    <property name="text" translatable="yes">0</property>
+                    <property name="truncate_multiline">True</property>
+                    <property name="caps_lock_warning">False</property>
+                    <property name="input_purpose">number</property>
                   </object>
                   <packing>
                     <property name="x">180</property>

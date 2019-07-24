@@ -8,6 +8,7 @@
 #ifndef UI_VENTANAINICIO_H_
 #define UI_VENTANAINICIO_H_
 
+#include "tools.h"
 #include <gtk/gtk.h>
 #include <ldf.h>
 
@@ -22,7 +23,17 @@ private:
 	GtkBuilder *builder;
 	GObject *handler;
 
-	static void OnDatabaseFileSelected(GtkFileChooserButton *widget, gpointer user_data);
+	// Widgets
+	G_VAR(PanelConfiguracionDatabase);
+	G_VAR(PanelDatabaseLinProtocolVersion);
+	G_VAR(PanelDatabaseLinLanguageVersion);
+	G_VAR(PanelDatabaseLinSpeed);
+
+	// Signal events
+	static void OnPanelConfiguracionDatabaseFileSet(GtkFileChooserButton *widget, gpointer user_data);
+	static void OnPanelDatabaseLinProtocolVersionChanged(GtkComboBox *widget, gpointer user_data);
+	static void OnPanelDatabaseLinLanguageVersionChanged(GtkComboBox *widget, gpointer user_data);
+	static void OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpointer user_data);
 
 	void ReloadDatabase();
 
