@@ -32,6 +32,9 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseLinProtocolVersion);
 	G_PIN(PanelDatabaseLinLanguageVersion);
 	G_PIN(PanelDatabaseLinSpeed);
+	G_PIN(PanelDatabaseMasterName);
+	G_PIN(PanelDatabaseMasterTimebase);
+	G_PIN(PanelDatabaseMasterJitter);
 
 	// Initialize db
 	db = NULL;
@@ -50,13 +53,14 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseLinProtocolVersion, Changed, "changed");
 	G_CONNECT(PanelDatabaseLinLanguageVersion, Changed, "changed");
 	G_CONNECT(PanelDatabaseLinSpeed, Changed, "changed");
-
-	// Connect input filters on events
-	g_signal_connect(g_PanelDatabaseLinSpeed, "key-press-event", G_CALLBACK(KeyFilterNumbers), NULL);
+	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), (gpointer)"^[0-9]{1,5}$");
+	g_signal_connect(g_PanelDatabaseLinSpeed, "delete-text", G_CALLBACK(EditableDeleteValidator), (gpointer)"^[0-9]{1,5}$");
+	G_CONNECT(PanelDatabaseMasterName, Changed, "changed");
+	G_CONNECT(PanelDatabaseMasterTimebase, Changed, "changed");
+	G_CONNECT(PanelDatabaseMasterJitter, Changed, "changed");
 
 	// Load database
 	ReloadDatabase();
-
 }
 
 VentanaInicio::~VentanaInicio()
@@ -100,6 +104,21 @@ void VentanaInicio::OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpoi
 	v->db->SetLinSpeed(atoi(gtk_entry_get_text(GTK_ENTRY(widget)))); // @suppress("Invalid arguments")
 }
 
+void VentanaInicio::OnPanelDatabaseMasterNameChanged(GtkCellEditable *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+}
+
+void VentanaInicio::OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+}
+
+void VentanaInicio::OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+}
+
 void VentanaInicio::ReloadDatabase()
 {
 	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
@@ -117,6 +136,11 @@ void VentanaInicio::ReloadDatabase()
 	G_STOP(PanelDatabaseLinProtocolVersion);
 	G_STOP(PanelDatabaseLinLanguageVersion);
 	G_STOP(PanelDatabaseLinSpeed);
+	g_signal_handlers_block_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	g_signal_handlers_block_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableDeleteValidator, 0);
+	G_STOP(PanelDatabaseMasterName);
+	G_STOP(PanelDatabaseMasterTimebase);
+	G_STOP(PanelDatabaseMasterJitter);
 
 	// Set database path in file chooser
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
@@ -131,11 +155,27 @@ void VentanaInicio::ReloadDatabase()
 	sprintf(str, "%d", db->GetLinSpeed());
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), str);
 
+	// Master's name
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterName), (char *)db->GetMasterNode()->GetName());
+
+	// Master's timebase
+	sprintf(str, "%0.1f", (double)db->GetMasterNode()->GetTimebase() / 10.0f);
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterTimebase), str);
+
+	// Master's jitter
+	sprintf(str, "%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f);
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), str);
+
 	// Run all signal handlers
 	G_RUN(PanelConfiguracionDatabase);
 	G_RUN(PanelDatabaseLinProtocolVersion);
 	G_RUN(PanelDatabaseLinLanguageVersion);
 	G_RUN(PanelDatabaseLinSpeed);
+	g_signal_handlers_unblock_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	g_signal_handlers_unblock_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableDeleteValidator, 0);
+	G_RUN(PanelDatabaseMasterName);
+	G_RUN(PanelDatabaseMasterTimebase);
+	G_RUN(PanelDatabaseMasterJitter);
 }
 
 } /* namespace lin */

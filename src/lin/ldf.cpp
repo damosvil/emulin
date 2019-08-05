@@ -513,5 +513,16 @@ void ldf::SetLinSpeed(uint16_t s)
 	lin_speed = s;
 }
 
+ldfmasternode *ldf::GetMasterNode()
+{
+	if (master == NULL)
+	{
+		master = new ldfmasternode((uint8_t *)"", 0, 0);
+	}
+
+	return master;
+}
+
+
 
 } /* namespace ldf */

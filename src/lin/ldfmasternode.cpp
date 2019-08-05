@@ -53,5 +53,26 @@ ldfmasternode *ldfmasternode::FromLdfStatement(uint8_t *statement)
 	}
 }
 
+uint16_t ldfmasternode::GetTimebase()
+{
+	return timebase;
+}
+
+void ldfmasternode::SetTimebase(uint16_t timebase)
+{
+	this->timebase = timebase;
+}
+
+uint16_t ldfmasternode::GetJitter()
+{
+	return jitter;
+}
+
+void ldfmasternode::SetJitter(uint16_t jitter)
+{
+	this->jitter = jitter;
+}
+
+
 
 }

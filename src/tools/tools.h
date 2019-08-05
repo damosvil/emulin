@@ -9,6 +9,7 @@
 #define TOOLS_TOOLS_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <gtk/gtk.h>
 
 
@@ -26,7 +27,9 @@ extern "C" {
 #endif
 
 uint32_t GetStrIndexByID(const char **ids, uint32_t ids_count, const char *id);
-gboolean KeyFilterNumbers(GtkWidget *widget, GdkEvent  *event, gpointer   user_data);
+bool RegExprCheck(const char *string, const char *pattern);
+void EditableInsertValidator(GtkEditable *editable, gchar *new_text, gint new_text_length, gpointer position, gpointer user_data);
+void EditableDeleteValidator (GtkEditable *editable, gint start_pos, gint end_pos, gpointer user_data);
 
 
 #ifdef __cplusplus

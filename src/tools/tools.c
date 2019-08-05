@@ -7,6 +7,8 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <regex.h>
 #include <gtk/gtk.h>
 #include "tools.h"
 
@@ -25,18 +27,68 @@ uint32_t GetStrIndexByID(const char **ids, uint32_t ids_count, const char *id)
 	return ix;
 }
 
-gboolean KeyFilterNumbers(GtkWidget *widget, GdkEvent  *event, gpointer   user_data)
+bool RegExprCheck(const char *string, const char *pattern)
 {
-	const char *valid = "0123456789\b";
+	regex_t regex;
+	bool good = false;
 
-	if (event->type == GDK_KEY_PRESS)
+	// Check expression
+	if (regcomp(&regex, pattern, REG_EXTENDED | REG_ICASE) == 0)
 	{
-		while (*valid)
-		{
-			if (event->key.string[0] == *valid) return 0;
-			valid++;
-		}
+		// Check expression
+		good = regexec(&regex, string, 0, NULL, 0) == 0;
+
+		// Free reg expr resources
+		regfree(&regex);
 	}
 
-	return 1;
+	return good;
 }
+
+void EditableInsertValidator(GtkEditable *editable, gchar *new_text, gint new_text_length, gpointer position, gpointer user_data)
+{
+	uint32_t insert_position = gtk_editable_get_position(editable);
+
+	// Store old expression
+	const char *pattern = (const char *)user_data;
+	const char *old_expr = gtk_entry_get_text(GTK_ENTRY(editable));
+
+	// Compose new expression
+	char *new_expr = (char *)malloc(strlen(old_expr) + new_text_length + 1);
+	memcpy(new_expr, old_expr, insert_position);
+	new_expr[insert_position] = 0;
+	strcat(new_expr, new_text);
+	strcat(new_expr, old_expr + insert_position);
+
+	// Cancel action if necessary
+	if (!RegExprCheck(new_expr, pattern))
+	{
+		g_signal_stop_emission_by_name(G_OBJECT(editable), "insert-text");
+	}
+
+	// Free old_expr copy
+	free((void *)new_expr);
+}
+
+void EditableDeleteValidator(GtkEditable *editable, gint start_pos, gint end_pos, gpointer user_data)
+{
+	// Store old expression
+	const char *pattern =  (const char *)user_data;
+	const char *old_expr = gtk_entry_get_text(GTK_ENTRY(editable));
+
+	// Compose new expression
+	char *new_expr = malloc(strlen(old_expr) + 1 - (end_pos - start_pos));
+	memcpy(new_expr, old_expr, start_pos);
+	new_expr[start_pos] = 0;
+	strcat(new_expr, old_expr + end_pos);
+
+	// Cancel action if necessary
+	if (!RegExprCheck(new_expr, pattern))
+	{
+		g_signal_stop_emission_by_name(G_OBJECT(editable), "delete-text");
+	}
+
+	// Free old_expr copy
+	free((void *)new_expr);
+}
+

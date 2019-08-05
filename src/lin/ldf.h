@@ -106,6 +106,8 @@ public:
 	uint16_t GetLinSpeed();
 	void SetLinSpeed(uint16_t s);
 
+	ldfmasternode *GetMasterNode();
+
 
 };
 

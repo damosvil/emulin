@@ -25,6 +25,12 @@ public:
 
 	static ldfmasternode *FromLdfStatement(uint8_t *statement);
 
+	uint16_t GetTimebase();
+	void SetTimebase(uint16_t timebase);
+
+	uint16_t GetJitter();
+	void SetJitter(uint16_t jitter);
+
 };
 
 }

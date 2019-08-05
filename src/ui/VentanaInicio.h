@@ -28,12 +28,18 @@ private:
 	G_VAR(PanelDatabaseLinProtocolVersion);
 	G_VAR(PanelDatabaseLinLanguageVersion);
 	G_VAR(PanelDatabaseLinSpeed);
+	G_VAR(PanelDatabaseMasterName);
+	G_VAR(PanelDatabaseMasterTimebase);
+	G_VAR(PanelDatabaseMasterJitter);
 
 	// Signal events
 	static void OnPanelConfiguracionDatabaseFileSet(GtkFileChooserButton *widget, gpointer user_data);
 	static void OnPanelDatabaseLinProtocolVersionChanged(GtkComboBox *widget, gpointer user_data);
 	static void OnPanelDatabaseLinLanguageVersionChanged(GtkComboBox *widget, gpointer user_data);
 	static void OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseMasterNameChanged(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data);
 
 	void ReloadDatabase();
 
