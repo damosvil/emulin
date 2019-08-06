@@ -53,11 +53,13 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseLinProtocolVersion, Changed, "changed");
 	G_CONNECT(PanelDatabaseLinLanguageVersion, Changed, "changed");
 	G_CONNECT(PanelDatabaseLinSpeed, Changed, "changed");
-	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), (gpointer)"^[0-9]{1,5}$");
-	g_signal_connect(g_PanelDatabaseLinSpeed, "delete-text", G_CALLBACK(EditableDeleteValidator), (gpointer)"^[0-9]{1,5}$");
+	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), INT_EXPR);
 	G_CONNECT(PanelDatabaseMasterName, Changed, "changed");
+	g_signal_connect(g_PanelDatabaseMasterName, "insert-text", G_CALLBACK(EditableInsertValidator), NAME_EXPR);
 	G_CONNECT(PanelDatabaseMasterTimebase, Changed, "changed");
+	g_signal_connect(g_PanelDatabaseMasterTimebase, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
 	G_CONNECT(PanelDatabaseMasterJitter, Changed, "changed");
+	g_signal_connect(g_PanelDatabaseMasterJitter, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
 
 	// Load database
 	ReloadDatabase();
@@ -107,16 +109,22 @@ void VentanaInicio::OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpoi
 void VentanaInicio::OnPanelDatabaseMasterNameChanged(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	v->db->GetMasterNode()->SetName((uint8_t *)gtk_entry_get_text(GTK_ENTRY(widget)));
 }
 
 void VentanaInicio::OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	v->db->GetMasterNode()->SetTimebase((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10); // @suppress("Invalid arguments")
 }
 
 void VentanaInicio::OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	v->db->GetMasterNode()->SetJitter((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10); // @suppress("Invalid arguments")
 }
 
 void VentanaInicio::ReloadDatabase()
@@ -131,16 +139,18 @@ void VentanaInicio::ReloadDatabase()
 	if (db != NULL) delete db;
 	db = new ldf(database_path);
 
-	// Stop all signal handlers
-	G_STOP(PanelConfiguracionDatabase);
-	G_STOP(PanelDatabaseLinProtocolVersion);
-	G_STOP(PanelDatabaseLinLanguageVersion);
-	G_STOP(PanelDatabaseLinSpeed);
+	// Pause all signal handlers
+	G_PAUSE(PanelConfiguracionDatabase);
+	G_PAUSE(PanelDatabaseLinProtocolVersion);
+	G_PAUSE(PanelDatabaseLinLanguageVersion);
+	G_PAUSE(PanelDatabaseLinSpeed);
+	G_PAUSE(PanelDatabaseMasterName);
+	G_PAUSE(PanelDatabaseMasterTimebase);
+	G_PAUSE(PanelDatabaseMasterJitter);
 	g_signal_handlers_block_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_block_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableDeleteValidator, 0);
-	G_STOP(PanelDatabaseMasterName);
-	G_STOP(PanelDatabaseMasterTimebase);
-	G_STOP(PanelDatabaseMasterJitter);
+	g_signal_handlers_block_matched(g_PanelDatabaseMasterName, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	g_signal_handlers_block_matched(g_PanelDatabaseMasterTimebase, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	g_signal_handlers_block_matched(g_PanelDatabaseMasterJitter, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
 
 	// Set database path in file chooser
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
@@ -166,16 +176,18 @@ void VentanaInicio::ReloadDatabase()
 	sprintf(str, "%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f);
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), str);
 
-	// Run all signal handlers
-	G_RUN(PanelConfiguracionDatabase);
-	G_RUN(PanelDatabaseLinProtocolVersion);
-	G_RUN(PanelDatabaseLinLanguageVersion);
-	G_RUN(PanelDatabaseLinSpeed);
+	// Play all signal handlers
+	G_PLAY(PanelConfiguracionDatabase);
+	G_PLAY(PanelDatabaseLinProtocolVersion);
+	G_PLAY(PanelDatabaseLinLanguageVersion);
+	G_PLAY(PanelDatabaseLinSpeed);
+	G_PLAY(PanelDatabaseMasterName);
+	G_PLAY(PanelDatabaseMasterTimebase);
+	G_PLAY(PanelDatabaseMasterJitter);
 	g_signal_handlers_unblock_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_unblock_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableDeleteValidator, 0);
-	G_RUN(PanelDatabaseMasterName);
-	G_RUN(PanelDatabaseMasterTimebase);
-	G_RUN(PanelDatabaseMasterJitter);
+	g_signal_handlers_unblock_matched(g_PanelDatabaseMasterName, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	g_signal_handlers_unblock_matched(g_PanelDatabaseMasterTimebase, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	g_signal_handlers_unblock_matched(g_PanelDatabaseMasterJitter, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
 }
 
 } /* namespace lin */
