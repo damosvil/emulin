@@ -5,6 +5,7 @@
  *      Author: iso9660
  */
 
+#include <stdlib.h>
 #include "tools.h"
 #include "ManagerConfig.h"
 #include "VentanaInicio.h"
@@ -53,12 +54,12 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseLinProtocolVersion, Changed, "changed");
 	G_CONNECT(PanelDatabaseLinLanguageVersion, Changed, "changed");
 	G_CONNECT(PanelDatabaseLinSpeed, Changed, "changed");
-	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), INT_EXPR);
 	G_CONNECT(PanelDatabaseMasterName, Changed, "changed");
-	g_signal_connect(g_PanelDatabaseMasterName, "insert-text", G_CALLBACK(EditableInsertValidator), NAME_EXPR);
 	G_CONNECT(PanelDatabaseMasterTimebase, Changed, "changed");
-	g_signal_connect(g_PanelDatabaseMasterTimebase, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
 	G_CONNECT(PanelDatabaseMasterJitter, Changed, "changed");
+	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), INT_EXPR);
+	g_signal_connect(g_PanelDatabaseMasterName, "insert-text", G_CALLBACK(EditableInsertValidator), NAME_EXPR);
+	g_signal_connect(g_PanelDatabaseMasterTimebase, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
 	g_signal_connect(g_PanelDatabaseMasterJitter, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
 
 	// Load database
@@ -103,7 +104,7 @@ void VentanaInicio::OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpoi
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->SetLinSpeed(atoi(gtk_entry_get_text(GTK_ENTRY(widget)))); // @suppress("Invalid arguments")
+	v->db->SetLinSpeed(atoi(gtk_entry_get_text(GTK_ENTRY(widget))));
 }
 
 void VentanaInicio::OnPanelDatabaseMasterNameChanged(GtkCellEditable *widget, gpointer user_data)
@@ -117,14 +118,14 @@ void VentanaInicio::OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->GetMasterNode()->SetTimebase((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10); // @suppress("Invalid arguments")
+	v->db->GetMasterNode()->SetTimebase(atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
 }
 
 void VentanaInicio::OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->GetMasterNode()->SetJitter((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10); // @suppress("Invalid arguments")
+	v->db->GetMasterNode()->SetJitter((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
 }
 
 void VentanaInicio::ReloadDatabase()

@@ -47,7 +47,7 @@ uint8_t *ldfnode::GetName()
 
 void ldfnode::SetName(uint8_t *name)
 {
-	if (this->name) delete name;
+	if (this->name) delete this->name;
 	this->name = (name != NULL) ? (uint8_t *)strdup((char *)name) : NULL;
 }
 
