@@ -107,7 +107,10 @@ public:
 	void SetLinSpeed(uint16_t s);
 
 	ldfmasternode *GetMasterNode();
+	ldfnode **GetSlaveNodes();
+	uint32_t GetSlaveNodesCount();
 
+	ldfnodeattributes *GetNodeAttributes(uint8_t *slave);
 
 };
 

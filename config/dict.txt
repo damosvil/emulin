@@ -3,3 +3,4 @@ src
 ui
 emulin
 popdown
+unmanage

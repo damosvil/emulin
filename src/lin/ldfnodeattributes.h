@@ -53,6 +53,13 @@ public:
 	void ValidateUnicity(ldfnodeattributes *attributes, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateFrames(ldfframe **frames, uint32_t frames_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
+	uint8_t *GetName();
+	uint8_t GetInitialNAD();
+	uint8_t GetConfiguredNAD();
+	uint8_t *GetResponseErrorSignalName();
+	ldfconfigurableframe **GetConfigurableFrames();
+	uint16_t GetConfigurableFramesCount();
+
 };
 
 } /* namespace lin */

@@ -179,5 +179,34 @@ void ldfnodeattributes::ValidateFrames(ldfframe **frames, uint32_t frames_count,
 	}
 }
 
+uint8_t *ldfnodeattributes::GetName()
+{
+	return name;
+}
+
+uint8_t ldfnodeattributes::GetInitialNAD()
+{
+	return initial_NAD;
+}
+
+uint8_t ldfnodeattributes::GetConfiguredNAD()
+{
+	return configured_NAD;
+}
+
+uint8_t *ldfnodeattributes::GetResponseErrorSignalName()
+{
+	return response_error_signal_name;
+}
+
+ldfconfigurableframe **ldfnodeattributes::GetConfigurableFrames()
+{
+	return configurable_frames;
+}
+
+uint16_t ldfnodeattributes::GetConfigurableFramesCount()
+{
+	return configurable_frames_count;
+}
 
 } /* namespace lin */

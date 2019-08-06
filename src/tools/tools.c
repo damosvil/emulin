@@ -92,3 +92,14 @@ void EditableDeleteValidator(GtkEditable *editable, gint start_pos, gint end_pos
 	free((void *)new_expr);
 }
 
+void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index)
+{
+	GtkTreeViewColumn *c = gtk_tree_view_column_new();
+	GtkCellRenderer *r = gtk_cell_renderer_text_new();
+
+	gtk_tree_view_column_set_title(c, title);
+	gtk_tree_view_append_column(v, c);
+	gtk_tree_view_column_pack_start(c, r, TRUE);
+	gtk_tree_view_column_add_attribute(c, r, "text", column_index);
+}
+

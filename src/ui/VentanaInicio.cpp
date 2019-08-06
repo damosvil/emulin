@@ -49,6 +49,9 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	gtk_file_filter_add_pattern(p, "*.ldf");
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), p);
 
+	// Initialize slaves list view
+	PrepareSlavesList();
+
 	// Connect widget signals
 	G_CONNECT(PanelConfiguracionDatabase, FileSet, "file-set");
 	G_CONNECT(PanelDatabaseLinProtocolVersion, Changed, "changed");
@@ -128,10 +131,28 @@ void VentanaInicio::OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, 
 	v->db->GetMasterNode()->SetJitter((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
 }
 
+void VentanaInicio::PrepareSlavesList()
+{
+	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	GtkTreeView *v = GTK_TREE_VIEW(gtk_builder_get_object(builder, "PanelDatabaseSlavesList"));
+
+	// Add columns
+	TreeViewAddColumn(v, "Slave", 0);
+	TreeViewAddColumn(v, "INAD", 1);
+	TreeViewAddColumn(v, "CNAD", 2);
+	TreeViewAddColumn(v, "ERR SIG", 3);
+	TreeViewAddColumn(v, "CFG FRM", 4);
+
+	// Set model and unmanage reference from this code
+	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
+	g_object_unref(s);
+}
+
 void VentanaInicio::ReloadDatabase()
 {
+	uint32_t ix, jx;
 	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
-	char str[1000];
+	char str[100000];
 
 	// Check database path is valid
 	if (database_path == NULL) return;
@@ -176,6 +197,39 @@ void VentanaInicio::ReloadDatabase()
 	// Master's jitter
 	sprintf(str, "%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f);
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), str);
+
+	// Slaves list
+	GtkTreeView *v = GTK_TREE_VIEW(gtk_builder_get_object(builder, "PanelDatabaseSlavesList"));
+	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
+	GtkTreeIter it;
+	for (ix = 0; ix < db->GetSlaveNodesCount(); ix++)
+	{
+		ldfnodeattributes *a = db->GetNodeAttributes(db->GetSlaveNodes()[ix]->GetName());
+
+		// Slave name
+		gtk_list_store_append(s, &it);
+		gtk_list_store_set(s, &it, 0, a->GetName(), -1);
+
+		// Initial node address
+		sprintf(str, "0x%X", a->GetInitialNAD());
+		gtk_list_store_set(s, &it, 1, str, -1);
+
+		// Configured node address
+		sprintf(str, "0x%X", a->GetConfiguredNAD());
+		gtk_list_store_set(s, &it, 2, str, -1);
+
+		// Reponse error signal name
+		gtk_list_store_set(s, &it, 3, a->GetResponseErrorSignalName(), -1);
+
+		// Configurable frames
+		str[0] = 0;
+		for (jx = 0; jx < a->GetConfigurableFramesCount(); jx++)
+		{
+			if (jx > 0) strcat(str, ", ");
+			strcat(str, (char *)a->GetConfigurableFrames()[jx]->GetName());
+		}
+		gtk_list_store_set(s, &it, 4, str, -1);
+	}
 
 	// Play all signal handlers
 	G_PLAY(PanelConfiguracionDatabase);

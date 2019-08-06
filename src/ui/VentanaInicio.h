@@ -41,6 +41,7 @@ private:
 	static void OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget, gpointer user_data);
 	static void OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data);
 
+	void PrepareSlavesList();
 	void ReloadDatabase();
 
 public:

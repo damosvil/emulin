@@ -291,6 +291,58 @@
                           <object class="GtkFixed">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkButton" id="PanelDatabaseSlavesNew">
+                                <property name="label" translatable="yes">New</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                              </object>
+                              <packing>
+                                <property name="x">505</property>
+                                <property name="y">345</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="PanelDatabaseSlavesEdit">
+                                <property name="label" translatable="yes">Edit</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                              </object>
+                              <packing>
+                                <property name="x">560</property>
+                                <property name="y">345</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="PanelDatabaseSlavesDelete">
+                                <property name="label" translatable="yes">Delete</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                              </object>
+                              <packing>
+                                <property name="x">610</property>
+                                <property name="y">345</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkTreeView" id="PanelDatabaseSlavesList">
+                                <property name="width_request">667</property>
+                                <property name="height_request">330</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="enable_grid_lines">both</property>
+                                <child internal-child="selection">
+                                  <object class="GtkTreeSelection"/>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="x">5</property>
+                                <property name="y">5</property>
+                              </packing>
+                            </child>
                           </object>
                         </child>
                       </object>

@@ -34,6 +34,7 @@ uint32_t GetStrIndexByID(const char **ids, uint32_t ids_count, const char *id);
 bool RegExprCheck(const char *string, const char *pattern);
 void EditableInsertValidator(GtkEditable *editable, gchar *new_text, gint new_text_length, gpointer position, gpointer user_data);
 void EditableDeleteValidator (GtkEditable *editable, gint start_pos, gint end_pos, gpointer user_data);
+void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index);
 
 
 #ifdef __cplusplus

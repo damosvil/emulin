@@ -523,6 +523,31 @@ ldfmasternode *ldf::GetMasterNode()
 	return master;
 }
 
+ldfnode **ldf::GetSlaveNodes()
+{
+	return slaves;
+}
+
+uint32_t ldf::GetSlaveNodesCount()
+{
+	return slaves_count;
+}
+
+ldfnodeattributes *ldf::GetNodeAttributes(uint8_t *slave)
+{
+	uint32_t ix;
+	ldfnodeattributes *ret = NULL;
+
+	// Look for node attributes
+	for (ix = 0; (ret == NULL) && (ix < node_attributes_count); ix++)
+	{
+		ret = (strcmp((char *)slave, (char *)node_attributes[ix]->GetName()) == 0) ? node_attributes[ix] : NULL;
+	}
+
+	return ret;
+}
+
+
 
 
 } /* namespace ldf */
