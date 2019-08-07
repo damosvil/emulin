@@ -10,16 +10,12 @@
 
 #include <locale.h>
 #include <gtk/gtk.h>
-#include <ldf.h>
 #include <VentanaInicio.h>
 
 
 using namespace std;
-using namespace lin;
 using namespace ui;
 
-
-#define FILENAME				"config/database.ldf"
 
 int main(int argc, char *argv[])
 {

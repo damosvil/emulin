@@ -476,5 +476,411 @@
       </object>
     </child>
   </object>
-  <object class="GtkListStore" id="listaVersionProtocolo"/>
+  <object class="GtkWindow" id="VentanaNodoEsclavo">
+    <property name="width_request">600</property>
+    <property name="height_request">410</property>
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Slave</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="icon_name">network-wired</property>
+    <property name="skip_taskbar_hint">True</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkFixed">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Name</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">10</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="Name">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">20</property>
+            <property name="truncate_multiline">True</property>
+            <property name="caps_lock_warning">False</property>
+          </object>
+          <packing>
+            <property name="x">100</property>
+            <property name="y">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">LIN protocol version</property>
+          </object>
+          <packing>
+            <property name="x">300</property>
+            <property name="y">10</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="ProtocolVersion">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="active">0</property>
+            <property name="active_id">0</property>
+            <items>
+              <item id="0" translatable="yes">2.1</item>
+              <item id="1" translatable="yes">2.0</item>
+            </items>
+          </object>
+          <packing>
+            <property name="x">500</property>
+            <property name="y">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Initial NAD</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">40</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="InitialNAD">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="max_length">4</property>
+            <property name="width_chars">6</property>
+            <property name="truncate_multiline">True</property>
+          </object>
+          <packing>
+            <property name="x">100</property>
+            <property name="y">35</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Configured NAD</property>
+          </object>
+          <packing>
+            <property name="x">300</property>
+            <property name="y">40</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="ConfiguredNAD">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="max_length">4</property>
+            <property name="width_chars">6</property>
+            <property name="truncate_multiline">True</property>
+          </object>
+          <packing>
+            <property name="x">500</property>
+            <property name="y">35</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Supplier ID</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">70</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="SupplierID">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">8</property>
+          </object>
+          <packing>
+            <property name="x">100</property>
+            <property name="y">65</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Function ID</property>
+          </object>
+          <packing>
+            <property name="x">200</property>
+            <property name="y">70</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="FunctionID">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">6</property>
+          </object>
+          <packing>
+            <property name="x">300</property>
+            <property name="y">65</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Variant</property>
+          </object>
+          <packing>
+            <property name="x">400</property>
+            <property name="y">70</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="Variant">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">4</property>
+          </object>
+          <packing>
+            <property name="x">500</property>
+            <property name="y">65</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Response error signal</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">100</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="ResponseErrorSignal">
+            <property name="width_request">350</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="active">0</property>
+            <property name="active_id">0</property>
+          </object>
+          <packing>
+            <property name="x">200</property>
+            <property name="y">95</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">P2 min</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">130</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="P2_min">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">6</property>
+            <property name="truncate_multiline">True</property>
+          </object>
+          <packing>
+            <property name="x">100</property>
+            <property name="y">125</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">ST min</property>
+          </object>
+          <packing>
+            <property name="x">200</property>
+            <property name="y">130</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="ST_min">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">6</property>
+          </object>
+          <packing>
+            <property name="x">300</property>
+            <property name="y">125</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">N As timeout</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">160</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="N_As_timeout">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">6</property>
+            <property name="truncate_multiline">True</property>
+          </object>
+          <packing>
+            <property name="x">100</property>
+            <property name="y">155</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">N Cr timeout</property>
+          </object>
+          <packing>
+            <property name="x">200</property>
+            <property name="y">160</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="N_Cr_timeout">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="width_chars">6</property>
+          </object>
+          <packing>
+            <property name="x">300</property>
+            <property name="y">155</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFrame">
+            <property name="width_request">590</property>
+            <property name="height_request">180</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">out</property>
+            <child>
+              <object class="GtkAlignment">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLayout">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkTreeView" id="ConfigFrameList">
+                        <property name="width_request">510</property>
+                        <property name="height_request">150</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="x">5</property>
+                        <property name="y">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="ConfigFrameDelete">
+                        <property name="label" translatable="yes">Delete</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="x">525</property>
+                        <property name="y">75</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="ConfigFrameNew">
+                        <property name="label" translatable="yes">New</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="x">525</property>
+                        <property name="y">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="ConfigFrameEdit">
+                        <property name="label" translatable="yes">Edit</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="x">525</property>
+                        <property name="y">40</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Configurable frames</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">190</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="Accept">
+            <property name="label" translatable="yes">Accept</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+          </object>
+          <packing>
+            <property name="x">530</property>
+            <property name="y">375</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="Cancel">
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+          </object>
+          <packing>
+            <property name="x">440</property>
+            <property name="y">375</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
 </interface>

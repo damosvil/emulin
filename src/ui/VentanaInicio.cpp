@@ -198,10 +198,16 @@ void VentanaInicio::ReloadDatabase()
 	sprintf(str, "%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f);
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), str);
 
+
 	// Slaves list
+	GtkTreeIter it;
 	GtkTreeView *v = GTK_TREE_VIEW(gtk_builder_get_object(builder, "PanelDatabaseSlavesList"));
 	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
-	GtkTreeIter it;
+
+	// Clear list store
+	gtk_list_store_clear(s);
+
+	// Add data to list store
 	for (ix = 0; ix < db->GetSlaveNodesCount(); ix++)
 	{
 		ldfnodeattributes *a = db->GetNodeAttributes(db->GetSlaveNodes()[ix]->GetName());
