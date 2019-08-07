@@ -9,6 +9,7 @@
 #include "tools.h"
 #include "ManagerConfig.h"
 #include "VentanaInicio.h"
+#include "VentanaNodoEsclavo.h"
 
 
 using namespace managers;
@@ -23,12 +24,13 @@ static const char *lin_language_ids[] = { NULL, "1", "0" };
 VentanaInicio::VentanaInicio(GtkBuilder *builder)
 {
 	GtkFileFilter *p;
+	GObject *handle = gtk_builder_get_object(builder, "VentanaInicio");
 
-	// Get window handler
+	// Initialize attributes
+	this->db = NULL;
 	this->builder = builder;
-	this->handler = gtk_builder_get_object(builder, "VentanaInicio");
 
-	// Pin widget pointers
+	// Pin widgets
 	G_PIN(PanelConfiguracionDatabase);
 	G_PIN(PanelDatabaseLinProtocolVersion);
 	G_PIN(PanelDatabaseLinLanguageVersion);
@@ -36,12 +38,13 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseMasterName);
 	G_PIN(PanelDatabaseMasterTimebase);
 	G_PIN(PanelDatabaseMasterJitter);
-
-	// Initialize db
-	db = NULL;
+	G_PIN(PanelDatabaseSlavesList);
+	G_PIN(PanelDatabaseSlavesNew);
+	G_PIN(PanelDatabaseSlavesEdit);
+	G_PIN(PanelDatabaseSlavesDelete);
 
 	// Connect Window signals
-	g_signal_connect(this->handler, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
 	// Set file filter pattern to file chooser button (setting it in glade didn't work for me)
 	p = gtk_file_filter_new();
@@ -64,6 +67,9 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	g_signal_connect(g_PanelDatabaseMasterName, "insert-text", G_CALLBACK(EditableInsertValidator), NAME_EXPR);
 	g_signal_connect(g_PanelDatabaseMasterTimebase, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
 	g_signal_connect(g_PanelDatabaseMasterJitter, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
+	G_CONNECT(PanelDatabaseSlavesNew, Clicked, "clicked");
+	G_CONNECT(PanelDatabaseSlavesEdit, Clicked, "clicked");
+	G_CONNECT(PanelDatabaseSlavesDelete, Clicked, "clicked");
 
 	// Load database
 	ReloadDatabase();
@@ -129,6 +135,25 @@ void VentanaInicio::OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, 
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	v->db->GetMasterNode()->SetJitter((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
+}
+
+void VentanaInicio::OnPanelDatabaseSlavesNewClicked(GtkButton *button, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	// Create window as local
+	VentanaNodoEsclavo w(v->builder, v->db, NULL);
+	w.ShowModal();
+}
+
+void VentanaInicio::OnPanelDatabaseSlavesEditClicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseSlavesDeleteClicked(GtkButton *button, gpointer user_data)
+{
+
 }
 
 void VentanaInicio::PrepareSlavesList()

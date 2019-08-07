@@ -19,6 +19,7 @@ namespace ui {
 class VentanaNodoEsclavo {
 
 private:
+	GObject *handle;
 	ldf *db;
 	uint8_t *slave_name;
 
@@ -41,9 +42,18 @@ private:
 	G_VAR(Accept);
 	G_VAR(Cancel);
 
+	// Signal events
+	static void OnConfigFrameNewClicked(GtkButton *button, gpointer user_data);
+	static void OnConfigFrameEditClicked(GtkButton *button, gpointer user_data);
+	static void OnConfigFrameDeleteClicked(GtkButton *button, gpointer user_data);
+	static void OnAcceptClicked(GtkButton *button, gpointer user_data);
+	static void OnCancelClicked(GtkButton *button, gpointer user_data);
+
 public:
-	VentanaNodoEsclavo(ldf *db,	uint8_t *slave_name);
+	VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *slave_name);
 	virtual ~VentanaNodoEsclavo();
+
+	ldfnodeattributes *ShowModal();
 
 };
 

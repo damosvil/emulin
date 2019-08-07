@@ -21,7 +21,6 @@ class VentanaInicio {
 private:
 	ldf *db;
 	GtkBuilder *builder;
-	GObject *handler;
 
 	// Widgets
 	G_VAR(PanelConfiguracionDatabase);
@@ -31,6 +30,10 @@ private:
 	G_VAR(PanelDatabaseMasterName);
 	G_VAR(PanelDatabaseMasterTimebase);
 	G_VAR(PanelDatabaseMasterJitter);
+	G_VAR(PanelDatabaseSlavesList);
+	G_VAR(PanelDatabaseSlavesNew);
+	G_VAR(PanelDatabaseSlavesEdit);
+	G_VAR(PanelDatabaseSlavesDelete);
 
 	// Signal events
 	static void OnPanelConfiguracionDatabaseFileSet(GtkFileChooserButton *widget, gpointer user_data);
@@ -40,6 +43,9 @@ private:
 	static void OnPanelDatabaseMasterNameChanged(GtkCellEditable *widget, gpointer user_data);
 	static void OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget, gpointer user_data);
 	static void OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseSlavesNewClicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseSlavesEditClicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseSlavesDeleteClicked(GtkButton *button, gpointer user_data);
 
 	void PrepareSlavesList();
 	void ReloadDatabase();
