@@ -5,6 +5,7 @@
  *      Author: iso9660
  */
 
+#include <string.h>
 #include <VentanaNodoEsclavo.h>
 #include "tools.h"
 
@@ -65,7 +66,10 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant), GetStrPrintf("0x%02X", a->GetVariant()));
 
 		// Response error signal
-		// TODO
+		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal));
+		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal), "", "None");
+		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal), "");
+		// TODO: Load this list with all 1 bit signals published by this node. Leave this way for now
 
 		// P2 min
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min), GetStrPrintf("%d", a->GetP2_min()));
@@ -79,7 +83,6 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 		// N_Cr_timeout
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetN_Cr_timeout()));
 	}
-
 
 	// Connect signals widgets
 	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, Clicked, "clicked");
@@ -98,7 +101,7 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 {
 	ldfnodeattributes *res = NULL;
 
-	// Put this window on top of parent
+	// Put this window always on top of parent
 	gtk_window_set_transient_for(GTK_WINDOW(handle), GTK_WINDOW(parent));
 
 	// Show dialog
@@ -132,6 +135,38 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameDeleteClicked(GtkButton 
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
+	const char *new_slave_name = gtk_entry_get_text(GTK_ENTRY(v->g_VentanaNodoEsclavoName));
+	ldfnodeattributes *attributes = v->db->GetNodeAttributes((uint8_t *)new_slave_name);
+
+	// Validate slave name
+	if (strlen(new_slave_name) == 0)
+	{
+		// Identifier invalid
+		ShowErrorMessageBox(v->handle, "Incorrect slave name.");
+		return;
+	}
+
+	// Check that the node name is a new one and it is not repeated
+	if (v->slave_name == NULL)
+	{
+		if (attributes != NULL)
+		{
+			// Identifier in use
+			ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use.", new_slave_name);
+			return;
+		}
+	}
+	else
+	{
+		if (strcmp(new_slave_name, (const char *)v->slave_name) != 0 && attributes != NULL)
+		{
+			// Identifier in use
+			ShowErrorMessageBox(v->handle, "Slave name changed to another one that '%s' is already in use.", new_slave_name);
+			return;
+		}
+	}
+
+	// TODO: Build a new one node attributes with the dialog data
 
 	// Return true
 	gtk_dialog_response(GTK_DIALOG(v->handle), true);

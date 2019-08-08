@@ -37,6 +37,7 @@ void EditableInsertValidator(GtkEditable *editable, gchar *new_text, gint new_te
 void EditableDeleteValidator (GtkEditable *editable, gint start_pos, gint end_pos, gpointer user_data);
 void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index);
 const char *GetStrPrintf(const char *format, ...);
+void ShowErrorMessageBox(GObject *parent, const char *format, ...);
 
 }
 

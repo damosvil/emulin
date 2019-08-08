@@ -118,4 +118,26 @@ const char *GetStrPrintf(const char *format, ...)
 	return str;
 }
 
+void ShowErrorMessageBox(GObject *parent, const char *format, ...)
+{
+	static char str[10000];
+	va_list argptr;
+
+	va_start(argptr, format);
+	vsprintf(str, format, argptr);
+	va_end(argptr);
+
+	GtkWidget *d = gtk_message_dialog_new(
+			GTK_WINDOW(parent),
+			GTK_DIALOG_DESTROY_WITH_PARENT,
+			GTK_MESSAGE_WARNING,
+			GTK_BUTTONS_OK,
+			str
+			);
+
+	gtk_window_set_title(GTK_WINDOW(d), "Error");
+	gtk_dialog_run(GTK_DIALOG(d));
+	gtk_widget_destroy(d);
+}
+
 }
