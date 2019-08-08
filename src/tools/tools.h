@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <gtk/gtk.h>
-
+#include "ldfcommon.h"
 
 #define ARR_SIZE(A)			(sizeof(A) / sizeof(A[0]))
 #define G_VAR(A)  			GObject *g_##A;
@@ -24,21 +24,20 @@
 #define INT_EXPR			(gpointer)"^[0-9]{1,5}$"
 #define NAME_EXPR			(gpointer)"^[A-Za-z]{1}([A-Za-z_0-9])+$"
 #define SFLOAT_EXPR			(gpointer)"^[0-9]{1,2}[.]{0,1}[0-9]{0,3}$"
+#define HEX2_EXPR			(gpointer)"^0x[0-9A-Fa-f]{1,2}$"
+#define HEX4_EXPR			(gpointer)"^0x[0-9A-Fa-f]{1,4}$"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace tools
+{
 
 uint32_t GetStrIndexByID(const char **ids, uint32_t ids_count, const char *id);
 bool RegExprCheck(const char *string, const char *pattern);
 void EditableInsertValidator(GtkEditable *editable, gchar *new_text, gint new_text_length, gpointer position, gpointer user_data);
 void EditableDeleteValidator (GtkEditable *editable, gint start_pos, gint end_pos, gpointer user_data);
 void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index);
+const char *GetStrPrintf(const char *format, ...);
 
-
-#ifdef __cplusplus
 }
-#endif
 
 #endif /* TOOLS_TOOLS_H_ */

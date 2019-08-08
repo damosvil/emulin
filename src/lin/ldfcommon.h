@@ -13,6 +13,7 @@
 #define STR_ERR								"ERR: "
 #define STR_WARN							"WARN: "
 
+
 namespace lin
 {
 
@@ -30,8 +31,11 @@ enum lin_language_version_e
 	LIN_LANGUAGE_VERSION_2_1
 };
 
+const char *GetLinProtocolVersionStringID(lin_protocol_version_e v);
+const char *GetLinLanguageVersionStringID(lin_language_version_e v);
+lin_protocol_version_e GetProtocolVersionByStringID(const char *id);
+lin_language_version_e GetLanguageVersionByStringID(const char *id);
 
 }
-
 
 #endif /* LIN_LDFCOMMON_H_ */

@@ -194,6 +194,21 @@ uint8_t ldfnodeattributes::GetConfiguredNAD()
 	return configured_NAD;
 }
 
+uint16_t ldfnodeattributes::GetSupplierID()
+{
+	return product_id.supplier_id;
+}
+
+uint16_t ldfnodeattributes::GetFunctionID()
+{
+	return product_id.function_id;
+}
+
+uint8_t ldfnodeattributes::GetVariant()
+{
+	return product_id.variant;
+}
+
 uint8_t *ldfnodeattributes::GetResponseErrorSignalName()
 {
 	return response_error_signal_name;
@@ -207,6 +222,26 @@ ldfconfigurableframe **ldfnodeattributes::GetConfigurableFrames()
 uint16_t ldfnodeattributes::GetConfigurableFramesCount()
 {
 	return configurable_frames_count;
+}
+
+uint16_t ldfnodeattributes::GetP2_min()
+{
+	return P2_min;
+}
+
+uint16_t ldfnodeattributes::GetST_min()
+{
+	return ST_min;
+}
+
+uint16_t ldfnodeattributes::GetN_As_timeout()
+{
+	return N_As_timeout;
+}
+
+uint16_t ldfnodeattributes::GetN_Cr_timeout()
+{
+	return N_Cr_timeout;
 }
 
 } /* namespace lin */

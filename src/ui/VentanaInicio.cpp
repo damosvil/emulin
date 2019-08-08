@@ -7,19 +7,17 @@
 
 #include <stdlib.h>
 #include "tools.h"
+#include "ldfcommon.h"
 #include "ManagerConfig.h"
 #include "VentanaInicio.h"
 #include "VentanaNodoEsclavo.h"
 
 
 using namespace managers;
+using namespace tools;
 
 
 namespace ui {
-
-static const char *lin_protocol_ids[] = { NULL, "1", "0" };
-static const char *lin_language_ids[] = { NULL, "1", "0" };
-
 
 VentanaInicio::VentanaInicio(GtkBuilder *builder)
 {
@@ -95,18 +93,14 @@ void VentanaInicio::OnPanelDatabaseLinProtocolVersionChanged(GtkComboBox *widget
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->SetLinProtocolVersion((lin_protocol_version_e)GetStrIndexByID(
-			lin_protocol_ids, ARR_SIZE(lin_protocol_ids),
-			gtk_combo_box_get_active_id(widget)));
+	v->db->SetLinProtocolVersion(GetProtocolVersionByStringID(gtk_combo_box_get_active_id(widget)));
 }
 
 void VentanaInicio::OnPanelDatabaseLinLanguageVersionChanged(GtkComboBox *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->SetLinLanguageVersion((lin_language_version_e)GetStrIndexByID(
-			lin_language_ids, ARR_SIZE(lin_language_ids),
-			gtk_combo_box_get_active_id(widget)));
+	v->db->SetLinLanguageVersion(GetLanguageVersionByStringID(gtk_combo_box_get_active_id(widget)));
 }
 
 void VentanaInicio::OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpointer user_data)
@@ -177,7 +171,6 @@ void VentanaInicio::ReloadDatabase()
 {
 	uint32_t ix, jx;
 	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
-	char str[100000];
 
 	// Check database path is valid
 	if (database_path == NULL) return;
@@ -203,25 +196,22 @@ void VentanaInicio::ReloadDatabase()
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
 
 	// Database LIN protocol version
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinProtocolVersion), lin_protocol_ids[db->GetLinProtocolVersion()]);
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinProtocolVersion), GetLinProtocolVersionStringID(db->GetLinProtocolVersion()));
 
 	// Database LIN language version
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinLanguageVersion), lin_language_ids[db->GetLinLanguageVersion()]);
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinLanguageVersion), GetLinLanguageVersionStringID(db->GetLinLanguageVersion()));
 
 	// Database LIN speed
-	sprintf(str, "%d", db->GetLinSpeed());
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), str);
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), GetStrPrintf("%d", db->GetLinSpeed()));
 
 	// Master's name
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterName), (char *)db->GetMasterNode()->GetName());
 
 	// Master's timebase
-	sprintf(str, "%0.1f", (double)db->GetMasterNode()->GetTimebase() / 10.0f);
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterTimebase), str);
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterTimebase), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetTimebase() / 10.0f));
 
 	// Master's jitter
-	sprintf(str, "%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f);
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), str);
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f));
 
 
 	// Slaves list
@@ -242,17 +232,16 @@ void VentanaInicio::ReloadDatabase()
 		gtk_list_store_set(s, &it, 0, a->GetName(), -1);
 
 		// Initial node address
-		sprintf(str, "0x%X", a->GetInitialNAD());
-		gtk_list_store_set(s, &it, 1, str, -1);
+		gtk_list_store_set(s, &it, 1, GetStrPrintf("0x%X", a->GetInitialNAD()), -1);
 
 		// Configured node address
-		sprintf(str, "0x%X", a->GetConfiguredNAD());
-		gtk_list_store_set(s, &it, 2, str, -1);
+		gtk_list_store_set(s, &it, 2, GetStrPrintf("0x%X", a->GetConfiguredNAD()), -1);
 
-		// Reponse error signal name
+		// Response error signal name
 		gtk_list_store_set(s, &it, 3, a->GetResponseErrorSignalName(), -1);
 
 		// Configurable frames
+		char str[100000];
 		str[0] = 0;
 		for (jx = 0; jx < a->GetConfigurableFramesCount(); jx++)
 		{

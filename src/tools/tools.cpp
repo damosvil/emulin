@@ -10,8 +10,11 @@
 #include <sys/types.h>
 #include <regex.h>
 #include <gtk/gtk.h>
+#include <stdarg.h>
 #include "tools.h"
 
+namespace tools
+{
 
 uint32_t GetStrIndexByID(const char **ids, uint32_t ids_count, const char *id)
 {
@@ -77,7 +80,7 @@ void EditableDeleteValidator(GtkEditable *editable, gint start_pos, gint end_pos
 	const char *old_expr = gtk_entry_get_text(GTK_ENTRY(editable));
 
 	// Compose new expression
-	char *new_expr = malloc(strlen(old_expr) + 1 - (end_pos - start_pos));
+	char *new_expr = (char *)malloc(strlen(old_expr) + 1 - (end_pos - start_pos));
 	memcpy(new_expr, old_expr, start_pos);
 	new_expr[start_pos] = 0;
 	strcat(new_expr, old_expr + end_pos);
@@ -103,3 +106,16 @@ void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index)
 	gtk_tree_view_column_add_attribute(c, r, "text", column_index);
 }
 
+const char *GetStrPrintf(const char *format, ...)
+{
+	static char str[10000];
+	va_list argptr;
+
+	va_start(argptr, format);
+	vsprintf(str, format, argptr);
+	va_end(argptr);
+
+	return str;
+}
+
+}

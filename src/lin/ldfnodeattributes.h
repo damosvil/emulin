@@ -56,6 +56,13 @@ public:
 	uint8_t *GetName();
 	uint8_t GetInitialNAD();
 	uint8_t GetConfiguredNAD();
+	uint16_t GetSupplierID();
+	uint16_t GetFunctionID();
+	uint8_t GetVariant();
+	uint16_t GetP2_min();
+	uint16_t GetST_min();
+	uint16_t GetN_As_timeout();
+	uint16_t GetN_Cr_timeout();
 	uint8_t *GetResponseErrorSignalName();
 	ldfconfigurableframe **GetConfigurableFrames();
 	uint16_t GetConfigurableFramesCount();

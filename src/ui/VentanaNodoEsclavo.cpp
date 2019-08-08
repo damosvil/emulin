@@ -6,6 +6,9 @@
  */
 
 #include <VentanaNodoEsclavo.h>
+#include "tools.h"
+
+using namespace tools;
 
 namespace ui {
 
@@ -17,32 +20,73 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	this->handle = gtk_builder_get_object(builder, "VentanaNodoEsclavo");
 
 	// Pin widgets
-	G_PIN(Name);
-	G_PIN(ProtocolVersion);
-	G_PIN(InitialNAD);
-	G_PIN(ConfiguredNAD);
-	G_PIN(SupplierID);
-	G_PIN(FunctionID);
-	G_PIN(Variant);
-	G_PIN(ResponseErrorSignal);
-	G_PIN(P2_min);
-	G_PIN(ST_min);	// Show dialog
+	G_PIN(VentanaNodoEsclavoName);
+	G_PIN(VentanaNodoEsclavoProtocolVersion);
+	G_PIN(VentanaNodoEsclavoInitialNAD);
+	G_PIN(VentanaNodoEsclavoConfiguredNAD);
+	G_PIN(VentanaNodoEsclavoSupplierID);
+	G_PIN(VentanaNodoEsclavoFunctionID);
+	G_PIN(VentanaNodoEsclavoVariant);
+	G_PIN(VentanaNodoEsclavoResponseErrorSignal);
+	G_PIN(VentanaNodoEsclavoP2_min);
+	G_PIN(VentanaNodoEsclavoST_min);
+	G_PIN(VentanaNodoEsclavoN_As_timeout);
+	G_PIN(VentanaNodoEsclavoN_Cr_timeout);
+	G_PIN(VentanaNodoEsclavoConfigFrameList);
+	G_PIN(VentanaNodoEsclavoConfigFrameNew);
+	G_PIN(VentanaNodoEsclavoConfigFrameEdit);
+	G_PIN(VentanaNodoEsclavoConfigFrameDelete);
+	G_PIN(VentanaNodoEsclavoAccept);
+	G_PIN(VentanaNodoEsclavoCancel);
 
-	G_PIN(N_As_timeout);
-	G_PIN(N_Cr_timeout);
-	G_PIN(ConfigFrameList);
-	G_PIN(ConfigFrameNew);
-	G_PIN(ConfigFrameEdit);
-	G_PIN(ConfigFrameDelete);
-	G_PIN(Accept);
-	G_PIN(Cancel);
+	// Fill dialog fields with data
+	ldfnodeattributes *a = (slave_name != NULL) ? db->GetNodeAttributes(slave_name) : NULL;
+	if (a != NULL)
+	{
+		// Name
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoName), (gchar *)a->GetName());
 
-	// Connect button widgets
-	G_CONNECT(ConfigFrameNew, Clicked, "clicked");
-	G_CONNECT(ConfigFrameEdit, Clicked, "clicked");
-	G_CONNECT(ConfigFrameDelete, Clicked, "clicked");
-	G_CONNECT(Accept, Clicked, "clicked");
-	G_CONNECT(Cancel, Clicked, "clicked");
+		// Protocol version
+		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion), GetLinProtocolVersionStringID(db->GetLinProtocolVersion()));
+
+		// Initial NAD
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD), GetStrPrintf("0x%02X", a->GetInitialNAD()));
+
+		// Configured NAD
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoConfiguredNAD), GetStrPrintf("0x%02X", a->GetConfiguredNAD()));
+
+		// Supplier ID
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoSupplierID), GetStrPrintf("0x%04X", a->GetSupplierID()));
+
+		// Function ID
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoFunctionID), GetStrPrintf("0x%04X", a->GetFunctionID()));
+
+		// Variant
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant), GetStrPrintf("0x%02X", a->GetVariant()));
+
+		// Response error signal
+		// TODO
+
+		// P2 min
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min), GetStrPrintf("%d", a->GetP2_min()));
+
+		// ST min
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetST_min()));
+
+		// N_As_timeout
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetN_As_timeout()));
+
+		// N_Cr_timeout
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetN_Cr_timeout()));
+	}
+
+
+	// Connect signals widgets
+	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, Clicked, "clicked");
+	G_CONNECT(VentanaNodoEsclavoConfigFrameEdit, Clicked, "clicked");
+	G_CONNECT(VentanaNodoEsclavoConfigFrameDelete, Clicked, "clicked");
+	G_CONNECT(VentanaNodoEsclavoAccept, Clicked, "clicked");
+	G_CONNECT(VentanaNodoEsclavoCancel, Clicked, "clicked");
 }
 
 VentanaNodoEsclavo::~VentanaNodoEsclavo()
@@ -67,25 +111,25 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 	return res;
 }
 
-void VentanaNodoEsclavo::OnConfigFrameNewClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameNewClicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
 }
 
-void VentanaNodoEsclavo::OnConfigFrameEditClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameEditClicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
 }
 
-void VentanaNodoEsclavo::OnConfigFrameDeleteClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameDeleteClicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
 }
 
-void VentanaNodoEsclavo::OnAcceptClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
@@ -93,7 +137,7 @@ void VentanaNodoEsclavo::OnAcceptClicked(GtkButton *button, gpointer user_data)
 	gtk_dialog_response(GTK_DIALOG(v->handle), true);
 }
 
-void VentanaNodoEsclavo::OnCancelClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoCancelClicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 

@@ -23,31 +23,31 @@ private:
 	ldf *db;
 	uint8_t *slave_name;
 
-	G_VAR(Name);
-	G_VAR(ProtocolVersion);
-	G_VAR(InitialNAD);
-	G_VAR(ConfiguredNAD);
-	G_VAR(SupplierID);
-	G_VAR(FunctionID);
-	G_VAR(Variant);
-	G_VAR(ResponseErrorSignal);
-	G_VAR(P2_min);
-	G_VAR(ST_min);
-	G_VAR(N_As_timeout);
-	G_VAR(N_Cr_timeout);
-	G_VAR(ConfigFrameList);
-	G_VAR(ConfigFrameNew);
-	G_VAR(ConfigFrameEdit);
-	G_VAR(ConfigFrameDelete);
-	G_VAR(Accept);
-	G_VAR(Cancel);
+	G_VAR(VentanaNodoEsclavoName);
+	G_VAR(VentanaNodoEsclavoProtocolVersion);
+	G_VAR(VentanaNodoEsclavoInitialNAD);
+	G_VAR(VentanaNodoEsclavoConfiguredNAD);
+	G_VAR(VentanaNodoEsclavoSupplierID);
+	G_VAR(VentanaNodoEsclavoFunctionID);
+	G_VAR(VentanaNodoEsclavoVariant);
+	G_VAR(VentanaNodoEsclavoResponseErrorSignal);
+	G_VAR(VentanaNodoEsclavoP2_min);
+	G_VAR(VentanaNodoEsclavoST_min);
+	G_VAR(VentanaNodoEsclavoN_As_timeout);
+	G_VAR(VentanaNodoEsclavoN_Cr_timeout);
+	G_VAR(VentanaNodoEsclavoConfigFrameList);
+	G_VAR(VentanaNodoEsclavoConfigFrameNew);
+	G_VAR(VentanaNodoEsclavoConfigFrameEdit);
+	G_VAR(VentanaNodoEsclavoConfigFrameDelete);
+	G_VAR(VentanaNodoEsclavoAccept);
+	G_VAR(VentanaNodoEsclavoCancel);
 
 	// Signal events
-	static void OnConfigFrameNewClicked(GtkButton *button, gpointer user_data);
-	static void OnConfigFrameEditClicked(GtkButton *button, gpointer user_data);
-	static void OnConfigFrameDeleteClicked(GtkButton *button, gpointer user_data);
-	static void OnAcceptClicked(GtkButton *button, gpointer user_data);
-	static void OnCancelClicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoConfigFrameNewClicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoConfigFrameEditClicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoConfigFrameDeleteClicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoCancelClicked(GtkButton *button, gpointer user_data);
 
 public:
 	VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *slave_name);
