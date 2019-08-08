@@ -21,6 +21,7 @@ class VentanaInicio {
 private:
 	ldf *db;
 	GtkBuilder *builder;
+	GObject *handle;
 
 	// Widgets
 	G_VAR(PanelConfiguracionDatabase);

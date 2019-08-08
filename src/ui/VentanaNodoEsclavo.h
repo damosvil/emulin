@@ -53,7 +53,7 @@ public:
 	VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *slave_name);
 	virtual ~VentanaNodoEsclavo();
 
-	ldfnodeattributes *ShowModal();
+	ldfnodeattributes *ShowModal(GObject *parent);
 
 };
 

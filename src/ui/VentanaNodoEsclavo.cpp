@@ -50,9 +50,12 @@ VentanaNodoEsclavo::~VentanaNodoEsclavo()
 	// Free resources
 }
 
-ldfnodeattributes *VentanaNodoEsclavo::ShowModal()
+ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 {
 	ldfnodeattributes *res = NULL;
+
+	// Put this window on top of parent
+	gtk_window_set_transient_for(GTK_WINDOW(handle), GTK_WINDOW(parent));
 
 	// Show dialog
 	if (gtk_dialog_run(GTK_DIALOG(handle)))

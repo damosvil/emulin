@@ -24,11 +24,11 @@ static const char *lin_language_ids[] = { NULL, "1", "0" };
 VentanaInicio::VentanaInicio(GtkBuilder *builder)
 {
 	GtkFileFilter *p;
-	GObject *handle = gtk_builder_get_object(builder, "VentanaInicio");
 
 	// Initialize attributes
 	this->db = NULL;
 	this->builder = builder;
+	handle = gtk_builder_get_object(builder, "VentanaInicio");
 
 	// Pin widgets
 	G_PIN(PanelConfiguracionDatabase);
@@ -143,7 +143,7 @@ void VentanaInicio::OnPanelDatabaseSlavesNewClicked(GtkButton *button, gpointer 
 
 	// Create window as local
 	VentanaNodoEsclavo w(v->builder, v->db, NULL);
-	w.ShowModal();
+	w.ShowModal(v->handle);
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesEditClicked(GtkButton *button, gpointer user_data)

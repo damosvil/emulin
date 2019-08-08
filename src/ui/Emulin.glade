@@ -482,7 +482,6 @@
     <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
-    <property name="transient_for">VentanaInicio</property>
     <child>
       <placeholder/>
     </child>
