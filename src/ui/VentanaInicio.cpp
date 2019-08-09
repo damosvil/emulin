@@ -61,10 +61,10 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseMasterName, Changed, "changed");
 	G_CONNECT(PanelDatabaseMasterTimebase, Changed, "changed");
 	G_CONNECT(PanelDatabaseMasterJitter, Changed, "changed");
-	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), INT5_EXPR);
-	g_signal_connect(g_PanelDatabaseMasterName, "insert-text", G_CALLBACK(EditableInsertValidator), NAME_EXPR);
-	g_signal_connect(g_PanelDatabaseMasterTimebase, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
-	g_signal_connect(g_PanelDatabaseMasterJitter, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
+	G_CONNECT_INSTXT(PanelDatabaseLinSpeed, INT5_EXPR);
+	G_CONNECT_INSTXT(PanelDatabaseMasterName, NAME_EXPR);
+	G_CONNECT_INSTXT(PanelDatabaseMasterTimebase, SFLOAT_EXPR);
+	G_CONNECT_INSTXT(PanelDatabaseMasterJitter, SFLOAT_EXPR);
 	G_CONNECT(PanelDatabaseSlavesNew, Clicked, "clicked");
 	G_CONNECT(PanelDatabaseSlavesEdit, Clicked, "clicked");
 	G_CONNECT(PanelDatabaseSlavesDelete, Clicked, "clicked");
@@ -180,17 +180,17 @@ void VentanaInicio::ReloadDatabase()
 	db = new ldf(database_path);
 
 	// Pause all signal handlers
-	G_PAUSE(PanelConfiguracionDatabase);
-	G_PAUSE(PanelDatabaseLinProtocolVersion);
-	G_PAUSE(PanelDatabaseLinLanguageVersion);
-	G_PAUSE(PanelDatabaseLinSpeed);
-	G_PAUSE(PanelDatabaseMasterName);
-	G_PAUSE(PanelDatabaseMasterTimebase);
-	G_PAUSE(PanelDatabaseMasterJitter);
-	g_signal_handlers_block_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_block_matched(g_PanelDatabaseMasterName, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_block_matched(g_PanelDatabaseMasterTimebase, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_block_matched(g_PanelDatabaseMasterJitter, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	G_PAUSE_DATA(PanelConfiguracionDatabase, this);
+	G_PAUSE_DATA(PanelDatabaseLinProtocolVersion, this);
+	G_PAUSE_DATA(PanelDatabaseLinLanguageVersion, this);
+	G_PAUSE_DATA(PanelDatabaseLinSpeed, this);
+	G_PAUSE_DATA(PanelDatabaseMasterName, this);
+	G_PAUSE_DATA(PanelDatabaseMasterTimebase, this);
+	G_PAUSE_DATA(PanelDatabaseMasterJitter, this);
+	G_PAUSE_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
+	G_PAUSE_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
+	G_PAUSE_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
+	G_PAUSE_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
 
 	// Set database path in file chooser
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
@@ -252,17 +252,17 @@ void VentanaInicio::ReloadDatabase()
 	}
 
 	// Play all signal handlers
-	G_PLAY(PanelConfiguracionDatabase);
-	G_PLAY(PanelDatabaseLinProtocolVersion);
-	G_PLAY(PanelDatabaseLinLanguageVersion);
-	G_PLAY(PanelDatabaseLinSpeed);
-	G_PLAY(PanelDatabaseMasterName);
-	G_PLAY(PanelDatabaseMasterTimebase);
-	G_PLAY(PanelDatabaseMasterJitter);
-	g_signal_handlers_unblock_matched(g_PanelDatabaseLinSpeed, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_unblock_matched(g_PanelDatabaseMasterName, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_unblock_matched(g_PanelDatabaseMasterTimebase, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-	g_signal_handlers_unblock_matched(g_PanelDatabaseMasterJitter, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+	G_PLAY_DATA(PanelConfiguracionDatabase, this);
+	G_PLAY_DATA(PanelDatabaseLinProtocolVersion, this);
+	G_PLAY_DATA(PanelDatabaseLinLanguageVersion, this);
+	G_PLAY_DATA(PanelDatabaseLinSpeed, this);
+	G_PLAY_DATA(PanelDatabaseMasterName, this);
+	G_PLAY_DATA(PanelDatabaseMasterTimebase, this);
+	G_PLAY_DATA(PanelDatabaseMasterJitter, this);
+	G_PLAY_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
 }
 
 } /* namespace lin */
