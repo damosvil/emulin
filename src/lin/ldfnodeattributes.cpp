@@ -31,8 +31,8 @@ ldfnodeattributes::ldfnodeattributes(uint8_t *name)
 
 ldfnodeattributes::~ldfnodeattributes()
 {
-	if (name) delete name;
-	if (response_error_signal_name) delete response_error_signal_name;
+	if (name != NULL) delete name;
+	if (response_error_signal_name != NULL) delete response_error_signal_name;
 	while (fault_state_signals_count > 0) delete fault_state_signals[--fault_state_signals_count];
 	while (configurable_frames_count > 0) delete configurable_frames[--configurable_frames_count];
 }
@@ -243,5 +243,57 @@ uint16_t ldfnodeattributes::GetN_Cr_timeout()
 {
 	return N_Cr_timeout;
 }
+
+void ldfnodeattributes::SetInitialNAD(uint8_t v)
+{
+	initial_NAD = v;
+}
+
+void ldfnodeattributes::SetConfiguredNAD(uint8_t v)
+{
+	configured_NAD = v;
+}
+
+void ldfnodeattributes::SetSupplierID(uint16_t v)
+{
+	product_id.supplier_id = v;
+}
+
+void ldfnodeattributes::SetFunctionID(uint16_t v)
+{
+	product_id.function_id = v;
+}
+
+void ldfnodeattributes::SetVariant(uint8_t v)
+{
+	product_id.variant = v;
+}
+
+void ldfnodeattributes::SetP2_min(uint16_t v)
+{
+	P2_min = v;
+}
+
+void ldfnodeattributes::SetST_min(uint16_t v)
+{
+	ST_min = v;
+}
+
+void ldfnodeattributes::SetN_As_timeout(uint16_t v)
+{
+	N_As_timeout = v;
+}
+
+void ldfnodeattributes::SetN_Cr_timeout(uint16_t v)
+{
+	N_Cr_timeout = v;
+}
+
+void ldfnodeattributes::SetResponseErrorSignalName(uint8_t *v)
+{
+	if (response_error_signal_name != NULL) delete response_error_signal_name;
+	response_error_signal_name = (v != NULL) ? (uint8_t *)strdup((const char *)v) : NULL;
+}
+
 
 } /* namespace lin */

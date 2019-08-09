@@ -20,8 +20,11 @@
 #define G_PAUSE(A)			g_signal_handlers_block_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, this)
 #define G_PLAY(A)			g_signal_handlers_unblock_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, this)
 
+#define G_CONNECT_INSTXT(A, B)		g_signal_connect(g_##A, "insert-text", G_CALLBACK(EditableInsertValidator), B)
+#define G_DISCONNECT_FUNC(A, B)		g_signal_handlers_disconnect_matched(g_##A, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)B, 0)
+#define G_DISCONNECT_DATA(A, B)		g_signal_handlers_disconnect_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, B)
 
-#define INT_EXPR			(gpointer)"^[0-9]{1,5}$"
+#define INT5_EXPR			(gpointer)"^[0-9]{1,5}$"
 #define NAME_EXPR			(gpointer)"^[A-Za-z]{1}([A-Za-z_0-9])+$"
 #define SFLOAT_EXPR			(gpointer)"^[0-9]{1,2}[.]{0,1}[0-9]{0,3}$"
 #define HEX2_EXPR			(gpointer)"^0x[0-9A-Fa-f]{1,2}$"
@@ -38,6 +41,7 @@ void EditableDeleteValidator (GtkEditable *editable, gint start_pos, gint end_po
 void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index);
 const char *GetStrPrintf(const char *format, ...);
 void ShowErrorMessageBox(GObject *parent, const char *format, ...);
+int32_t MultiParseInt(const char *p);
 
 }
 

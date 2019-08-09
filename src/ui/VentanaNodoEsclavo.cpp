@@ -44,7 +44,18 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	ldfnodeattributes *a = (slave_name != NULL) ? db->GetNodeAttributes(slave_name) : NULL;
 	if (a != NULL)
 	{
-		// Name
+		// Name	G_PIN(VentanaNodoEsclavoProtocolVersion);
+		G_PIN(VentanaNodoEsclavoInitialNAD);
+		G_PIN(VentanaNodoEsclavoConfiguredNAD);
+		G_PIN(VentanaNodoEsclavoSupplierID);
+		G_PIN(VentanaNodoEsclavoFunctionID);
+		G_PIN(VentanaNodoEsclavoVariant);
+		G_PIN(VentanaNodoEsclavoResponseErrorSignal);
+		G_PIN(VentanaNodoEsclavoP2_min);
+		G_PIN(VentanaNodoEsclavoST_min);
+		G_PIN(VentanaNodoEsclavoN_As_timeout);
+		G_PIN(VentanaNodoEsclavoN_Cr_timeout);
+
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoName), (gchar *)a->GetName());
 
 		// Protocol version
@@ -84,7 +95,19 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetN_Cr_timeout()));
 	}
 
-	// Connect signals widgets
+	// Connect text fields
+	G_CONNECT_INSTXT(VentanaNodoEsclavoName, NAME_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoInitialNAD, HEX2_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoConfiguredNAD, HEX2_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoSupplierID, HEX4_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoFunctionID, HEX4_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoVariant, HEX2_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoP2_min, INT5_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoST_min, INT5_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoN_As_timeout, INT5_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoN_Cr_timeout, INT5_EXPR);
+
+	// Connect buttons
 	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, Clicked, "clicked");
 	G_CONNECT(VentanaNodoEsclavoConfigFrameEdit, Clicked, "clicked");
 	G_CONNECT(VentanaNodoEsclavoConfigFrameDelete, Clicked, "clicked");
@@ -94,7 +117,24 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 
 VentanaNodoEsclavo::~VentanaNodoEsclavo()
 {
-	// Free resources
+	// Disconnect text fields
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoName, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoInitialNAD, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoConfiguredNAD, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoSupplierID, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoFunctionID, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoVariant, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoP2_min, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoST_min, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoN_As_timeout, EditableInsertValidator);
+	G_DISCONNECT_FUNC(VentanaNodoEsclavoN_Cr_timeout, EditableInsertValidator);
+
+	// Disconnect buttons
+	G_DISCONNECT_DATA(VentanaNodoEsclavoConfigFrameNew, this);
+	G_DISCONNECT_DATA(VentanaNodoEsclavoConfigFrameEdit, this);
+	G_DISCONNECT_DATA(VentanaNodoEsclavoConfigFrameDelete, this);
+	G_DISCONNECT_DATA(VentanaNodoEsclavoAccept, this);
+	G_DISCONNECT_DATA(VentanaNodoEsclavoCancel, this);
 }
 
 ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
@@ -107,7 +147,35 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 	// Show dialog
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
-		res = new ldfnodeattributes((uint8_t *)"");
+		// Name
+		res = new ldfnodeattributes((uint8_t *)gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoName)));
+
+		// Initial NAD
+		res->SetInitialNAD(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD))));
+
+		// Configured NAD
+		res->SetConfiguredNAD(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoConfiguredNAD))));
+
+		// Supplier ID
+		res->SetSupplierID(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoSupplierID))));
+
+		// Function ID
+		res->SetFunctionID(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoFunctionID))));
+
+		// Variant
+		res->SetVariant(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant))));
+
+		// P2 min
+		res->SetP2_min(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min))));
+
+		// ST min
+		res->SetVariant(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min))));
+
+		// N_As_timeout
+		res->SetN_As_timeout(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoN_As_timeout))));
+
+		// N_Cr_timeout
+		res->SetN_Cr_timeout(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout))));
 	}
 	gtk_widget_hide(GTK_WIDGET(handle));
 
@@ -146,7 +214,7 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gp
 		return;
 	}
 
-	// Check that the node name is a new one and it is not repeated
+	// Validate node name
 	if (v->slave_name == NULL)
 	{
 		if (attributes != NULL)
@@ -165,8 +233,6 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gp
 			return;
 		}
 	}
-
-	// TODO: Build a new one node attributes with the dialog data
 
 	// Return true
 	gtk_dialog_response(GTK_DIALOG(v->handle), true);

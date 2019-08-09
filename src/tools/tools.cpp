@@ -140,4 +140,9 @@ void ShowErrorMessageBox(GObject *parent, const char *format, ...)
 	gtk_widget_destroy(d);
 }
 
+int32_t MultiParseInt(const char *p)
+{
+	return (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
+}
+
 }

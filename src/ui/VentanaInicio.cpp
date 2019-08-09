@@ -61,7 +61,7 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseMasterName, Changed, "changed");
 	G_CONNECT(PanelDatabaseMasterTimebase, Changed, "changed");
 	G_CONNECT(PanelDatabaseMasterJitter, Changed, "changed");
-	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), INT_EXPR);
+	g_signal_connect(g_PanelDatabaseLinSpeed, "insert-text", G_CALLBACK(EditableInsertValidator), INT5_EXPR);
 	g_signal_connect(g_PanelDatabaseMasterName, "insert-text", G_CALLBACK(EditableInsertValidator), NAME_EXPR);
 	g_signal_connect(g_PanelDatabaseMasterTimebase, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);
 	g_signal_connect(g_PanelDatabaseMasterJitter, "insert-text", G_CALLBACK(EditableInsertValidator), SFLOAT_EXPR);

@@ -22,9 +22,9 @@ class ldfnodeattributes {
 public:
 	struct product_id_s
 	{
-		uint32_t supplier_id;
-		uint32_t function_id;
-		uint32_t variant;
+		uint16_t supplier_id;
+		uint16_t function_id;
+		uint8_t variant;
 	};
 
 private:
@@ -66,6 +66,17 @@ public:
 	uint8_t *GetResponseErrorSignalName();
 	ldfconfigurableframe **GetConfigurableFrames();
 	uint16_t GetConfigurableFramesCount();
+
+	void SetInitialNAD(uint8_t v);
+	void SetConfiguredNAD(uint8_t v);
+	void SetSupplierID(uint16_t v);
+	void SetFunctionID(uint16_t v);
+	void SetVariant(uint8_t v);
+	void SetP2_min(uint16_t v);
+	void SetST_min(uint16_t v);
+	void SetN_As_timeout(uint16_t v);
+	void SetN_Cr_timeout(uint16_t v);
+	void SetResponseErrorSignalName(uint8_t *v);
 
 };
 
