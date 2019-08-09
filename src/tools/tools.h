@@ -20,11 +20,11 @@
 #define G_CONNECT(A,B,C)	g_signal_connect(g_##A, C, G_CALLBACK(On##A##B), this)
 #define G_CONNECT_INSTXT(A, B)		g_signal_connect(g_##A, "insert-text", G_CALLBACK(EditableInsertValidator), B)
 
-#define G_PAUSE_DATA(A, B)	g_signal_handlers_block_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, B)
 #define G_PAUSE_FUNC(A, B)	g_signal_handlers_block_matched(g_##A, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)B, 0)
+#define G_PAUSE_DATA(A, B)	g_signal_handlers_block_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, B)
 
+#define G_PLAY_FUNC(A, B)	g_signal_handlers_unblock_matched(g_##A, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)B, 0)
 #define G_PLAY_DATA(A, B)	g_signal_handlers_unblock_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, B)
-#define G_PLAY_FUNC(A, B)	g_signal_handlers_unblock_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, (gpointer)B, 0)
 
 #define G_DISCONNECT_FUNC(A, B)		g_signal_handlers_disconnect_matched(g_##A, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)B, 0)
 #define G_DISCONNECT_DATA(A, B)		g_signal_handlers_disconnect_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, B)
