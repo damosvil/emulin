@@ -89,10 +89,10 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetST_min()));
 
 		// N_As_timeout
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetN_As_timeout()));
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_As_timeout), GetStrPrintf("%d", a->GetN_As_timeout()));
 
 		// N_Cr_timeout
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetN_Cr_timeout()));
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout), GetStrPrintf("%d", a->GetN_Cr_timeout()));
 	}
 
 	// Connect text fields

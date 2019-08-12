@@ -328,14 +328,21 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkTreeView" id="PanelDatabaseSlavesList">
+                              <object class="GtkScrolledWindow">
                                 <property name="width_request">667</property>
                                 <property name="height_request">330</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="enable_grid_lines">both</property>
-                                <child internal-child="selection">
-                                  <object class="GtkTreeSelection" id="PanelDatabaseSlavesSelection"/>
+                                <property name="shadow_type">in</property>
+                                <child>
+                                  <object class="GtkTreeView" id="PanelDatabaseSlavesList">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="enable_grid_lines">both</property>
+                                    <child internal-child="selection">
+                                      <object class="GtkTreeSelection" id="PanelDatabaseSlavesSelection"/>
+                                    </child>
+                                  </object>
                                 </child>
                               </object>
                               <packing>
@@ -539,8 +546,11 @@
     </child>
   </object>
   <object class="GtkDialog" id="VentanaNodoEsclavo">
+    <property name="width_request">600</property>
+    <property name="height_request">400</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Slave</property>
+    <property name="resizable">False</property>
     <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
@@ -981,8 +991,14 @@
     </child>
   </object>
   <object class="GtkDialog" id="VentanaSenal">
+    <property name="width_request">320</property>
+    <property name="height_request">400</property>
     <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Signal</property>
+    <property name="resizable">False</property>
+    <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
+    <property name="deletable">False</property>
     <child>
       <placeholder/>
     </child>
@@ -1133,7 +1149,7 @@
             <child>
               <object class="GtkScrolledWindow">
                 <property name="width_request">245</property>
-                <property name="height_request">130</property>
+                <property name="height_request">220</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">never</property>
