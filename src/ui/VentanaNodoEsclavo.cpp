@@ -41,7 +41,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	G_PIN(VentanaNodoEsclavoCancel);
 
 	// Fill dialog fields with data
-	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNode(slave_name) : NULL;
+	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNodeAttributes(slave_name) : NULL;
 	if (a != NULL)
 	{
 		// Name	G_PIN(VentanaNodoEsclavoProtocolVersion);
@@ -204,7 +204,7 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, g
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 	const char *new_slave_name = gtk_entry_get_text(GTK_ENTRY(v->g_VentanaNodoEsclavoName));
-	ldfnodeattributes *attributes = v->db->GetSlaveNode((uint8_t *)new_slave_name);
+	ldfnodeattributes *attributes = v->db->GetSlaveNodeAttributes((uint8_t *)new_slave_name);
 
 	// Validate slave name
 	if (strlen(new_slave_name) == 0)

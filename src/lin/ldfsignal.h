@@ -33,6 +33,10 @@ public:
 	void ValidateUnicity(ldfsignal *signal, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	uint8_t *GetName();
 	uint8_t GetBitSize();
+	uint32_t GetDefaultValue();
+	uint8_t *GetPublisher();
+	uint32_t GetSubscribersCount();
+	uint8_t *GetSubscriber(uint32_t ix);
 
 };
 

@@ -130,6 +130,27 @@ uint8_t ldfsignal::GetBitSize()
 	return bit_size;
 }
 
+uint32_t ldfsignal::GetDefaultValue()
+{
+	return default_value;
+}
+
+uint8_t *ldfsignal::GetPublisher()
+{
+	return publisher;
+}
+
+uint32_t ldfsignal::GetSubscribersCount()
+{
+	return subscribers_count;
+}
+
+uint8_t *ldfsignal::GetSubscriber(uint32_t ix)
+{
+	return subscribers[ix];
+}
+
+
 
 
 } /* namespace lin */

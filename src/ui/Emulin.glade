@@ -380,6 +380,68 @@
               <object class="GtkFixed">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkButton" id="PanelDatabaseSignalsNew">
+                    <property name="label" translatable="yes">New</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="x">510</property>
+                    <property name="y">535</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="PanelDatabaseSignalsEdit">
+                    <property name="label" translatable="yes">Edit</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="x">570</property>
+                    <property name="y">535</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="PanelDatabaseSignalsDelete">
+                    <property name="label" translatable="yes">Delete</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="x">625</property>
+                    <property name="y">535</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="width_request">683</property>
+                    <property name="height_request">525</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkTreeView" id="PanelDatabaseSignalsList">
+                        <property name="width_request">100</property>
+                        <property name="height_request">100</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="enable_grid_lines">both</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="x">5</property>
+                    <property name="y">5</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="position">2</property>
@@ -827,7 +889,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkTreeView" id="VentanaNodoEsclavoConfigFrameList1">
+                          <object class="GtkTreeView" id="VentanaNodoEsclavoConfigFrameList">
                             <property name="width_request">510</property>
                             <property name="height_request">150</property>
                             <property name="visible">True</property>
@@ -839,18 +901,6 @@
                           <packing>
                             <property name="x">5</property>
                             <property name="y">5</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="VentanaNodoEsclavoConfigFrameDelete">
-                            <property name="label" translatable="yes">Delete</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                          </object>
-                          <packing>
-                            <property name="x">525</property>
-                            <property name="y">75</property>
                           </packing>
                         </child>
                         <child>
@@ -875,6 +925,18 @@
                           <packing>
                             <property name="x">525</property>
                             <property name="y">40</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="VentanaNodoEsclavoConfigFrameDelete">
+                            <property name="label" translatable="yes">Delete</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                          </object>
+                          <packing>
+                            <property name="x">525</property>
+                            <property name="y">75</property>
                           </packing>
                         </child>
                       </object>

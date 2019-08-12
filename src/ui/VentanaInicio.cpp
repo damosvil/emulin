@@ -41,6 +41,11 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseSlavesEdit);
 	G_PIN(PanelDatabaseSlavesDelete);
 	g_PanelDatabaseSlavesListSelection = (GObject *)gtk_tree_view_get_selection(GTK_TREE_VIEW(g_PanelDatabaseSlavesList));
+	G_PIN(PanelDatabaseSignalsList);
+	G_PIN(PanelDatabaseSignalsNew);
+	G_PIN(PanelDatabaseSignalsEdit);
+	G_PIN(PanelDatabaseSignalsDelete);
+	g_PanelDatabaseSignalsListSelection = (GObject *)gtk_tree_view_get_selection(GTK_TREE_VIEW(g_PanelDatabaseSignalsList));
 
 	// Connect Window signals
 	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -52,7 +57,10 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), p);
 
 	// Initialize slaves list view
-	PrepareSlavesList();
+	PrepareListSlaves();
+
+	// Initialize signals list view
+	PrepareListSignals();
 
 	// Connect widget signals
 	G_CONNECT(PanelConfiguracionDatabase, file_set);
@@ -71,6 +79,11 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseSlavesDelete, clicked);
 	G_CONNECT(PanelDatabaseSlavesList, row_activated);
 	G_CONNECT(PanelDatabaseSlavesListSelection, changed);
+	G_CONNECT(PanelDatabaseSignalsNew, clicked);
+	G_CONNECT(PanelDatabaseSignalsEdit, clicked);
+	G_CONNECT(PanelDatabaseSignalsDelete, clicked);
+	G_CONNECT(PanelDatabaseSignalsList, row_activated);
+	G_CONNECT(PanelDatabaseSignalsListSelection, changed);
 
 	// Load database
 	ReloadDatabase();
@@ -79,6 +92,195 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 VentanaInicio::~VentanaInicio()
 {
 	if (db != NULL) delete db;
+}
+
+void VentanaInicio::ReloadDatabase()
+{
+	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
+
+	// Check database path is valid
+	if (database_path == NULL) return;
+
+	// If database is loaded delete it and create a new one
+	if (db != NULL) delete db;
+	db = new ldf(database_path);
+
+	// Pause all signal handlers
+	G_PAUSE_DATA(PanelConfiguracionDatabase, this);
+	G_PAUSE_DATA(PanelDatabaseLinProtocolVersion, this);
+	G_PAUSE_DATA(PanelDatabaseLinLanguageVersion, this);
+	G_PAUSE_DATA(PanelDatabaseLinSpeed, this);
+	G_PAUSE_DATA(PanelDatabaseMasterName, this);
+	G_PAUSE_DATA(PanelDatabaseMasterTimebase, this);
+	G_PAUSE_DATA(PanelDatabaseMasterJitter, this);
+	G_PAUSE_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
+	G_PAUSE_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
+	G_PAUSE_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
+	G_PAUSE_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
+
+	// Set database path in file chooser
+	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
+
+	// Database LIN protocol version
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinProtocolVersion), GetLinProtocolVersionStringID(db->GetLinProtocolVersion()));
+
+	// Database LIN language version
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinLanguageVersion), GetLinLanguageVersionStringID(db->GetLinLanguageVersion()));
+
+	// Database LIN speed
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), GetStrPrintf("%d", db->GetLinSpeed()));
+
+	// Master's name
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterName), (char *)db->GetMasterNode()->GetName());
+
+	// Master's timebase
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterTimebase), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetTimebase() / 10.0f));
+
+	// Master's jitter
+	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f));
+
+	// Slaves list
+	ReloadListSlaves(db);
+
+	// Signals list
+	ReloadListSignals(db);
+
+	// Play all signal handlers
+	G_PLAY_DATA(PanelConfiguracionDatabase, this);
+	G_PLAY_DATA(PanelDatabaseLinProtocolVersion, this);
+	G_PLAY_DATA(PanelDatabaseLinLanguageVersion, this);
+	G_PLAY_DATA(PanelDatabaseLinSpeed, this);
+	G_PLAY_DATA(PanelDatabaseMasterName, this);
+	G_PLAY_DATA(PanelDatabaseMasterTimebase, this);
+	G_PLAY_DATA(PanelDatabaseMasterJitter, this);
+	G_PLAY_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
+}
+
+void VentanaInicio::PrepareListSlaves()
+{
+	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSlavesList);
+
+	// Add columns
+	TreeViewAddColumn(v, "Slave", 0);
+	TreeViewAddColumn(v, "INAD", 1);
+	TreeViewAddColumn(v, "CNAD", 2);
+	TreeViewAddColumn(v, "ERR SIG", 3);
+	TreeViewAddColumn(v, "CFG FRM", 4);
+
+	// Set model and unmanage reference from this code
+	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
+	g_object_unref(s);
+
+	// Disable edit and delete buttons
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesEdit), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesDelete), FALSE);
+}
+
+void VentanaInicio::ReloadListSlaves(ldf *db)
+{
+	uint32_t ix;
+	GtkTreeIter it;
+	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSlavesList);
+	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
+
+	// Clear list store
+	gtk_list_store_clear(s);
+
+	// Add data to list store
+	for (ix = 0; ix < db->GetSlaveNodesCount(); ix++)
+	{
+		ldfnodeattributes *a = db->GetSlaveNodeAttributes(db->GetSlaveNode(ix)->GetName());
+
+		// Slave name
+		gtk_list_store_append(s, &it);
+		gtk_list_store_set(s, &it, 0, a->GetName(), -1);
+
+		// ldfnodeInitial node address
+		gtk_list_store_set(s, &it, 1, GetStrPrintf("0x%02X", a->GetInitialNAD()), -1);
+
+		// Configured node address
+		gtk_list_store_set(s, &it, 2, GetStrPrintf("0x%02X", a->GetConfiguredNAD()), -1);
+
+		// Response error signal name
+		gtk_list_store_set(s, &it, 3, a->GetResponseErrorSignalName(), -1);
+
+		// Configurable frames
+		char str[100000];
+		uint32_t jx;
+		str[0] = 0;
+		for (jx = 0; jx < a->GetConfigurableFramesCount(); jx++)
+		{
+			if (jx > 0) strcat(str, ", ");
+			strcat(str, (char *)a->GetConfigurableFrame(jx)->GetName());
+		}
+		gtk_list_store_set(s, &it, 4, str, -1);
+	}
+}
+
+void VentanaInicio::PrepareListSignals()
+{
+	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSignalsList);
+
+	// Add columns
+	TreeViewAddColumn(v, "Signal", 0);
+	TreeViewAddColumn(v, "Size", 1);
+	TreeViewAddColumn(v, "I.Val", 2);
+	TreeViewAddColumn(v, "Publisher", 3);
+	TreeViewAddColumn(v, "Subscribers", 4);
+
+	// Set model and unmanage reference from this code
+	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
+	g_object_unref(s);
+
+	// Disable edit and delete buttons
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSignalsEdit), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSignalsDelete), FALSE);
+}
+
+void VentanaInicio::ReloadListSignals(ldf *db)
+{
+	uint32_t ix;
+	GtkTreeIter it;
+	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSignalsList);
+	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
+
+	// Clear list store
+	gtk_list_store_clear(s);
+
+	// Add data to list store
+	for (ix = 0; ix < db->GetSignalsCount(); ix++)
+	{
+		ldfsignal *signal = db->GetSignal(ix);
+
+		// Signal name
+		gtk_list_store_append(s, &it);
+		gtk_list_store_set(s, &it, 0, signal->GetName(), -1);
+
+		// Bit size
+		gtk_list_store_set(s, &it, 1, GetStrPrintf("%d", signal->GetBitSize()), -1);
+
+		// Initial Value
+		gtk_list_store_set(s, &it, 2, GetStrPrintf("0x%02X", signal->GetDefaultValue()), -1);
+
+		// Publisher
+		gtk_list_store_set(s, &it, 3, signal->GetPublisher(), -1);
+
+		// Subscribers
+		char str[100000];
+		uint32_t jx;
+		str[0] = 0;
+		for (jx = 0; jx < signal->GetSubscribersCount(); jx++)
+		{
+			if (jx != 0) strcat(str, ", ");
+			strcat(str, (char *)signal->GetSubscriber(jx));
+		}
+		gtk_list_store_set(s, &it, 4, str, -1);
+	}
 }
 
 void VentanaInicio::OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data)
@@ -147,7 +349,7 @@ void VentanaInicio::OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer
 	v->db->AddSlaveNode(na);
 
 	// Reload slaves list
-	v->ReloadSlavesList(v->db);
+	v->ReloadListSlaves(v->db);
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointer user_data)
@@ -170,7 +372,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	v->db->UpdateSlaveNode((uint8_t *)slave_name, na);
 
 	// Reload slaves list
-	v->ReloadSlavesList(v->db);
+	v->ReloadListSlaves(v->db);
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data)
@@ -188,7 +390,32 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 	v->db->DeleteSlaveNode((uint8_t *)slave_name);
 
 	// Reload slaves list
-	v->ReloadSlavesList(v->db);
+	v->ReloadListSlaves(v->db);
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsNew_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsEdit_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsDelete_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsListSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+{
+
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
@@ -207,127 +434,5 @@ void VentanaInicio::OnPanelDatabaseSlavesListSelection_changed(GtkTreeSelection 
 	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSlavesDelete), enable);
 }
 
-void VentanaInicio::PrepareSlavesList()
-{
-	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	GtkTreeView *v = GTK_TREE_VIEW(gtk_builder_get_object(builder, "PanelDatabaseSlavesList"));
-
-	// Add columns
-	TreeViewAddColumn(v, "Slave", 0);
-	TreeViewAddColumn(v, "INAD", 1);
-	TreeViewAddColumn(v, "CNAD", 2);
-	TreeViewAddColumn(v, "ERR SIG", 3);
-	TreeViewAddColumn(v, "CFG FRM", 4);
-
-	// Set model and unmanage reference from this code
-	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
-	g_object_unref(s);
-
-	// Disable edit and delete buttons
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesEdit), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesDelete), FALSE);
-}
-
-void VentanaInicio::ReloadDatabase()
-{
-	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
-
-	// Check database path is valid
-	if (database_path == NULL) return;
-
-	// If database is loaded delete it and create a new one
-	if (db != NULL) delete db;
-	db = new ldf(database_path);
-
-	// Pause all signal handlers
-	G_PAUSE_DATA(PanelConfiguracionDatabase, this);
-	G_PAUSE_DATA(PanelDatabaseLinProtocolVersion, this);
-	G_PAUSE_DATA(PanelDatabaseLinLanguageVersion, this);
-	G_PAUSE_DATA(PanelDatabaseLinSpeed, this);
-	G_PAUSE_DATA(PanelDatabaseMasterName, this);
-	G_PAUSE_DATA(PanelDatabaseMasterTimebase, this);
-	G_PAUSE_DATA(PanelDatabaseMasterJitter, this);
-	G_PAUSE_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
-	G_PAUSE_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
-	G_PAUSE_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
-	G_PAUSE_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
-
-	// Set database path in file chooser
-	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
-
-	// Database LIN protocol version
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinProtocolVersion), GetLinProtocolVersionStringID(db->GetLinProtocolVersion()));
-
-	// Database LIN language version
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinLanguageVersion), GetLinLanguageVersionStringID(db->GetLinLanguageVersion()));
-
-	// Database LIN speed
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), GetStrPrintf("%d", db->GetLinSpeed()));
-
-	// Master's name
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterName), (char *)db->GetMasterNode()->GetName());
-
-	// Master's timebase
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterTimebase), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetTimebase() / 10.0f));
-
-	// Master's jitter
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f));
-
-	// Slaves list
-	ReloadSlavesList(db);
-
-	// Play all signal handlers
-	G_PLAY_DATA(PanelConfiguracionDatabase, this);
-	G_PLAY_DATA(PanelDatabaseLinProtocolVersion, this);
-	G_PLAY_DATA(PanelDatabaseLinLanguageVersion, this);
-	G_PLAY_DATA(PanelDatabaseLinSpeed, this);
-	G_PLAY_DATA(PanelDatabaseMasterName, this);
-	G_PLAY_DATA(PanelDatabaseMasterTimebase, this);
-	G_PLAY_DATA(PanelDatabaseMasterJitter, this);
-	G_PLAY_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
-	G_PLAY_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
-	G_PLAY_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
-	G_PLAY_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
-}
-
-void VentanaInicio::ReloadSlavesList(ldf *db)
-{
-	uint32_t ix, jx;
-	GtkTreeIter it;
-	GtkTreeView *v = GTK_TREE_VIEW(gtk_builder_get_object(builder, "PanelDatabaseSlavesList"));
-	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
-
-	// Clear list store
-	gtk_list_store_clear(s);
-
-	// Add data to list store
-	for (ix = 0; ix < db->GetSlaveNodesCount(); ix++)
-	{
-		ldfnodeattributes *a = db->GetSlaveNode(db->GetSlaveNodes()[ix]->GetName());
-
-		// Slave name
-		gtk_list_store_append(s, &it);
-		gtk_list_store_set(s, &it, 0, a->GetName(), -1);
-
-		// ldfnodeInitial node address
-		gtk_list_store_set(s, &it, 1, GetStrPrintf("0x%X", a->GetInitialNAD()), -1);
-
-		// Configured node address
-		gtk_list_store_set(s, &it, 2, GetStrPrintf("0x%X", a->GetConfiguredNAD()), -1);
-
-		// Response error signal name
-		gtk_list_store_set(s, &it, 3, a->GetResponseErrorSignalName(), -1);
-
-		// Configurable frames
-		char str[100000];
-		str[0] = 0;
-		for (jx = 0; jx < a->GetConfigurableFramesCount(); jx++)
-		{
-			if (jx > 0) strcat(str, ", ");
-			strcat(str, (char *)a->GetConfigurableFrames()[jx]->GetName());
-		}
-		gtk_list_store_set(s, &it, 4, str, -1);
-	}
-}
 
 } /* namespace lin */

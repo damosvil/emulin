@@ -64,7 +64,7 @@ public:
 	uint16_t GetN_As_timeout();
 	uint16_t GetN_Cr_timeout();
 	uint8_t *GetResponseErrorSignalName();
-	ldfconfigurableframe **GetConfigurableFrames();
+	ldfconfigurableframe *GetConfigurableFrame(uint32_t ix);
 	uint16_t GetConfigurableFramesCount();
 
 	void SetInitialNAD(uint8_t v);

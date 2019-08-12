@@ -214,9 +214,9 @@ uint8_t *ldfnodeattributes::GetResponseErrorSignalName()
 	return response_error_signal_name;
 }
 
-ldfconfigurableframe **ldfnodeattributes::GetConfigurableFrames()
+ldfconfigurableframe *ldfnodeattributes::GetConfigurableFrame(uint32_t ix)
 {
-	return configurable_frames;
+	return configurable_frames[ix];
 }
 
 uint16_t ldfnodeattributes::GetConfigurableFramesCount()

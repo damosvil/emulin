@@ -523,9 +523,9 @@ ldfmasternode *ldf::GetMasterNode()
 	return master;
 }
 
-ldfnode **ldf::GetSlaveNodes()
+ldfnode *ldf::GetSlaveNode(uint32_t ix)
 {
-	return slaves;
+	return slaves[ix];
 }
 
 uint32_t ldf::GetSlaveNodesCount()
@@ -533,7 +533,7 @@ uint32_t ldf::GetSlaveNodesCount()
 	return slaves_count;
 }
 
-ldfnodeattributes *ldf::GetSlaveNode(uint8_t *slave_name)
+ldfnodeattributes *ldf::GetSlaveNodeAttributes(uint8_t *slave_name)
 {
 	uint32_t ix;
 	ldfnodeattributes *ret = NULL;
@@ -612,6 +612,16 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 
 		break;
 	}
+}
+
+ldfsignal *ldf::GetSignal(uint32_t ix)
+{
+	return signals[ix];
+}
+
+uint32_t ldf::GetSignalsCount()
+{
+	return signals_count;
 }
 
 
