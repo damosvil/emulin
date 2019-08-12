@@ -35,21 +35,25 @@ private:
 	G_VAR(PanelDatabaseSlavesNew);
 	G_VAR(PanelDatabaseSlavesEdit);
 	G_VAR(PanelDatabaseSlavesDelete);
+	GObject *g_PanelDatabaseSlavesListSelection;
 
 	// Signal events
-	static void OnPanelConfiguracionDatabaseFileSet(GtkFileChooserButton *widget, gpointer user_data);
-	static void OnPanelDatabaseLinProtocolVersionChanged(GtkComboBox *widget, gpointer user_data);
-	static void OnPanelDatabaseLinLanguageVersionChanged(GtkComboBox *widget, gpointer user_data);
-	static void OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpointer user_data);
-	static void OnPanelDatabaseMasterNameChanged(GtkCellEditable *widget, gpointer user_data);
-	static void OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget, gpointer user_data);
-	static void OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data);
-	static void OnPanelDatabaseSlavesNewClicked(GtkButton *button, gpointer user_data);
-	static void OnPanelDatabaseSlavesEditClicked(GtkButton *button, gpointer user_data);
-	static void OnPanelDatabaseSlavesDeleteClicked(GtkButton *button, gpointer user_data);
+	static void OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data);
+	static void OnPanelDatabaseLinProtocolVersion_changed(GtkComboBox *widget, gpointer user_data);
+	static void OnPanelDatabaseLinLanguageVersion_changed(GtkComboBox *widget, gpointer user_data);
+	static void OnPanelDatabaseLinSpeed_changed(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseMasterTimebase_changed(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseMasterJitter_changed(GtkCellEditable *widget, gpointer user_data);
+	static void OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+	static void OnPanelDatabaseSlavesListSelection_changed(GtkTreeSelection *widget, gpointer user_data);
 
 	void PrepareSlavesList();
 	void ReloadDatabase();
+	void ReloadSlavesList(ldf *db);
 
 public:
 	VentanaInicio(GtkBuilder *builder);

@@ -43,11 +43,11 @@ private:
 	G_VAR(VentanaNodoEsclavoCancel);
 
 	// Signal events
-	static void OnVentanaNodoEsclavoConfigFrameNewClicked(GtkButton *button, gpointer user_data);
-	static void OnVentanaNodoEsclavoConfigFrameEditClicked(GtkButton *button, gpointer user_data);
-	static void OnVentanaNodoEsclavoConfigFrameDeleteClicked(GtkButton *button, gpointer user_data);
-	static void OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gpointer user_data);
-	static void OnVentanaNodoEsclavoCancelClicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoConfigFrameNew_clicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoConfigFrameEdit_clicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoConfigFrameDelete_clicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaNodoEsclavoCancel_clicked(GtkButton *button, gpointer user_data);
 
 public:
 	VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *slave_name);

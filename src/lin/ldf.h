@@ -110,7 +110,10 @@ public:
 	ldfnode **GetSlaveNodes();
 	uint32_t GetSlaveNodesCount();
 
-	ldfnodeattributes *GetNodeAttributes(uint8_t *slave);
+	ldfnodeattributes *GetSlaveNode(uint8_t *slave_name);
+	void AddSlaveNode(ldfnodeattributes *n);
+	void UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n);
+	void DeleteSlaveNode(uint8_t *slave_name);
 
 };
 

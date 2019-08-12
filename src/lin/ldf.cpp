@@ -533,7 +533,7 @@ uint32_t ldf::GetSlaveNodesCount()
 	return slaves_count;
 }
 
-ldfnodeattributes *ldf::GetNodeAttributes(uint8_t *slave)
+ldfnodeattributes *ldf::GetSlaveNode(uint8_t *slave_name)
 {
 	uint32_t ix;
 	ldfnodeattributes *ret = NULL;
@@ -541,13 +541,78 @@ ldfnodeattributes *ldf::GetNodeAttributes(uint8_t *slave)
 	// Look for node attributes
 	for (ix = 0; (ret == NULL) && (ix < node_attributes_count); ix++)
 	{
-		ret = (strcmp((char *)slave, (char *)node_attributes[ix]->GetName()) == 0) ? node_attributes[ix] : NULL;
+		ret = (strcmp((char *)slave_name, (char *)node_attributes[ix]->GetName()) == 0) ? node_attributes[ix] : NULL;
 	}
 
 	return ret;
 }
 
+void ldf::AddSlaveNode(ldfnodeattributes *n)
+{
+	// Add slave and store slave node attributes
+	if (slaves_count < sizeof(slaves) / sizeof(slaves[0]))
+	{
+		slaves[slaves_count++] = new ldfnode(n->GetName());
+		node_attributes[node_attributes_count++] = n;
+	}
+}
 
+void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
+{
+	uint32_t ix;
+
+	// Update slave name
+	for (ix = 0; ix < slaves_count; ix++)
+	{
+		if (strcmp((char *)old_slave_name, (char *)slaves[ix]->GetName()) != 0) continue;
+
+		slaves[ix]->SetName(n->GetName());
+
+		break;
+	}
+
+	// Update slave node attributes
+	for (ix = 0; ix < node_attributes_count; ix++)
+	{
+		if (strcmp((char *)old_slave_name, (char *)node_attributes[ix]->GetName()) != 0) continue;
+
+		delete node_attributes[ix];
+		node_attributes[ix] = n;
+
+		break;
+	}
+}
+
+void ldf::DeleteSlaveNode(uint8_t *slave_name)
+{
+	uint32_t ix;
+
+	// Delete slave name
+	for (ix = 0; ix < slaves_count; ix++)
+	{
+		if (strcmp((char *)slave_name, (char *)slaves[ix]->GetName()) != 0) continue;
+
+		// Delete slave and move all list one slot back
+		delete slaves[ix];
+		slaves_count--;
+		for (;ix < slaves_count; ix++) slaves[ix] = slaves[ix + 1];
+
+		break;
+	}
+
+	// Update slave node attributes
+	for (ix = 0; ix < node_attributes_count; ix++)
+	{
+		if (strcmp((char *)slave_name, (char *)node_attributes[ix]->GetName()) != 0) continue;
+
+		// Delete node attributes and move all list one slot back
+		delete node_attributes[ix];
+		node_attributes_count--;
+		for (;ix < node_attributes_count; ix++) node_attributes[ix] = node_attributes[ix + 1];
+
+		break;
+	}
+}
 
 
 } /* namespace ldf */

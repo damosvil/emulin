@@ -40,6 +40,7 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseSlavesNew);
 	G_PIN(PanelDatabaseSlavesEdit);
 	G_PIN(PanelDatabaseSlavesDelete);
+	g_PanelDatabaseSlavesListSelection = (GObject *)gtk_tree_view_get_selection(GTK_TREE_VIEW(g_PanelDatabaseSlavesList));
 
 	// Connect Window signals
 	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -54,20 +55,22 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	PrepareSlavesList();
 
 	// Connect widget signals
-	G_CONNECT(PanelConfiguracionDatabase, FileSet, "file-set");
-	G_CONNECT(PanelDatabaseLinProtocolVersion, Changed, "changed");
-	G_CONNECT(PanelDatabaseLinLanguageVersion, Changed, "changed");
-	G_CONNECT(PanelDatabaseLinSpeed, Changed, "changed");
-	G_CONNECT(PanelDatabaseMasterName, Changed, "changed");
-	G_CONNECT(PanelDatabaseMasterTimebase, Changed, "changed");
-	G_CONNECT(PanelDatabaseMasterJitter, Changed, "changed");
+	G_CONNECT(PanelConfiguracionDatabase, file_set);
+	G_CONNECT(PanelDatabaseLinProtocolVersion, changed);
+	G_CONNECT(PanelDatabaseLinLanguageVersion, changed);
+	G_CONNECT(PanelDatabaseLinSpeed, changed);
+	G_CONNECT(PanelDatabaseMasterName, changed);
+	G_CONNECT(PanelDatabaseMasterTimebase, changed);
+	G_CONNECT(PanelDatabaseMasterJitter, changed);
 	G_CONNECT_INSTXT(PanelDatabaseLinSpeed, INT5_EXPR);
 	G_CONNECT_INSTXT(PanelDatabaseMasterName, NAME_EXPR);
 	G_CONNECT_INSTXT(PanelDatabaseMasterTimebase, SFLOAT_EXPR);
 	G_CONNECT_INSTXT(PanelDatabaseMasterJitter, SFLOAT_EXPR);
-	G_CONNECT(PanelDatabaseSlavesNew, Clicked, "clicked");
-	G_CONNECT(PanelDatabaseSlavesEdit, Clicked, "clicked");
-	G_CONNECT(PanelDatabaseSlavesDelete, Clicked, "clicked");
+	G_CONNECT(PanelDatabaseSlavesNew, clicked);
+	G_CONNECT(PanelDatabaseSlavesEdit, clicked);
+	G_CONNECT(PanelDatabaseSlavesDelete, clicked);
+	G_CONNECT(PanelDatabaseSlavesList, row_activated);
+	G_CONNECT(PanelDatabaseSlavesListSelection, changed);
 
 	// Load database
 	ReloadDatabase();
@@ -78,7 +81,7 @@ VentanaInicio::~VentanaInicio()
 	if (db != NULL) delete db;
 }
 
-void VentanaInicio::OnPanelConfiguracionDatabaseFileSet(GtkFileChooserButton *widget, gpointer user_data)
+void VentanaInicio::OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
@@ -89,65 +92,119 @@ void VentanaInicio::OnPanelConfiguracionDatabaseFileSet(GtkFileChooserButton *wi
 	v->ReloadDatabase();
 }
 
-void VentanaInicio::OnPanelDatabaseLinProtocolVersionChanged(GtkComboBox *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseLinProtocolVersion_changed(GtkComboBox *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	v->db->SetLinProtocolVersion(GetProtocolVersionByStringID(gtk_combo_box_get_active_id(widget)));
 }
 
-void VentanaInicio::OnPanelDatabaseLinLanguageVersionChanged(GtkComboBox *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseLinLanguageVersion_changed(GtkComboBox *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	v->db->SetLinLanguageVersion(GetLanguageVersionByStringID(gtk_combo_box_get_active_id(widget)));
 }
 
-void VentanaInicio::OnPanelDatabaseLinSpeedChanged(GtkCellEditable *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseLinSpeed_changed(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	v->db->SetLinSpeed(atoi(gtk_entry_get_text(GTK_ENTRY(widget))));
 }
 
-void VentanaInicio::OnPanelDatabaseMasterNameChanged(GtkCellEditable *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	v->db->GetMasterNode()->SetName((uint8_t *)gtk_entry_get_text(GTK_ENTRY(widget)));
 }
 
-void VentanaInicio::OnPanelDatabaseMasterTimebaseChanged(GtkCellEditable *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseMasterTimebase_changed(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	v->db->GetMasterNode()->SetTimebase(atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
 }
 
-void VentanaInicio::OnPanelDatabaseMasterJitterChanged(GtkCellEditable *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseMasterJitter_changed(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	v->db->GetMasterNode()->SetJitter((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
 }
 
-void VentanaInicio::OnPanelDatabaseSlavesNewClicked(GtkButton *button, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	// Create window as local
+	// Create slave window
 	VentanaNodoEsclavo w(v->builder, v->db, NULL);
-	w.ShowModal(v->handle);
+	ldfnodeattributes *na = w.ShowModal(v->handle);
+
+	// Add slave node if any
+	if (na == NULL) return;
+	v->db->AddSlaveNode(na);
+
+	// Reload slaves list
+	v->ReloadSlavesList(v->db);
 }
 
-void VentanaInicio::OnPanelDatabaseSlavesEditClicked(GtkButton *button, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *slave_name;
 
+	// Get slave name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSlavesListSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &slave_name, -1);
+
+	// Create slave window
+	VentanaNodoEsclavo w(v->builder, v->db, (uint8_t *)slave_name);
+	ldfnodeattributes *na = w.ShowModal(v->handle);
+
+	// Update slave node
+	if (na == NULL) return;
+	v->db->UpdateSlaveNode((uint8_t *)slave_name, na);
+
+	// Reload slaves list
+	v->ReloadSlavesList(v->db);
 }
 
-void VentanaInicio::OnPanelDatabaseSlavesDeleteClicked(GtkButton *button, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *slave_name;
 
+	// Get slave name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSlavesListSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &slave_name, -1);
+
+	// Delete slave node
+	v->db->DeleteSlaveNode((uint8_t *)slave_name);
+
+	// Reload slaves list
+	v->ReloadSlavesList(v->db);
+}
+
+void VentanaInicio::OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	gtk_widget_activate(GTK_WIDGET(v->g_PanelDatabaseSlavesEdit));
+}
+
+void VentanaInicio::OnPanelDatabaseSlavesListSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSlavesEdit), enable);
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSlavesDelete), enable);
 }
 
 void VentanaInicio::PrepareSlavesList()
@@ -165,11 +222,14 @@ void VentanaInicio::PrepareSlavesList()
 	// Set model and unmanage reference from this code
 	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
 	g_object_unref(s);
+
+	// Disable edit and delete buttons
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesEdit), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesDelete), FALSE);
 }
 
 void VentanaInicio::ReloadDatabase()
 {
-	uint32_t ix, jx;
 	const uint8_t *database_path = ManagerConfig::GetManager()->GetDatabasePath();
 
 	// Check database path is valid
@@ -213,8 +273,26 @@ void VentanaInicio::ReloadDatabase()
 	// Master's jitter
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f));
 
-
 	// Slaves list
+	ReloadSlavesList(db);
+
+	// Play all signal handlers
+	G_PLAY_DATA(PanelConfiguracionDatabase, this);
+	G_PLAY_DATA(PanelDatabaseLinProtocolVersion, this);
+	G_PLAY_DATA(PanelDatabaseLinLanguageVersion, this);
+	G_PLAY_DATA(PanelDatabaseLinSpeed, this);
+	G_PLAY_DATA(PanelDatabaseMasterName, this);
+	G_PLAY_DATA(PanelDatabaseMasterTimebase, this);
+	G_PLAY_DATA(PanelDatabaseMasterJitter, this);
+	G_PLAY_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
+	G_PLAY_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
+}
+
+void VentanaInicio::ReloadSlavesList(ldf *db)
+{
+	uint32_t ix, jx;
 	GtkTreeIter it;
 	GtkTreeView *v = GTK_TREE_VIEW(gtk_builder_get_object(builder, "PanelDatabaseSlavesList"));
 	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
@@ -225,13 +303,13 @@ void VentanaInicio::ReloadDatabase()
 	// Add data to list store
 	for (ix = 0; ix < db->GetSlaveNodesCount(); ix++)
 	{
-		ldfnodeattributes *a = db->GetNodeAttributes(db->GetSlaveNodes()[ix]->GetName());
+		ldfnodeattributes *a = db->GetSlaveNode(db->GetSlaveNodes()[ix]->GetName());
 
 		// Slave name
 		gtk_list_store_append(s, &it);
 		gtk_list_store_set(s, &it, 0, a->GetName(), -1);
 
-		// Initial node address
+		// ldfnodeInitial node address
 		gtk_list_store_set(s, &it, 1, GetStrPrintf("0x%X", a->GetInitialNAD()), -1);
 
 		// Configured node address
@@ -250,19 +328,6 @@ void VentanaInicio::ReloadDatabase()
 		}
 		gtk_list_store_set(s, &it, 4, str, -1);
 	}
-
-	// Play all signal handlers
-	G_PLAY_DATA(PanelConfiguracionDatabase, this);
-	G_PLAY_DATA(PanelDatabaseLinProtocolVersion, this);
-	G_PLAY_DATA(PanelDatabaseLinLanguageVersion, this);
-	G_PLAY_DATA(PanelDatabaseLinSpeed, this);
-	G_PLAY_DATA(PanelDatabaseMasterName, this);
-	G_PLAY_DATA(PanelDatabaseMasterTimebase, this);
-	G_PLAY_DATA(PanelDatabaseMasterJitter, this);
-	G_PLAY_FUNC(PanelDatabaseLinSpeed, EditableInsertValidator);
-	G_PLAY_FUNC(PanelDatabaseMasterName, EditableInsertValidator);
-	G_PLAY_FUNC(PanelDatabaseMasterTimebase, EditableInsertValidator);
-	G_PLAY_FUNC(PanelDatabaseMasterJitter, EditableInsertValidator);
 }
 
 } /* namespace lin */

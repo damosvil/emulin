@@ -41,7 +41,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	G_PIN(VentanaNodoEsclavoCancel);
 
 	// Fill dialog fields with data
-	ldfnodeattributes *a = (slave_name != NULL) ? db->GetNodeAttributes(slave_name) : NULL;
+	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNode(slave_name) : NULL;
 	if (a != NULL)
 	{
 		// Name	G_PIN(VentanaNodoEsclavoProtocolVersion);
@@ -108,11 +108,11 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	G_CONNECT_INSTXT(VentanaNodoEsclavoN_Cr_timeout, INT5_EXPR);
 
 	// Connect buttons
-	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, Clicked, "clicked");
-	G_CONNECT(VentanaNodoEsclavoConfigFrameEdit, Clicked, "clicked");
-	G_CONNECT(VentanaNodoEsclavoConfigFrameDelete, Clicked, "clicked");
-	G_CONNECT(VentanaNodoEsclavoAccept, Clicked, "clicked");
-	G_CONNECT(VentanaNodoEsclavoCancel, Clicked, "clicked");
+	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, clicked);
+	G_CONNECT(VentanaNodoEsclavoConfigFrameEdit, clicked);
+	G_CONNECT(VentanaNodoEsclavoConfigFrameDelete, clicked);
+	G_CONNECT(VentanaNodoEsclavoAccept, clicked);
+	G_CONNECT(VentanaNodoEsclavoCancel, clicked);
 }
 
 VentanaNodoEsclavo::~VentanaNodoEsclavo()
@@ -182,29 +182,29 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 	return res;
 }
 
-void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameNewClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameNew_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
 }
 
-void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameEditClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameEdit_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
 }
 
-void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameDeleteClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameDelete_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
 }
 
-void VentanaNodoEsclavo::OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 	const char *new_slave_name = gtk_entry_get_text(GTK_ENTRY(v->g_VentanaNodoEsclavoName));
-	ldfnodeattributes *attributes = v->db->GetNodeAttributes((uint8_t *)new_slave_name);
+	ldfnodeattributes *attributes = v->db->GetSlaveNode((uint8_t *)new_slave_name);
 
 	// Validate slave name
 	if (strlen(new_slave_name) == 0)
@@ -238,7 +238,7 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAcceptClicked(GtkButton *button, gp
 	gtk_dialog_response(GTK_DIALOG(v->handle), true);
 }
 
-void VentanaNodoEsclavo::OnVentanaNodoEsclavoCancelClicked(GtkButton *button, gpointer user_data)
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoCancel_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
