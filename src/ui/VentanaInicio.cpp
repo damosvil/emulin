@@ -37,15 +37,15 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseMasterTimebase);
 	G_PIN(PanelDatabaseMasterJitter);
 	G_PIN(PanelDatabaseSlavesList);
+	G_PIN(PanelDatabaseSlavesSelection);
 	G_PIN(PanelDatabaseSlavesNew);
 	G_PIN(PanelDatabaseSlavesEdit);
 	G_PIN(PanelDatabaseSlavesDelete);
-	g_PanelDatabaseSlavesListSelection = (GObject *)gtk_tree_view_get_selection(GTK_TREE_VIEW(g_PanelDatabaseSlavesList));
 	G_PIN(PanelDatabaseSignalsList);
+	G_PIN(PanelDatabaseSignalsSelection);
 	G_PIN(PanelDatabaseSignalsNew);
 	G_PIN(PanelDatabaseSignalsEdit);
 	G_PIN(PanelDatabaseSignalsDelete);
-	g_PanelDatabaseSignalsListSelection = (GObject *)gtk_tree_view_get_selection(GTK_TREE_VIEW(g_PanelDatabaseSignalsList));
 
 	// Connect Window signals
 	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -78,12 +78,12 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseSlavesEdit, clicked);
 	G_CONNECT(PanelDatabaseSlavesDelete, clicked);
 	G_CONNECT(PanelDatabaseSlavesList, row_activated);
-	G_CONNECT(PanelDatabaseSlavesListSelection, changed);
+	G_CONNECT(PanelDatabaseSlavesSelection, changed);
 	G_CONNECT(PanelDatabaseSignalsNew, clicked);
 	G_CONNECT(PanelDatabaseSignalsEdit, clicked);
 	G_CONNECT(PanelDatabaseSignalsDelete, clicked);
 	G_CONNECT(PanelDatabaseSignalsList, row_activated);
-	G_CONNECT(PanelDatabaseSignalsListSelection, changed);
+	G_CONNECT(PanelDatabaseSignalsSelection, changed);
 
 	// Load database
 	ReloadDatabase();
@@ -363,7 +363,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	gchar *slave_name;
 
 	// Get slave name
-	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSlavesListSelection), &model, &iter);
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSlavesSelection), &model, &iter);
 	gtk_tree_model_get(model, &iter, 0, &slave_name, -1);
 
 	// Create slave window
@@ -386,7 +386,7 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 	gchar *slave_name;
 
 	// Get slave name
-	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSlavesListSelection), &model, &iter);
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSlavesSelection), &model, &iter);
 	gtk_tree_model_get(model, &iter, 0, &slave_name, -1);
 
 	// Delete slave node
@@ -416,7 +416,7 @@ void VentanaInicio::OnPanelDatabaseSignalsList_row_activated(GtkTreeView *tree_v
 
 }
 
-void VentanaInicio::OnPanelDatabaseSignalsListSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *widget, gpointer user_data)
 {
 
 }
@@ -428,7 +428,7 @@ void VentanaInicio::OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_vi
 	gtk_widget_activate(GTK_WIDGET(v->g_PanelDatabaseSlavesEdit));
 }
 
-void VentanaInicio::OnPanelDatabaseSlavesListSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+void VentanaInicio::OnPanelDatabaseSlavesSelection_changed(GtkTreeSelection *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 

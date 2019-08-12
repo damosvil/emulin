@@ -32,15 +32,15 @@ private:
 	G_VAR(PanelDatabaseMasterTimebase);
 	G_VAR(PanelDatabaseMasterJitter);
 	G_VAR(PanelDatabaseSlavesList);
+	G_VAR(PanelDatabaseSlavesSelection);
 	G_VAR(PanelDatabaseSlavesNew);
 	G_VAR(PanelDatabaseSlavesEdit);
 	G_VAR(PanelDatabaseSlavesDelete);
-	GObject *g_PanelDatabaseSlavesListSelection;
 	G_VAR(PanelDatabaseSignalsList);
+	G_VAR(PanelDatabaseSignalsSelection);
 	G_VAR(PanelDatabaseSignalsNew);
 	G_VAR(PanelDatabaseSignalsEdit);
 	G_VAR(PanelDatabaseSignalsDelete);
-	GObject *g_PanelDatabaseSignalsListSelection;
 
 	// Processes
 	void ReloadDatabase();
@@ -61,12 +61,12 @@ private:
 	static void OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointer user_data);
 	static void OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data);
 	static void OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
-	static void OnPanelDatabaseSlavesListSelection_changed(GtkTreeSelection *widget, gpointer user_data);
+	static void OnPanelDatabaseSlavesSelection_changed(GtkTreeSelection *widget, gpointer user_data);
 	static void OnPanelDatabaseSignalsNew_clicked(GtkButton *button, gpointer user_data);
 	static void OnPanelDatabaseSignalsEdit_clicked(GtkButton *button, gpointer user_data);
 	static void OnPanelDatabaseSignalsDelete_clicked(GtkButton *button, gpointer user_data);
 	static void OnPanelDatabaseSignalsList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
-	static void OnPanelDatabaseSignalsListSelection_changed(GtkTreeSelection *widget, gpointer user_data);
+	static void OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *widget, gpointer user_data);
 
 public:
 	VentanaInicio(GtkBuilder *builder);
