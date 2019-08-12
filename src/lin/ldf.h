@@ -91,10 +91,13 @@ private:
 	void process_group_start(uint8_t *start);
 	void process_group_end(uint8_t *end);
 
+	static int SorterSignals(const void *a, const void *b);
+
 public:
 	ldf(const uint8_t *filename);
 	virtual ~ldf();
 
+	void SortData();
 	bool Validate(void);
 
 	lin_protocol_version_e GetLinProtocolVersion();
@@ -117,7 +120,6 @@ public:
 
 	ldfsignal *GetSignal(uint32_t ix);
 	uint32_t GetSignalsCount();
-
 
 };
 

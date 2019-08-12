@@ -249,6 +249,9 @@ void VentanaInicio::ReloadListSignals(ldf *db)
 	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSignalsList);
 	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
 
+	// Sort database data
+	db->SortData();
+
 	// Clear list store
 	gtk_list_store_clear(s);
 

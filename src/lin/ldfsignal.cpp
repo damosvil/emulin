@@ -120,7 +120,7 @@ void ldfsignal::ValidateUnicity(ldfsignal *signal, uint8_t **validation_messages
 	}
 }
 
-uint8_t *ldfsignal::GetName()
+const uint8_t *ldfsignal::GetName()
 {
 	return name;
 }
@@ -135,7 +135,7 @@ uint32_t ldfsignal::GetDefaultValue()
 	return default_value;
 }
 
-uint8_t *ldfsignal::GetPublisher()
+const uint8_t *ldfsignal::GetPublisher()
 {
 	return publisher;
 }
@@ -150,7 +150,19 @@ uint8_t *ldfsignal::GetSubscriber(uint32_t ix)
 	return subscribers[ix];
 }
 
+int ldfsignal::Compare(const ldfsignal *a, const ldfsignal *b)
+{
+	if (a->name == NULL) return -1;
+	if (b->name == NULL) return 1;
+	return strcmp((char *)a->name, (char *)b->name);
+}
 
+int ldfsignal::ComparePublisher(const ldfsignal *a, const ldfsignal *b)
+{
+	if (a->publisher == NULL) return -1;
+	if (b->publisher == NULL) return 1;
+	return strcmp((char *)a->publisher, (char *)b->publisher);
+}
 
 
 } /* namespace lin */

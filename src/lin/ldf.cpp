@@ -624,5 +624,18 @@ uint32_t ldf::GetSignalsCount()
 	return signals_count;
 }
 
+int ldf::SorterSignals(const void *a, const void *b)
+{
+	int res = ldfsignal::ComparePublisher(*(const ldfsignal **)a, *(const ldfsignal **)b);
+	if (res == 0) res = ldfsignal::Compare(*(const ldfsignal **)a, *(const ldfsignal **)b);
+	return res;
+}
+
+void ldf::SortData()
+{
+	// Sort signals
+	qsort(signals, signals_count, sizeof(signals[0]), SorterSignals);
+}
+
 
 } /* namespace ldf */
