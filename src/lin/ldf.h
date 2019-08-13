@@ -125,6 +125,8 @@ public:
 	void UpdateSignal(uint8_t *old_signal_name, ldfsignal *s);
 	void DeleteSignal(uint8_t *signal_name);
 
+	void UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name);
+
 };
 
 } /* namespace lin */

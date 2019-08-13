@@ -592,6 +592,12 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 		node_attributes[ix] = n;
 		break;
 	}
+
+	// Update slave node in signals
+	for (ix = 0; ix < signals_count; ix++)
+	{
+		signals[ix]->UpdateNodeName(old_slave_name, n->GetName());
+	}
 }
 
 void ldf::DeleteSlaveNode(uint8_t *slave_name)
@@ -622,6 +628,24 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 		for (;ix < node_attributes_count; ix++) node_attributes[ix] = node_attributes[ix + 1];
 
 		break;
+	}
+
+	// Delete signals that used the slave
+	for (ix = 0; ix < signals_count; )
+	{
+		bool in_use = strcmp((char *)slave_name, (char *)signals[ix]->GetPublisher()) == 0;
+		for (uint32_t jx = 0; !in_use && jx < signals[jx]->GetSubscribersCount(); jx++)
+			in_use = strcmp((char *)slave_name, (char *)signals[ix]->GetSubscriber(jx)) == 0;
+		if (!in_use)
+		{
+			ix++;
+			continue;
+		}
+
+		// Delete shuffle signals
+		signals_count--;
+		for (uint32_t jx = ix; jx < signals_count; jx++)
+			signals[jx] = signals[jx + 1];
 	}
 }
 
@@ -686,6 +710,19 @@ void ldf::DeleteSignal(uint8_t *signal_name)
 		break;
 	}
 }
+
+void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
+{
+	// Update node name in signals
+	for (uint32_t ix = 0; ix < signals_count; ix++)
+	{
+		signals[ix]->UpdateNodeName(old_name, new_name);
+	}
+
+	// Update master node name
+	master->SetName(new_name);
+}
+
 
 
 } /* namespace ldf */

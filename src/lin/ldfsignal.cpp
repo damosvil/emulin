@@ -150,6 +150,27 @@ uint8_t *ldfsignal::GetSubscriber(uint32_t ix)
 	return subscribers[ix];
 }
 
+void ldfsignal::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
+{
+	// Update publisher, otherwise update subscribers
+	if (strcmp((char *)old_name, (char *)publisher) == 0)
+	{
+		delete publisher;
+		publisher = (uint8_t *)strdup((char *)new_name);
+	}
+	else
+	{
+		for (int i = 0; i < subscribers_count; i++)
+		{
+			if (strcmp((char *)old_name, (char *)subscribers[i]) != 0) continue;
+
+			delete subscribers[i];
+			subscribers[i] = (uint8_t *)strdup((char *)new_name);
+			break;
+		}
+	}
+}
+
 int ldfsignal::Compare(const ldfsignal *a, const ldfsignal *b)
 {
 	if (a->name == NULL) return -1;

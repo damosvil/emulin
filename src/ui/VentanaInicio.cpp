@@ -322,8 +322,26 @@ void VentanaInicio::OnPanelDatabaseLinSpeed_changed(GtkCellEditable *widget, gpo
 void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
+	const char *new_master_name = gtk_entry_get_text(GTK_ENTRY(widget));
 
-	v->db->GetMasterNode()->SetName((uint8_t *)gtk_entry_get_text(GTK_ENTRY(widget)));
+	// Check that the identifier is not being used by a slave
+	if (v->db->GetSlaveNodeAttributes((uint8_t *)new_master_name) != NULL)
+	{
+		ShowErrorMessageBox(v->handle, "Master name won't be updated because identifier is in use by a slave");
+
+		// Undo changes
+		g_signal_handlers_block_matched(widget, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, v);
+		g_signal_handlers_block_matched(widget, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+		gtk_entry_set_text(GTK_ENTRY(widget), (gchar *)v->db->GetMasterNode()->GetName());
+		g_signal_handlers_unblock_matched(widget, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, v);
+		g_signal_handlers_unblock_matched(widget, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
+		return;
+	}
+
+	// Update node name and reload all lists
+	v->db->UpdateMasterNodeName(v->db->GetMasterNode()->GetName(), (uint8_t *)new_master_name);
+	v->db->SortData();
+	v->ReloadListSignals();
 }
 
 void VentanaInicio::OnPanelDatabaseMasterTimebase_changed(GtkCellEditable *widget, gpointer user_data)
@@ -353,7 +371,9 @@ void VentanaInicio::OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer
 	v->db->AddSlaveNode(na);
 
 	// Reload slaves list
+	v->db->SortData();
 	v->ReloadListSlaves();
+	v->ReloadListSignals();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointer user_data)
@@ -376,7 +396,9 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	v->db->UpdateSlaveNode((uint8_t *)slave_name, na);
 
 	// Reload slaves list
+	v->db->SortData();
 	v->ReloadListSlaves();
+	v->ReloadListSignals();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data)
@@ -394,7 +416,9 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 	v->db->DeleteSlaveNode((uint8_t *)slave_name);
 
 	// Reload slaves list
+	v->db->SortData();
 	v->ReloadListSlaves();
+	v->ReloadListSignals();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
