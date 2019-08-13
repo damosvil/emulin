@@ -45,9 +45,9 @@ private:
 	// Processes
 	void ReloadDatabase();
 	void PrepareListSlaves();
-	void ReloadListSlaves(ldf *db);
+	void ReloadListSlaves();
 	void PrepareListSignals();
-	void ReloadListSignals(ldf *db);
+	void ReloadListSignals();
 
 	// Signal events
 	static void OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data);

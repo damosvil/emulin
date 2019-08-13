@@ -119,7 +119,11 @@ public:
 	void DeleteSlaveNode(uint8_t *slave_name);
 
 	ldfsignal *GetSignal(uint32_t ix);
+	ldfsignal *GetSignal(uint8_t *signal_name);
 	uint32_t GetSignalsCount();
+	void AddSignal(ldfsignal *s);
+	void UpdateSignal(uint8_t *old_signal_name, ldfsignal *s);
+	void DeleteSignal(uint8_t *signal_name);
 
 };
 

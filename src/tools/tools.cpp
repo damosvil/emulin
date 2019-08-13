@@ -106,6 +106,12 @@ void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index)
 	gtk_tree_view_column_add_attribute(c, r, "text", column_index);
 }
 
+void TreeViewRemoveColumn(GtkTreeView *v, int ix)
+{
+	GtkTreeViewColumn *c = gtk_tree_view_get_column(v, ix);
+	if (c != NULL) gtk_tree_view_remove_column(v, c);
+}
+
 const char *GetStrPrintf(const char *format, ...)
 {
 	static char str[10000];

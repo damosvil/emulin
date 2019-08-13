@@ -990,6 +990,95 @@
       </object>
     </child>
   </object>
+  <object class="GtkDialog" id="VentanaSelectSignal">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Select signal</property>
+    <property name="resizable">False</property>
+    <property name="icon_name">network-wired</property>
+    <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="VentanaSelectSignalCancel">
+                <property name="label" translatable="yes">Cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="VentanaSelectSignalAccept">
+                <property name="label" translatable="yes">Accept</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFixed">
+            <property name="height_request">40</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Signal</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="VentanaSelectSignalName">
+                <property name="name">VentanaSenalPublisher</property>
+                <property name="width_request">210</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">5</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkDialog" id="VentanaSenal">
     <property name="width_request">320</property>
     <property name="height_request">400</property>
@@ -1060,7 +1149,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="VentanaSenalName">
                 <property name="name">VentanaSenalName</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -1085,7 +1174,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="VentanaSenalBitSize">
                 <property name="name">VentanaSenalBitSize</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -1110,7 +1199,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="VentanaSenalDefaultValue">
                 <property name="name">VentanaSenalDefaultValue</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -1135,7 +1224,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBoxText">
+              <object class="GtkComboBoxText" id="VentanaSenalPublisher">
                 <property name="name">VentanaSenalPublisher</property>
                 <property name="width_request">200</property>
                 <property name="visible">True</property>
@@ -1171,7 +1260,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="VentanaSenalSubscriberNew">
                 <property name="label" translatable="yes">New</property>
                 <property name="name">VentanaSenalSubscriberNew</property>
                 <property name="visible">True</property>
@@ -1184,7 +1273,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="VentanaSenalSubscriberEdit">
                 <property name="label" translatable="yes">Edit</property>
                 <property name="name">VentanaSenalSubscriberEdit</property>
                 <property name="visible">True</property>
@@ -1197,7 +1286,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="VentanaSenalSubscriberDelete">
                 <property name="label" translatable="yes">Delete</property>
                 <property name="name">VentanaSenalSubscriberDelete</property>
                 <property name="visible">True</property>

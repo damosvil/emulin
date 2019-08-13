@@ -77,6 +77,12 @@ ldf::~ldf()
 	while (validation_messages_count > 0) delete validation_messages[--validation_messages_count];
 }
 
+void ldf::SortData()
+{
+	// Sort signals
+	qsort(signals, signals_count, sizeof(signals[0]), SorterSignals);
+}
+
 bool ldf::Validate(void)
 {
 	uint32_t i, j;
@@ -483,6 +489,13 @@ void ldf::process_group_end(uint8_t *end)
 	}
 }
 
+int ldf::SorterSignals(const void *a, const void *b)
+{
+	int res = ldfsignal::ComparePublisher(*(const ldfsignal **)a, *(const ldfsignal **)b);
+	if (res == 0) res = ldfsignal::Compare(*(const ldfsignal **)a, *(const ldfsignal **)b);
+	return res;
+}
+
 lin_protocol_version_e ldf::GetLinProtocolVersion()
 {
 	return lin_protocol_version;
@@ -567,7 +580,6 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 		if (strcmp((char *)old_slave_name, (char *)slaves[ix]->GetName()) != 0) continue;
 
 		slaves[ix]->SetName(n->GetName());
-
 		break;
 	}
 
@@ -578,7 +590,6 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 
 		delete node_attributes[ix];
 		node_attributes[ix] = n;
-
 		break;
 	}
 }
@@ -619,22 +630,61 @@ ldfsignal *ldf::GetSignal(uint32_t ix)
 	return signals[ix];
 }
 
+ldfsignal *ldf::GetSignal(uint8_t *signal_name)
+{
+	if (signal_name == NULL)
+		return NULL;
+
+	for (uint32_t ix = 0; ix < signals_count; ix++)
+		if (strcmp((char *)signal_name, (char *)signals[ix]->GetName()) == 0)
+			return signals[ix];
+
+	return NULL;
+}
+
 uint32_t ldf::GetSignalsCount()
 {
 	return signals_count;
 }
 
-int ldf::SorterSignals(const void *a, const void *b)
+void ldf::AddSignal(ldfsignal *s)
 {
-	int res = ldfsignal::ComparePublisher(*(const ldfsignal **)a, *(const ldfsignal **)b);
-	if (res == 0) res = ldfsignal::Compare(*(const ldfsignal **)a, *(const ldfsignal **)b);
-	return res;
+	signals[signals_count++] = s;
 }
 
-void ldf::SortData()
+void ldf::UpdateSignal(uint8_t *old_signal_name, ldfsignal *s)
 {
-	// Sort signals
-	qsort(signals, signals_count, sizeof(signals[0]), SorterSignals);
+	if (old_signal_name == NULL)
+		return;
+
+	for (uint32_t ix = 0; ix < signals_count; ix++)
+	{
+		// Look for signal by ID
+		if (strcmp((char *)old_signal_name, (char *)signals[ix]->GetName()) != 0) continue;
+
+		// Delete signal
+		delete signals[ix];
+		signals[ix] = s;
+		break;
+	}
+}
+
+void ldf::DeleteSignal(uint8_t *signal_name)
+{
+	if (signal_name == NULL)
+		return;
+
+	for (uint32_t ix = 0; ix < signals_count; ix++)
+	{
+		// Look for signal by ID
+		if (strcmp((char *)signal_name, (char *)signals[ix]->GetName()) != 0) continue;
+
+		// Delete signal
+		delete signals[ix];
+		signals_count--;
+		for (; ix < signals_count; ix++) signals[ix] = signals[ix + 1];
+		break;
+	}
 }
 
 

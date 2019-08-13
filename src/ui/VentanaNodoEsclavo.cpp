@@ -44,18 +44,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNodeAttributes(slave_name) : NULL;
 	if (a != NULL)
 	{
-		// Name	G_PIN(VentanaNodoEsclavoProtocolVersion);
-		G_PIN(VentanaNodoEsclavoInitialNAD);
-		G_PIN(VentanaNodoEsclavoConfiguredNAD);
-		G_PIN(VentanaNodoEsclavoSupplierID);
-		G_PIN(VentanaNodoEsclavoFunctionID);
-		G_PIN(VentanaNodoEsclavoVariant);
-		G_PIN(VentanaNodoEsclavoResponseErrorSignal);
-		G_PIN(VentanaNodoEsclavoP2_min);
-		G_PIN(VentanaNodoEsclavoST_min);
-		G_PIN(VentanaNodoEsclavoN_As_timeout);
-		G_PIN(VentanaNodoEsclavoN_Cr_timeout);
-
+		// Name
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoName), (gchar *)a->GetName());
 
 		// Protocol version
@@ -93,6 +82,47 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 
 		// N_Cr_timeout
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout), GetStrPrintf("%d", a->GetN_Cr_timeout()));
+	}
+	else
+	{
+		// Name
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoName), "node");
+
+		// Protocol version
+		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion), GetLinProtocolVersionStringID(LIN_PROTOCOL_VERSION_2_1));
+
+		// Initial NAD
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD), "0xFF");
+
+		// Configured NAD
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoConfiguredNAD), "0xFF");
+
+		// Supplier ID
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoSupplierID), "0x0000");
+
+		// Function ID
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoFunctionID), "0x0000");
+
+		// Variant
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant), "0x00");
+
+		// Response error signal
+		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal));
+		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal), "", "None");
+		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal), "");
+		// TODO: Load this list with all 1 bit signals published by this node. Leave this way for now
+
+		// P2 min
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min), "50");
+
+		// ST min
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), "0");
+
+		// N_As_timeout
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_As_timeout), "1000");
+
+		// N_Cr_timeout
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout), "1000");
 	}
 
 	// Connect text fields
@@ -213,25 +243,23 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, g
 		ShowErrorMessageBox(v->handle, "Incorrect slave name.");
 		return;
 	}
-
-	// Validate node name
-	if (v->slave_name == NULL)
+	else if (v->slave_name == NULL && attributes != NULL)
 	{
-		if (attributes != NULL)
-		{
-			// Identifier in use
-			ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use.", new_slave_name);
-			return;
-		}
+		// Identifier in use
+		ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use.", new_slave_name);
+		return;
 	}
-	else
+	else if (v->slave_name != NULL && strcmp(new_slave_name, (char *)v->slave_name) != 0 && strcmp(new_slave_name, (char *)v->db->GetMasterNode()->GetName()) == 0)
 	{
-		if (strcmp(new_slave_name, (const char *)v->slave_name) != 0 && attributes != NULL)
-		{
-			// Identifier in use
-			ShowErrorMessageBox(v->handle, "Slave name changed to another one that '%s' is already in use.", new_slave_name);
-			return;
-		}
+		// Identifier in use
+		ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use by master node.", new_slave_name);
+		return;
+	}
+	else if (v->slave_name != NULL && strcmp(new_slave_name, (char *)v->slave_name) != 0 && attributes != NULL)
+	{
+		// Identifier in use
+		ShowErrorMessageBox(v->handle, "Slave name changed to another one that '%s' is already in use.", new_slave_name);
+		return;
 	}
 
 	// Return true

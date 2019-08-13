@@ -11,6 +11,7 @@
 #include "ManagerConfig.h"
 #include "VentanaInicio.h"
 #include "VentanaNodoEsclavo.h"
+#include "VentanaSenal.h"
 
 
 using namespace managers;
@@ -140,10 +141,10 @@ void VentanaInicio::ReloadDatabase()
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f));
 
 	// Slaves list
-	ReloadListSlaves(db);
+	ReloadListSlaves();
 
 	// Signals list
-	ReloadListSignals(db);
+	ReloadListSignals();
 
 	// Play all signal handlers
 	G_PLAY_DATA(PanelConfiguracionDatabase, this);
@@ -180,7 +181,7 @@ void VentanaInicio::PrepareListSlaves()
 	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesDelete), FALSE);
 }
 
-void VentanaInicio::ReloadListSlaves(ldf *db)
+void VentanaInicio::ReloadListSlaves()
 {
 	uint32_t ix;
 	GtkTreeIter it;
@@ -242,7 +243,7 @@ void VentanaInicio::PrepareListSignals()
 	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSignalsDelete), FALSE);
 }
 
-void VentanaInicio::ReloadListSignals(ldf *db)
+void VentanaInicio::ReloadListSignals()
 {
 	uint32_t ix;
 	GtkTreeIter it;
@@ -352,7 +353,7 @@ void VentanaInicio::OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer
 	v->db->AddSlaveNode(na);
 
 	// Reload slaves list
-	v->ReloadListSlaves(v->db);
+	v->ReloadListSlaves();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointer user_data)
@@ -375,7 +376,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	v->db->UpdateSlaveNode((uint8_t *)slave_name, na);
 
 	// Reload slaves list
-	v->ReloadListSlaves(v->db);
+	v->ReloadListSlaves();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data)
@@ -393,32 +394,7 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 	v->db->DeleteSlaveNode((uint8_t *)slave_name);
 
 	// Reload slaves list
-	v->ReloadListSlaves(v->db);
-}
-
-void VentanaInicio::OnPanelDatabaseSignalsNew_clicked(GtkButton *button, gpointer user_data)
-{
-
-}
-
-void VentanaInicio::OnPanelDatabaseSignalsEdit_clicked(GtkButton *button, gpointer user_data)
-{
-
-}
-
-void VentanaInicio::OnPanelDatabaseSignalsDelete_clicked(GtkButton *button, gpointer user_data)
-{
-
-}
-
-void VentanaInicio::OnPanelDatabaseSignalsList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
-{
-
-}
-
-void VentanaInicio::OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *widget, gpointer user_data)
-{
-
+	v->ReloadListSlaves();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
@@ -435,6 +411,76 @@ void VentanaInicio::OnPanelDatabaseSlavesSelection_changed(GtkTreeSelection *wid
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
 	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSlavesEdit), enable);
 	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSlavesDelete), enable);
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsNew_clicked(GtkButton *button, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	// Read signal from the user
+	VentanaSenal w(v->builder, v->db, NULL);
+	ldfsignal *s = w.ShowModal(v->handle);
+	if (s == NULL) return;
+
+	// Store the new signal
+	v->db->AddSignal(s);
+	v->db->SortData();
+	v->ReloadListSignals();
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsEdit_clicked(GtkButton *button, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *signal_name;
+
+	// Get signal name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSignalsSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &signal_name, -1);
+
+	// Read signal from the user
+	VentanaSenal w(v->builder, v->db, signal_name);
+	ldfsignal *s = w.ShowModal(v->handle);
+	if (s == NULL) return;
+
+	// Update signal
+	v->db->UpdateSignal((uint8_t *)signal_name, s);
+	v->db->SortData();
+	v->ReloadListSignals();
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsDelete_clicked(GtkButton *button, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *signal_name;
+
+	// Get signal name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSignalsSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &signal_name, -1);
+
+	// Update the signal
+	v->db->DeleteSignal((uint8_t *)signal_name);
+	v->db->SortData();
+	v->ReloadListSignals();
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	gtk_widget_activate(GTK_WIDGET(v->g_PanelDatabaseSignalsEdit));
+}
+
+void VentanaInicio::OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSignalsEdit), enable);
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSignalsDelete), enable);
 }
 
 
