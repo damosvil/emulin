@@ -657,12 +657,12 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 	}
 }
 
-ldfsignal *ldf::GetSignal(uint32_t ix)
+ldfsignal *ldf::GetSignalByIndex(uint32_t ix)
 {
 	return signals[ix];
 }
 
-ldfsignal *ldf::GetSignal(uint8_t *signal_name)
+ldfsignal *ldf::GetSignalByName(uint8_t *signal_name)
 {
 	if (signal_name == NULL)
 		return NULL;
@@ -699,6 +699,8 @@ void ldf::UpdateSignal(uint8_t *old_signal_name, ldfsignal *s)
 		signals[ix] = s;
 		break;
 	}
+
+	// TODO:: Update signal in all frames
 }
 
 void ldf::DeleteSignal(uint8_t *signal_name)
@@ -717,6 +719,8 @@ void ldf::DeleteSignal(uint8_t *signal_name)
 		for (; ix < signals_count; ix++) signals[ix] = signals[ix + 1];
 		break;
 	}
+
+	// TODO:: Delete signal from all frames
 }
 
 void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
@@ -731,14 +735,50 @@ void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
 	master->SetName(new_name);
 }
 
-ldfframe *ldf::GetFrame(uint32_t ix)
+ldfframe *ldf::GetFrameByIndex(uint32_t ix)
 {
 	return frames[ix];
+}
+
+ldfframe *ldf::GetFrameByName(uint8_t *frame_name)
+{
+	if (frame_name == NULL)
+		return NULL;
+
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+		if (strcmp((char *)frame_name, (char *)frames[ix]->GetName()) == 0)
+			return frames[ix];
+
+	return NULL;
+}
+
+ldfframe *ldf::GetFrameById(uint8_t frame_id)
+{
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+		if (frames[ix]->GetId() == frame_id)
+			return frames[ix];
+
+	return NULL;
 }
 
 uint32_t ldf::GetFramesCount()
 {
 	return frames_count;
+}
+
+void ldf::AddFrame(ldfframe *f)
+{
+	frames[frames_count++] = f;
+}
+
+void ldf::UpdateFrame(uint8_t *old_frame_name, ldfframe *f)
+{
+	// TODO::
+}
+
+void ldf::DeleteFrame(uint8_t *frame_name)
+{
+	// TODO::
 }
 
 

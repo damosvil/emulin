@@ -46,7 +46,7 @@ VentanaSenal::VentanaSenal(GtkBuilder *builder, ldf *db, const char *signal_name
 	PrepareListSubscribers();
 
 	// Fill fields with data
-	ldfsignal *s = db->GetSignal((uint8_t *)signal_name);
+	ldfsignal *s = db->GetSignalByName((uint8_t *)signal_name);
 	if (s != NULL)
 	{
 		// Name
@@ -361,12 +361,12 @@ void VentanaSenal::OnVentanaSenalAccept_clicked(GtkButton *button, gpointer user
 		ShowErrorMessageBox(v->handle, "Signal name length shall not be 0.");
 		return;
 	}
-	else if (v->signal_name == NULL && v->db->GetSignal((uint8_t *)new_signal_name) != NULL)
+	else if (v->signal_name == NULL && v->db->GetSignalByName((uint8_t *)new_signal_name) != NULL)
 	{
 		ShowErrorMessageBox(v->handle, "Signal name '%s' is already in use.", new_signal_name);
 		return;
 	}
-	else if (v->signal_name != NULL && strcmp((char *)v->signal_name, new_signal_name) != 0 && v->db->GetSignal((uint8_t *)new_signal_name) != NULL)
+	else if (v->signal_name != NULL && strcmp((char *)v->signal_name, new_signal_name) != 0 && v->db->GetSignalByName((uint8_t *)new_signal_name) != NULL)
 	{
 		ShowErrorMessageBox(v->handle, "Signal name changed to '%s' that is already in use.", new_signal_name);
 		return;

@@ -146,6 +146,31 @@ void ShowErrorMessageBox(GObject *parent, const char *format, ...)
 	gtk_widget_destroy(d);
 }
 
+bool ShowChooseMessageBox(GObject *parent, const char *format, ...)
+{
+	bool res;
+	static char str[10000];
+	va_list argptr;
+
+	va_start(argptr, format);
+	vsprintf(str, format, argptr);
+	va_end(argptr);
+
+	GtkWidget *d = gtk_message_dialog_new(
+			GTK_WINDOW(parent),
+			GTK_DIALOG_DESTROY_WITH_PARENT,
+			GTK_MESSAGE_WARNING,
+			GTK_BUTTONS_YES_NO,
+			str
+			);
+
+	gtk_window_set_title(GTK_WINDOW(d), "Error");
+	res = gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_YES;
+	gtk_widget_destroy(d);
+
+	return res;
+}
+
 int32_t MultiParseInt(const char *p)
 {
 	return (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);

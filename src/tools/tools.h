@@ -29,6 +29,7 @@
 #define G_DISCONNECT_FUNC(A, B)	g_signal_handlers_disconnect_matched(g_##A, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)B, 0)
 #define G_DISCONNECT_DATA(A, B)	g_signal_handlers_disconnect_matched(g_##A, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, B)
 
+#define INT_1_8_EXPR			(gpointer)"^[1-8]{1}$"
 #define INT3_EXPR				(gpointer)"^[0-9]{1,3}$"
 #define INT5_EXPR				(gpointer)"^[0-9]{1,5}$"
 #define NAME_EXPR				(gpointer)"^[A-Za-z]{1}([A-Za-z_0-9])+$"
@@ -48,6 +49,7 @@ void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index);
 void TreeViewRemoveColumn(GtkTreeView *v, int ix);
 const char *GetStrPrintf(const char *format, ...);
 void ShowErrorMessageBox(GObject *parent, const char *format, ...);
+bool ShowChooseMessageBox(GObject *parent, const char *format, ...);
 int32_t MultiParseInt(const char *p);
 
 }

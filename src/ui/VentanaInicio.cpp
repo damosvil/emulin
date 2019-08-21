@@ -12,6 +12,7 @@
 #include "VentanaInicio.h"
 #include "VentanaNodoEsclavo.h"
 #include "VentanaSenal.h"
+#include "VentanaFrame.h"
 
 
 using namespace managers;
@@ -267,7 +268,7 @@ void VentanaInicio::ReloadListSignals()
 	// Add data to list store
 	for (ix = 0; ix < db->GetSignalsCount(); ix++)
 	{
-		ldfsignal *signal = db->GetSignal(ix);
+		ldfsignal *signal = db->GetSignalByIndex(ix);
 
 		// Signal name
 		gtk_list_store_append(s, &it);
@@ -329,7 +330,7 @@ void VentanaInicio::ReloadListFrames()
 	// Add data to list store
 	for (ix = 0; ix < db->GetFramesCount(); ix++)
 	{
-		ldfframe *frame = db->GetFrame(ix);
+		ldfframe *frame = db->GetFrameByIndex(ix);
 
 		// Frame name
 		gtk_list_store_append(s, &it);
@@ -579,7 +580,18 @@ void VentanaInicio::OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *wi
 
 void VentanaInicio::OnPanelDatabaseFramesNew_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
 
+	// Read signal from the user
+	VentanaFrame w(v->builder, v->db, NULL);
+	ldfframe *s = w.ShowModal(v->handle);
+	if (s == NULL) return;
+
+	// Store the new signal
+	v->db->AddFrame(s);
+	v->db->SortData();
+	v->ReloadListSignals();
+	v->ReloadListFrames();
 }
 
 void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointer user_data)

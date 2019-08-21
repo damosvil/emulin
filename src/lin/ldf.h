@@ -120,8 +120,8 @@ public:
 	void UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n);
 	void DeleteSlaveNode(uint8_t *slave_name);
 
-	ldfsignal *GetSignal(uint32_t ix);
-	ldfsignal *GetSignal(uint8_t *signal_name);
+	ldfsignal *GetSignalByIndex(uint32_t ix);
+	ldfsignal *GetSignalByName(uint8_t *signal_name);
 	uint32_t GetSignalsCount();
 	void AddSignal(ldfsignal *s);
 	void UpdateSignal(uint8_t *old_signal_name, ldfsignal *s);
@@ -129,8 +129,13 @@ public:
 
 	void UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name);
 
-	ldfframe *GetFrame(uint32_t ix);
+	ldfframe *GetFrameByIndex(uint32_t ix);
+	ldfframe *GetFrameByName(uint8_t *frame_name);
+	ldfframe *GetFrameById(uint8_t frame_id);
 	uint32_t GetFramesCount();
+	void AddFrame(ldfframe *f);
+	void UpdateFrame(uint8_t *old_frame_name, ldfframe *f);
+	void DeleteFrame(uint8_t *frame_name);
 
 };
 
