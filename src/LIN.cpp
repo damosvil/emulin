@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, "src/ui/Emulin.glade", &error);
 
-	// Change locale because gtk changes it to the system one
+	// Change locale because GTK changes it to the system one
 	setlocale(LC_ALL, "en_US");
 
 	// Instantiate VentanaInicio

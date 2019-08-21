@@ -40,8 +40,8 @@ public:
 
 	void UpdateNodeName(uint8_t *old_name, uint8_t *new_name);
 
-	static int Compare(const ldfsignal *a, const ldfsignal *b);
-	static int ComparePublisher(const ldfsignal *a, const ldfsignal *b);
+	static int32_t Compare(const ldfsignal *a, const ldfsignal *b);
+	static int32_t ComparePublisher(const ldfsignal *a, const ldfsignal *b);
 
 };
 

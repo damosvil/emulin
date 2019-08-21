@@ -47,6 +47,11 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseSignalsNew);
 	G_PIN(PanelDatabaseSignalsEdit);
 	G_PIN(PanelDatabaseSignalsDelete);
+	G_PIN(PanelDatabaseFramesList);
+	G_PIN(PanelDatabaseFramesSelection);
+	G_PIN(PanelDatabaseFramesNew);
+	G_PIN(PanelDatabaseFramesEdit);
+	G_PIN(PanelDatabaseFramesDelete);
 
 	// Connect Window signals
 	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -57,11 +62,10 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	gtk_file_filter_add_pattern(p, "*.ldf");
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), p);
 
-	// Initialize slaves list view
+	// Initialize list views
 	PrepareListSlaves();
-
-	// Initialize signals list view
 	PrepareListSignals();
+	PrepareListFrames();
 
 	// Connect widget signals
 	G_CONNECT(PanelConfiguracionDatabase, file_set);
@@ -85,6 +89,11 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseSignalsDelete, clicked);
 	G_CONNECT(PanelDatabaseSignalsList, row_activated);
 	G_CONNECT(PanelDatabaseSignalsSelection, changed);
+	G_CONNECT(PanelDatabaseFramesNew, clicked);
+	G_CONNECT(PanelDatabaseFramesEdit, clicked);
+	G_CONNECT(PanelDatabaseFramesDelete, clicked);
+	G_CONNECT(PanelDatabaseFramesList, row_activated);
+	G_CONNECT(PanelDatabaseFramesSelection, changed);
 
 	// Load database
 	ReloadDatabase();
@@ -140,11 +149,13 @@ void VentanaInicio::ReloadDatabase()
 	// Master's jitter
 	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f));
 
-	// Slaves list
-	ReloadListSlaves();
+	// Sort database data
+	db->SortData();
 
-	// Signals list
+	// Reload lists
+	ReloadListSlaves();
 	ReloadListSignals();
+	ReloadListFrames();
 
 	// Play all signal handlers
 	G_PLAY_DATA(PanelConfiguracionDatabase, this);
@@ -250,9 +261,6 @@ void VentanaInicio::ReloadListSignals()
 	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSignalsList);
 	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
 
-	// Sort database data
-	db->SortData();
-
 	// Clear list store
 	gtk_list_store_clear(s);
 
@@ -282,6 +290,68 @@ void VentanaInicio::ReloadListSignals()
 		{
 			if (jx != 0) strcat(str, ", ");
 			strcat(str, (char *)signal->GetSubscriber(jx));
+		}
+		gtk_list_store_set(s, &it, 4, str, -1);
+	}
+}
+
+void VentanaInicio::PrepareListFrames()
+{
+	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseFramesList);
+
+	// Add columns
+	TreeViewAddColumn(v, "Frame", 0);
+	TreeViewAddColumn(v, "ID", 1);
+	TreeViewAddColumn(v, "Publisher", 2);
+	TreeViewAddColumn(v, "Size", 3);
+	TreeViewAddColumn(v, "Signals", 4);
+
+	// Set model and unmanage reference from this code
+	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
+	g_object_unref(s);
+
+	// Disable edit and delete buttons
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseFramesEdit), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseFramesDelete), FALSE);
+}
+
+void VentanaInicio::ReloadListFrames()
+{
+	uint32_t ix;
+	GtkTreeIter it;
+	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseFramesList);
+	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
+
+	// Clear list store
+	gtk_list_store_clear(s);
+
+	// Add data to list store
+	for (ix = 0; ix < db->GetFramesCount(); ix++)
+	{
+		ldfframe *frame = db->GetFrame(ix);
+
+		// Frame name
+		gtk_list_store_append(s, &it);
+		gtk_list_store_set(s, &it, 0, frame->GetName(), -1);
+
+		// ID
+		gtk_list_store_set(s, &it, 1, GetStrPrintf("%d", frame->GetId()), -1);
+
+		// Publisher
+		gtk_list_store_set(s, &it, 2, frame->GetPublisher(), -1);
+
+		// Size
+		gtk_list_store_set(s, &it, 3, GetStrPrintf("%d", frame->GetSize()), -1);
+
+		// Signals
+		char str[100000];
+		uint32_t jx;
+		str[0] = 0;
+		for (jx = 0; jx < frame->GetSignalsCount(); jx++)
+		{
+			if (jx != 0) strcat(str, ", ");
+			strcat(str, (char *)frame->GetSignal(jx)->GetName());
 		}
 		gtk_list_store_set(s, &it, 4, str, -1);
 	}
@@ -505,6 +575,37 @@ void VentanaInicio::OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *wi
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
 	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSignalsEdit), enable);
 	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSignalsDelete), enable);
+}
+
+void VentanaInicio::OnPanelDatabaseFramesNew_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseFramesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	gtk_widget_activate(GTK_WIDGET(v->g_PanelDatabaseFramesEdit));
+}
+
+void VentanaInicio::OnPanelDatabaseFramesSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseFramesEdit), enable);
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseFramesDelete), enable);
 }
 
 

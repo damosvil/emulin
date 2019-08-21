@@ -81,6 +81,7 @@ void ldf::SortData()
 {
 	// Sort signals
 	qsort(signals, signals_count, sizeof(signals[0]), SorterSignals);
+	qsort(frames, frames_count, sizeof(frames[0]), SorterFrames);
 }
 
 bool ldf::Validate(void)
@@ -491,8 +492,15 @@ void ldf::process_group_end(uint8_t *end)
 
 int ldf::SorterSignals(const void *a, const void *b)
 {
-	int res = ldfsignal::ComparePublisher(*(const ldfsignal **)a, *(const ldfsignal **)b);
+	int32_t res = ldfsignal::ComparePublisher(*(const ldfsignal **)a, *(const ldfsignal **)b);
 	if (res == 0) res = ldfsignal::Compare(*(const ldfsignal **)a, *(const ldfsignal **)b);
+	return res;
+}
+
+int ldf::SorterFrames(const void *a, const void *b)
+{
+	int32_t res = ldfframe::ComparePublisher(*(const ldfframe **)a, *(const ldfframe **)b);
+	if (res == 0) res = ldfframe::CompareId(*(const ldfframe **)a, *(const ldfframe **)b);
 	return res;
 }
 
@@ -723,6 +731,15 @@ void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
 	master->SetName(new_name);
 }
 
+ldfframe *ldf::GetFrame(uint32_t ix)
+{
+	return frames[ix];
+}
+
+uint32_t ldf::GetFramesCount()
+{
+	return frames_count;
+}
 
 
 } /* namespace ldf */

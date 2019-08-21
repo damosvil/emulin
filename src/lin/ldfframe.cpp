@@ -75,6 +75,31 @@ uint8_t *ldfframe::GetName()
 	return name;
 }
 
+uint8_t ldfframe::GetId()
+{
+	return id;
+}
+
+uint8_t *ldfframe::GetPublisher()
+{
+	return publisher;
+}
+
+uint8_t ldfframe::GetSize()
+{
+	return size;
+}
+
+ldfframesignal *ldfframe::GetSignal(uint32_t ix)
+{
+	return signals[ix];
+}
+
+uint32_t ldfframe::GetSignalsCount()
+{
+	return signals_count;
+}
+
 void ldfframe::ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
 {
 	char str[1000];
@@ -179,6 +204,18 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
 		}
 	}
+}
+
+int32_t ldfframe::CompareId(const ldfframe *a, const ldfframe *b)
+{
+	return a->id - b->id;
+}
+
+int32_t ldfframe::ComparePublisher(const ldfframe *a, const ldfframe *b)
+{
+	if (a->publisher == NULL) return -1;
+	if (b->publisher == NULL) return 1;
+	return strcmp((char *)a->publisher, (char *)b->publisher);
 }
 
 

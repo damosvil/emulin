@@ -35,11 +35,18 @@ public:
 
 	void AddSignal(ldfframesignal *signal);
 	uint8_t *GetName();
+	uint8_t GetId();
+	uint8_t *GetPublisher();
+	uint8_t GetSize();
+	ldfframesignal *GetSignal(uint32_t ix);
+	uint32_t GetSignalsCount();
 
 	void ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateUnicity(ldfframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
+	static int32_t CompareId(const ldfframe *a, const ldfframe *b);
+	static int32_t ComparePublisher(const ldfframe *a, const ldfframe *b);
 };
 
 } /* namespace lin */

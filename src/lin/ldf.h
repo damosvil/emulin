@@ -52,6 +52,7 @@ private:
 
 	// Nodes
 	ldfmasternode *master;
+
 	ldfnode *slaves[128];
 	uint8_t slaves_count;
 
@@ -92,6 +93,7 @@ private:
 	void process_group_end(uint8_t *end);
 
 	static int SorterSignals(const void *a, const void *b);
+	static int SorterFrames(const void *a, const void *b);
 
 public:
 	ldf(const uint8_t *filename);
@@ -126,6 +128,9 @@ public:
 	void DeleteSignal(uint8_t *signal_name);
 
 	void UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name);
+
+	ldfframe *GetFrame(uint32_t ix);
+	uint32_t GetFramesCount();
 
 };
 

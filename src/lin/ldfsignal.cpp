@@ -171,14 +171,14 @@ void ldfsignal::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
 	}
 }
 
-int ldfsignal::Compare(const ldfsignal *a, const ldfsignal *b)
+int32_t ldfsignal::Compare(const ldfsignal *a, const ldfsignal *b)
 {
 	if (a->name == NULL) return -1;
 	if (b->name == NULL) return 1;
 	return strcmp((char *)a->name, (char *)b->name);
 }
 
-int ldfsignal::ComparePublisher(const ldfsignal *a, const ldfsignal *b)
+int32_t ldfsignal::ComparePublisher(const ldfsignal *a, const ldfsignal *b)
 {
 	if (a->publisher == NULL) return -1;
 	if (b->publisher == NULL) return 1;
