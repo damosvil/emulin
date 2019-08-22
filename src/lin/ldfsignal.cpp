@@ -155,6 +155,15 @@ bool ldfsignal::NameIs(uint8_t *name)
 	return strcmp((char *)name, (char *)this->name) == 0;
 }
 
+bool ldfsignal::UsesSlave(uint8_t *slave_name)
+{
+	bool in_use = strcmp((char *)slave_name, (char *)publisher) == 0;
+	for (uint32_t jx = 0; !in_use && jx < subscribers_count; jx++)
+		in_use = strcmp((char *)slave_name, (char *)subscribers[jx]) == 0;
+
+	return in_use;
+}
+
 void ldfsignal::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
 {
 	// Update publisher, otherwise update subscribers

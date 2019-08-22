@@ -206,7 +206,7 @@ void VentanaInicio::ReloadListSlaves()
 	// Add data to list store
 	for (ix = 0; ix < db->GetSlaveNodesCount(); ix++)
 	{
-		ldfnodeattributes *a = db->GetSlaveNodeAttributes(db->GetSlaveNode(ix)->GetName());
+		ldfnodeattributes *a = db->GetSlaveNodeAttributesByName(db->GetSlaveNode(ix)->GetName());
 
 		// Slave name
 		gtk_list_store_append(s, &it);
@@ -242,7 +242,7 @@ void VentanaInicio::PrepareListSignals()
 	// Add columns
 	TreeViewAddColumn(v, "Signal", 0);
 	TreeViewAddColumn(v, "Size", 1);
-	TreeViewAddColumn(v, "I.Val", 2);
+	TreeViewAddColumn(v, "Ini.Val", 2);
 	TreeViewAddColumn(v, "Publisher", 3);
 	TreeViewAddColumn(v, "Subscribers", 4);
 
@@ -396,7 +396,7 @@ void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, g
 	const char *new_master_name = gtk_entry_get_text(GTK_ENTRY(widget));
 
 	// Check that the identifier is not being used by a slave
-	if (v->db->GetSlaveNodeAttributes((uint8_t *)new_master_name) != NULL)
+	if (v->db->GetSlaveNodeAttributesByName((uint8_t *)new_master_name) != NULL)
 	{
 		ShowErrorMessageBox(v->handle, "Master name won't be updated because identifier is in use by a slave");
 
@@ -470,6 +470,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	v->db->SortData();
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
+	v->ReloadListFrames();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data)
@@ -483,6 +484,10 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSlavesSelection), &model, &iter);
 	gtk_tree_model_get(model, &iter, 0, &slave_name, -1);
 
+	// Ask before deleting
+	if (!ShowChooseMessageBox(v->handle, "Delete slave '%s'?", slave_name))
+		return;
+
 	// Delete slave node
 	v->db->DeleteSlaveNode((uint8_t *)slave_name);
 
@@ -490,6 +495,7 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 	v->db->SortData();
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
+	v->ReloadListFrames();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
@@ -542,7 +548,9 @@ void VentanaInicio::OnPanelDatabaseSignalsEdit_clicked(GtkButton *button, gpoint
 	// Update signal
 	v->db->UpdateSignal((uint8_t *)signal_name, s);
 	v->db->SortData();
+	v->ReloadListSlaves();
 	v->ReloadListSignals();
+	v->ReloadListFrames();
 }
 
 void VentanaInicio::OnPanelDatabaseSignalsDelete_clicked(GtkButton *button, gpointer user_data)
@@ -556,10 +564,16 @@ void VentanaInicio::OnPanelDatabaseSignalsDelete_clicked(GtkButton *button, gpoi
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseSignalsSelection), &model, &iter);
 	gtk_tree_model_get(model, &iter, 0, &signal_name, -1);
 
-	// Update the signal
+	// Ask before deleting
+	if (!ShowChooseMessageBox(v->handle, "Delete signal '%s'?", signal_name))
+		return;
+
+	// Delete the signal
 	v->db->DeleteSignal((uint8_t *)signal_name);
 	v->db->SortData();
+	v->ReloadListSlaves();
 	v->ReloadListSignals();
+	v->ReloadListFrames();
 }
 
 void VentanaInicio::OnPanelDatabaseSignalsList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
@@ -592,16 +606,52 @@ void VentanaInicio::OnPanelDatabaseFramesNew_clicked(GtkButton *button, gpointer
 	v->db->SortData();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
+	// TODO: Reload schedule list
 }
 
 void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *frame_name;
 
+	// Get signal name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseFramesSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &frame_name, -1);
+
+	// Read signal from the user
+	VentanaFrame w(v->builder, v->db, frame_name);
+	ldfframe *f = w.ShowModal(v->handle);
+	if (f == NULL) return;
+
+	// Update frame
+	v->db->UpdateFrame((uint8_t *)frame_name, f);
+	v->db->SortData();
+	v->ReloadListFrames();
+	// TODO: Reload schedule list
 }
 
 void VentanaInicio::OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *frame_name;
 
+	// Get frame name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseFramesSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &frame_name, -1);
+
+	// Ask before deleting
+	if (!ShowChooseMessageBox(v->handle, "Delete frame '%s'?", frame_name))
+		return;
+
+	// Delete the frame
+	v->db->DeleteFrame((uint8_t *)frame_name);
+	v->db->SortData();
+	v->ReloadListSignals();
+	// TODO: Reload schedule list
 }
 
 void VentanaInicio::OnPanelDatabaseFramesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)

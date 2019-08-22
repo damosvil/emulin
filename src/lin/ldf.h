@@ -95,6 +95,11 @@ private:
 	static int SorterSignals(const void *a, const void *b);
 	static int SorterFrames(const void *a, const void *b);
 
+	void DeleteSlaveNodeByIndex(uint32_t ix);
+	void DeleteSlaveNodeAttributesByIndex(uint32_t ix);
+	void DeleteSignalByIndex(uint32_t ix);
+	void DeleteFrameByIndex(uint32_t ix);
+
 public:
 	ldf(const uint8_t *filename);
 	virtual ~ldf();
@@ -115,7 +120,7 @@ public:
 	ldfnode *GetSlaveNode(uint32_t ix);
 	uint32_t GetSlaveNodesCount();
 
-	ldfnodeattributes *GetSlaveNodeAttributes(uint8_t *slave_name);
+	ldfnodeattributes *GetSlaveNodeAttributesByName(uint8_t *slave_name);
 	void AddSlaveNode(ldfnodeattributes *n);
 	void UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n);
 	void DeleteSlaveNode(uint8_t *slave_name);

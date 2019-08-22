@@ -39,6 +39,7 @@ public:
 	uint8_t *GetSubscriber(uint32_t ix);
 
 	bool NameIs(uint8_t *name);
+	bool UsesSlave(uint8_t *slave_name);
 	void UpdateNodeName(uint8_t *old_name, uint8_t *new_name);
 
 	static int32_t Compare(const ldfsignal *a, const ldfsignal *b);

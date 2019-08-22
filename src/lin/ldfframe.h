@@ -41,9 +41,12 @@ public:
 	uint32_t GetSignalsCount();
 
 	bool NameIs(const uint8_t *name);
+	bool PublisherIs(const uint8_t *publisher);
 	void AddSignal(ldfframesignal *signal);
+	void DeleteSignalByIndex(uint32_t ix);
 	void DeleteSignalByName(uint8_t *signal_name);
 	void UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *new_signal_name);
+	void UpdateNodeName(uint8_t *old_name, uint8_t *new_name);
 
 	void ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateUnicity(ldfframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count);

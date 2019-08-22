@@ -105,6 +105,18 @@ bool ldfframe::NameIs(const uint8_t *name)
 	return strcmp((char*)name, (char*)this->name) == 0;
 }
 
+bool ldfframe::PublisherIs(const uint8_t *publisher)
+{
+	return strcmp((char*)publisher, (char*)this->publisher) == 0;
+}
+
+void ldfframe::DeleteSignalByIndex(uint32_t ix)
+{
+	delete signals[ix];
+	signals_count--;
+	for (; ix < signals_count; ix++) signals[ix] = signals[ix + 1];
+}
+
 void ldfframe::DeleteSignalByName(uint8_t *signal_name)
 {
 	for (uint32_t ix = 0; ix < signals_count; ix++)
@@ -114,9 +126,7 @@ void ldfframe::DeleteSignalByName(uint8_t *signal_name)
 			continue;
 
 		// Move back all signals one place
-		delete signals[ix];
-		signals_count--;
-		for (; ix < signals_count; ix++) signals[ix] = signals[ix + 1];
+		DeleteSignalByIndex(ix);
 		break;
 	}
 }
@@ -133,6 +143,15 @@ void ldfframe::UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *n
 		signals[ix]->SetName(new_signal_name);
 		break;
 	}
+}
+
+void ldfframe::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
+{
+	if (strcmp((char*)old_name, (char*)publisher) != 0)
+		return;
+
+	delete publisher;
+	publisher = (uint8_t *)strdup((char *)new_name);
 }
 
 void ldfframe::ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count)

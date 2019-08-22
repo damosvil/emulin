@@ -70,7 +70,7 @@ VentanaFrame::VentanaFrame(GtkBuilder *builder, ldf *db, const char *frame_name)
 			gtk_list_store_append(ls, &it);
 			gtk_list_store_set(ls, &it, 0, (gchar *)GetStrPrintf("%d", fs->GetOffset()), -1);
 			gtk_list_store_set(ls, &it, 1, (gchar *)fs->GetName(), -1);
-			gtk_list_store_set(ls, &it, 1, (gchar *)GetStrPrintf("%d", ss->GetBitSize()), -1);
+			gtk_list_store_set(ls, &it, 2, (gchar *)GetStrPrintf("%d", ss->GetBitSize()), -1);
 		}
 	}
 	else
@@ -164,7 +164,7 @@ ldfframe *VentanaFrame::ShowModal(GObject *parent)
 			{
 				gtk_tree_model_get(model, &iter, 0, &strOffset, -1);
 				gtk_tree_model_get(model, &iter, 1, &signal, -1);
-				res->AddSignal(new ldfframesignal((uint8_t *)name, MultiParseInt(strOffset)));
+				res->AddSignal(new ldfframesignal((uint8_t *)signal, MultiParseInt(strOffset)));
 			}
 			while (gtk_tree_model_iter_next(model, &iter));
 		}
@@ -181,8 +181,8 @@ void VentanaFrame::PrepareListSignals()
 
 	// Add columns
 	TreeViewRemoveColumn(v, 0);
-	TreeViewRemoveColumn(v, 1);
-	TreeViewRemoveColumn(v, 2);
+	TreeViewRemoveColumn(v, 0);
+	TreeViewRemoveColumn(v, 0);
 	TreeViewAddColumn(v, "Offset", 0);
 	TreeViewAddColumn(v, "Signal", 1);
 	TreeViewAddColumn(v, "Bit size", 2);
@@ -246,6 +246,28 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 	ldfframe *frame_by_old_name = v->db->GetFrameByName((uint8_t *)v->frame_name);
 	ldfframe *frame_by_new_id = v->db->GetFrameById(new_frame_id);
 
+	// Store maximum frame position depending on the frame size
+	uint32_t max_frame_pos = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameSize))) * 8;
+
+	// Store maximum signal position
+	uint32_t max_signal_pos = 0;
+	GtkTreeIter iter;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaFrameSignalsList));
+	if (gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			char *p;
+			uint32_t q;
+			gtk_tree_model_get(model, &iter, 0, &p, -1);	// Offset
+			q = MultiParseInt(p);
+			gtk_tree_model_get(model, &iter, 2, &p, -1);	// Bit size
+			q += MultiParseInt(p);
+			max_signal_pos = (q > max_signal_pos) ? q : max_signal_pos;
+		}
+		while (gtk_tree_model_iter_next(model, &iter));
+	}
+
 	if (strlen(new_frame_name) == 0)
 	{
 		ShowErrorMessageBox(v->handle, "Frame name length shall not be 0.");
@@ -261,11 +283,6 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 		ShowErrorMessageBox(v->handle, "Frame name changed to '%s' that is already in use.", new_frame_name);
 		return;
 	}
-	else if (new_frame_id == 0)
-	{
-		ShowErrorMessageBox(v->handle, "Frame ID cannot be 0.");
-		return;
-	}
 	else if (v->frame_name == NULL && frame_by_new_id != NULL)
 	{
 		ShowErrorMessageBox(v->handle, "Frame ID %d is already in use.", new_frame_id);
@@ -276,9 +293,14 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 		ShowErrorMessageBox(v->handle, "Frame ID %d is in use by frame '%s'.", new_frame_id, frame_by_new_id->GetName());
 		return;
 	}
-	else if (MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameSize))) == 0)
+	else if (max_frame_pos == 0)
 	{
 		ShowErrorMessageBox(v->handle, "Frame size cannot be 0.");
+		return;
+	}
+	else if (max_frame_pos < max_signal_pos)
+	{
+		ShowErrorMessageBox(v->handle, "Frame shall have enough bytes for all signals (%d).", (max_signal_pos + 7) / 8);
 		return;
 	}
 

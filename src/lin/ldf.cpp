@@ -504,6 +504,38 @@ int ldf::SorterFrames(const void *a, const void *b)
 	return res;
 }
 
+void ldf::DeleteSlaveNodeByIndex(uint32_t ix)
+{
+	delete slaves[ix];
+	slaves_count--;
+	for (;ix < slaves_count; ix++)
+		slaves[ix] = slaves[ix + 1];
+}
+
+void ldf::DeleteSlaveNodeAttributesByIndex(uint32_t ix)
+{
+	delete node_attributes[ix];
+	node_attributes_count--;
+	for (;ix < node_attributes_count; ix++)
+		node_attributes[ix] = node_attributes[ix + 1];
+}
+
+void ldf::DeleteSignalByIndex(uint32_t ix)
+{
+	delete signals[ix];
+	signals_count--;
+	for (;ix < signals_count; ix++)
+		signals[ix] = signals[ix + 1];
+}
+
+void ldf::DeleteFrameByIndex(uint32_t ix)
+{
+	delete frames[ix];
+	frames_count--;
+	for (;ix < frames_count; ix++)
+		frames[ix] = frames[ix + 1];
+}
+
 lin_protocol_version_e ldf::GetLinProtocolVersion()
 {
 	return lin_protocol_version;
@@ -547,6 +579,9 @@ ldfmasternode *ldf::GetMasterNode()
 ldfnode *ldf::GetSlaveNode(uint32_t ix)
 {
 	return slaves[ix];
+
+
+
 }
 
 uint32_t ldf::GetSlaveNodesCount()
@@ -554,7 +589,7 @@ uint32_t ldf::GetSlaveNodesCount()
 	return slaves_count;
 }
 
-ldfnodeattributes *ldf::GetSlaveNodeAttributes(uint8_t *slave_name)
+ldfnodeattributes *ldf::GetSlaveNodeAttributesByName(uint8_t *slave_name)
 {
 	uint32_t ix;
 	ldfnodeattributes *ret = NULL;
@@ -580,83 +615,113 @@ void ldf::AddSlaveNode(ldfnodeattributes *n)
 
 void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 {
-	uint32_t ix;
-
 	// Update slave name
-	for (ix = 0; ix < slaves_count; ix++)
+	for (uint32_t ix = 0; ix < slaves_count; ix++)
 	{
+		// Skip slaves
 		if (!slaves[ix]->NameIs(old_slave_name))
 			continue;
 
+		// Update slave name
 		slaves[ix]->SetName(n->GetName());
 		break;
 	}
 
 	// Update slave node attributes
-	for (ix = 0; ix < node_attributes_count; ix++)
+	for (uint32_t ix = 0; ix < node_attributes_count; ix++)
 	{
+		// Skip node attributes
 		if (!node_attributes[ix]->NameIs(old_slave_name))
 			continue;
 
+		// Replace node attibutes
 		delete node_attributes[ix];
 		node_attributes[ix] = n;
 		break;
 	}
 
 	// Update slave node in signals
-	for (ix = 0; ix < signals_count; ix++)
+	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		signals[ix]->UpdateNodeName(old_slave_name, n->GetName());
+	}
+
+	// Update slave node in frames
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+	{
+		frames[ix]->UpdateNodeName(old_slave_name, n->GetName());
 	}
 }
 
 void ldf::DeleteSlaveNode(uint8_t *slave_name)
 {
-	uint32_t ix;
-
 	// Delete slave name
-	for (ix = 0; ix < slaves_count; ix++)
+	for (uint32_t ix = 0; ix < slaves_count; ix++)
 	{
+		// Skip slaves
 		if (!slaves[ix]->NameIs(slave_name))
 			continue;
 
 		// Delete slave and move all list one slot back
-		delete slaves[ix];
-		slaves_count--;
-		for (;ix < slaves_count; ix++) slaves[ix] = slaves[ix + 1];
+		DeleteSlaveNodeByIndex(ix);
 		break;
 	}
 
 	// Delete slave node attributes
-	for (ix = 0; ix < node_attributes_count; ix++)
+	for (uint32_t ix = 0; ix < node_attributes_count; ix++)
 	{
+		// Skip node attributes
 		if (!node_attributes[ix]->NameIs(slave_name))
 			continue;
 
 		// Delete node attributes and move all list one slot back
-		delete node_attributes[ix];
-		node_attributes_count--;
-		for (;ix < node_attributes_count; ix++) node_attributes[ix] = node_attributes[ix + 1];
+		DeleteSlaveNodeAttributesByIndex(ix);
 		break;
 	}
 
-	// Delete signals that used the slave
-	for (ix = 0; ix < signals_count; )
+	// Delete signals that use the slave
+	for (uint32_t ix = 0; ix < signals_count; )
 	{
-		bool in_use = strcmp((char *)slave_name, (char *)signals[ix]->GetPublisher()) == 0;
-		for (uint32_t jx = 0; !in_use && jx < signals[jx]->GetSubscribersCount(); jx++)
-			in_use = strcmp((char *)slave_name, (char *)signals[ix]->GetSubscriber(jx)) == 0;
-		if (!in_use)
+		// Skip signals
+		if (!signals[ix]->UsesSlave(slave_name))
 		{
 			ix++;
 			continue;
 		}
 
-		// Delete shuffle signals
-		delete signals[ix];
-		signals_count--;
-		for (uint32_t jx = ix; jx < signals_count; jx++)
-			signals[jx] = signals[jx + 1];
+		// Delete signal and drag all others back
+		DeleteSignalByIndex(ix);
+	}
+
+	// Delete frames that use the slave
+	for (uint32_t ix = 0; ix < frames_count; )
+	{
+		// Skip frame
+		if (!frames[ix]->PublisherIs(slave_name))
+		{
+			ix++;
+			continue;
+		}
+
+		// Delete frame and drag all others back
+		DeleteFrameByIndex(ix);
+	}
+
+	// Remove deleted signals from frames
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+	{
+		for (uint32_t jx = 0; jx < frames[ix]->GetSignalsCount(); )
+		{
+			// Skip signal
+			if (GetSignalByName(frames[ix]->GetSignal(jx)->GetName()))
+			{
+				jx++;
+				continue;
+			}
+
+			// Remove signal from frame
+			frames[ix]->DeleteSignalByIndex(jx);
+		}
 	}
 }
 
@@ -725,9 +790,7 @@ void ldf::DeleteSignal(uint8_t *signal_name)
 			continue;
 
 		// Delete signal
-		delete signals[ix];
-		signals_count--;
-		for (; ix < signals_count; ix++) signals[ix] = signals[ix + 1];
+		DeleteSignalByIndex(ix);
 		break;
 	}
 
@@ -814,9 +877,7 @@ void ldf::DeleteFrame(uint8_t *frame_name)
 			continue;
 
 		// Delete frame and shuffle the rest ones
-		delete frames[ix];
-		frames_count--;
-		for (; ix < frames_count; ix++) frames[ix] = frames[ix + 1];
+		DeleteFrameByIndex(ix);
 		break;
 	}
 
