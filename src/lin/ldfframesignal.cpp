@@ -59,6 +59,21 @@ uint16_t ldfframesignal::GetOffset()
 	return offset;
 }
 
+void ldfframesignal::SetName(const uint8_t *name)
+{
+	delete this->name;
+	this->name = (uint8_t *)strdup((char *)name);
+}
+
+void ldfframesignal::SetOffset(uint16_t offset)
+{
+	this->offset = offset;
+}
+
+bool ldfframesignal::NameIs(const uint8_t *name)
+{
+	return strcmp((char *)name, (char *)this->name) == 0;
+}
 
 
 

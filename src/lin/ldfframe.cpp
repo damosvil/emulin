@@ -65,11 +65,6 @@ ldfframe *ldfframe::FromLdfStatement(uint8_t *statement)
 	}
 }
 
-void ldfframe::AddSignal(ldfframesignal *signal)
-{
-	signals[signals_count++] = signal;
-}
-
 uint8_t *ldfframe::GetName()
 {
 	return name;
@@ -98,6 +93,46 @@ ldfframesignal *ldfframe::GetSignal(uint32_t ix)
 uint32_t ldfframe::GetSignalsCount()
 {
 	return signals_count;
+}
+
+void ldfframe::AddSignal(ldfframesignal *signal)
+{
+	signals[signals_count++] = signal;
+}
+
+bool ldfframe::NameIs(const uint8_t *name)
+{
+	return strcmp((char*)name, (char*)this->name) == 0;
+}
+
+void ldfframe::DeleteSignalByName(uint8_t *signal_name)
+{
+	for (uint32_t ix = 0; ix < signals_count; ix++)
+	{
+		// Search signal
+		if (!signals[ix]->NameIs(signal_name))
+			continue;
+
+		// Move back all signals one place
+		delete signals[ix];
+		signals_count--;
+		for (; ix < signals_count; ix++) signals[ix] = signals[ix + 1];
+		break;
+	}
+}
+
+void ldfframe::UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *new_signal_name)
+{
+	for (uint32_t ix = 0; ix < signals_count; ix++)
+	{
+		// Search signal
+		if (!signals[ix]->NameIs(old_signal_name))
+			continue;
+
+		// Move back all signals one place
+		signals[ix]->SetName(new_signal_name);
+		break;
+	}
 }
 
 void ldfframe::ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
@@ -154,7 +189,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		// Look for signal definition
 		for (j = 0; (s == NULL) && (j < signals_count); j++)
 		{
-			if (strcmp((char *)this->signals[i]->GetName(), (char *)signals[j]->GetName()) == 0)
+			if (this->signals[i]->NameIs(signals[j]->GetName()))
 			{
 				s = signals[j];
 			}
@@ -171,7 +206,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		// Check signal name for repetition
 		for (j = i + 1; j < this->signals_count; j++)
 		{
-			if (strcmp((char *)this->signals[i]->GetName(), (char *)this->signals[j]->GetName()) == 0)
+			if (this->signals[i]->NameIs(signals[j]->GetName()))
 			{
 				sprintf(str, STR_ERR "Signal name '%s' used twice in frame '%s'.", this->signals[i]->GetName(), name);
 				validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);

@@ -26,6 +26,10 @@ public:
 
 	uint8_t *GetName();
 	uint16_t GetOffset();
+	void SetName(const uint8_t *name);
+	void SetOffset(uint16_t offset);
+
+	bool NameIs(const uint8_t *name);
 
 };
 

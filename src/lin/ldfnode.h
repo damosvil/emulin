@@ -24,7 +24,9 @@ public:
 	static bool CheckNodeName(uint8_t *name, ldfnode *master, ldfnode **slaves, uint32_t slaves_count);
 
 	uint8_t *GetName();
-	void SetName(uint8_t *name);
+	void SetName(const uint8_t *name);
+
+	bool NameIs(const uint8_t *name);
 
 };
 

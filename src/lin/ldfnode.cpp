@@ -28,13 +28,13 @@ bool ldfnode::CheckNodeName(uint8_t *name, ldfnode *master, ldfnode **slaves, ui
 	// Check publisher is master
 	if (master != NULL)
 	{
-		name_ok = strcmp((char *)name, (char *)master->GetName()) == 0;
+		name_ok = master->NameIs(name);
 	}
 
 	// Check publisher in slaves
 	for (i = 0; !name_ok && (i < slaves_count); i++)
 	{
-		name_ok = strcmp((char *)name, (char *)slaves[i++]->GetName()) == 0;
+		name_ok = slaves[i]->NameIs(name);
 	}
 
 	return name_ok;
@@ -45,10 +45,16 @@ uint8_t *ldfnode::GetName()
 	return name;
 }
 
-void ldfnode::SetName(uint8_t *name)
+void ldfnode::SetName(const uint8_t *name)
 {
 	if (this->name) delete this->name;
 	this->name = (name != NULL) ? (uint8_t *)strdup((char *)name) : NULL;
 }
+
+bool ldfnode::NameIs(const uint8_t *name)
+{
+	return strcmp((char*)name, (char*)this->name) == 0;
+}
+
 
 }

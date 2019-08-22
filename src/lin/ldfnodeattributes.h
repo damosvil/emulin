@@ -78,6 +78,8 @@ public:
 	void SetN_Cr_timeout(uint16_t v);
 	void SetResponseErrorSignalName(uint8_t *v);
 
+	bool NameIs(uint8_t *name);
+
 };
 
 } /* namespace lin */

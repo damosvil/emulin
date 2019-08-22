@@ -295,5 +295,11 @@ void ldfnodeattributes::SetResponseErrorSignalName(uint8_t *v)
 	response_error_signal_name = (v != NULL) ? (uint8_t *)strdup((const char *)v) : NULL;
 }
 
+bool ldfnodeattributes::NameIs(uint8_t *name)
+{
+	return strcmp((char *)name, (char *)this->name) == 0;
+}
+
+
 
 } /* namespace lin */

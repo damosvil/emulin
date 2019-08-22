@@ -33,13 +33,17 @@ public:
 
 	static ldfframe *FromLdfStatement(uint8_t *statement);
 
-	void AddSignal(ldfframesignal *signal);
 	uint8_t *GetName();
 	uint8_t GetId();
 	uint8_t *GetPublisher();
 	uint8_t GetSize();
 	ldfframesignal *GetSignal(uint32_t ix);
 	uint32_t GetSignalsCount();
+
+	bool NameIs(const uint8_t *name);
+	void AddSignal(ldfframesignal *signal);
+	void DeleteSignalByName(uint8_t *signal_name);
+	void UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *new_signal_name);
 
 	void ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateUnicity(ldfframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count);

@@ -150,6 +150,11 @@ uint8_t *ldfsignal::GetSubscriber(uint32_t ix)
 	return subscribers[ix];
 }
 
+bool ldfsignal::NameIs(uint8_t *name)
+{
+	return strcmp((char *)name, (char *)this->name) == 0;
+}
+
 void ldfsignal::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
 {
 	// Update publisher, otherwise update subscribers

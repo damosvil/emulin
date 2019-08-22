@@ -562,7 +562,7 @@ ldfnodeattributes *ldf::GetSlaveNodeAttributes(uint8_t *slave_name)
 	// Look for node attributes
 	for (ix = 0; (ret == NULL) && (ix < node_attributes_count); ix++)
 	{
-		ret = (strcmp((char *)slave_name, (char *)node_attributes[ix]->GetName()) == 0) ? node_attributes[ix] : NULL;
+		ret = node_attributes[ix]->NameIs(slave_name) ? node_attributes[ix] : NULL;
 	}
 
 	return ret;
@@ -585,7 +585,8 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 	// Update slave name
 	for (ix = 0; ix < slaves_count; ix++)
 	{
-		if (strcmp((char *)old_slave_name, (char *)slaves[ix]->GetName()) != 0) continue;
+		if (!slaves[ix]->NameIs(old_slave_name))
+			continue;
 
 		slaves[ix]->SetName(n->GetName());
 		break;
@@ -594,7 +595,8 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 	// Update slave node attributes
 	for (ix = 0; ix < node_attributes_count; ix++)
 	{
-		if (strcmp((char *)old_slave_name, (char *)node_attributes[ix]->GetName()) != 0) continue;
+		if (!node_attributes[ix]->NameIs(old_slave_name))
+			continue;
 
 		delete node_attributes[ix];
 		node_attributes[ix] = n;
@@ -615,26 +617,26 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 	// Delete slave name
 	for (ix = 0; ix < slaves_count; ix++)
 	{
-		if (strcmp((char *)slave_name, (char *)slaves[ix]->GetName()) != 0) continue;
+		if (!slaves[ix]->NameIs(slave_name))
+			continue;
 
 		// Delete slave and move all list one slot back
 		delete slaves[ix];
 		slaves_count--;
 		for (;ix < slaves_count; ix++) slaves[ix] = slaves[ix + 1];
-
 		break;
 	}
 
-	// Update slave node attributes
+	// Delete slave node attributes
 	for (ix = 0; ix < node_attributes_count; ix++)
 	{
-		if (strcmp((char *)slave_name, (char *)node_attributes[ix]->GetName()) != 0) continue;
+		if (!node_attributes[ix]->NameIs(slave_name))
+			continue;
 
 		// Delete node attributes and move all list one slot back
 		delete node_attributes[ix];
 		node_attributes_count--;
 		for (;ix < node_attributes_count; ix++) node_attributes[ix] = node_attributes[ix + 1];
-
 		break;
 	}
 
@@ -651,6 +653,7 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 		}
 
 		// Delete shuffle signals
+		delete signals[ix];
 		signals_count--;
 		for (uint32_t jx = ix; jx < signals_count; jx++)
 			signals[jx] = signals[jx + 1];
@@ -668,7 +671,7 @@ ldfsignal *ldf::GetSignalByName(uint8_t *signal_name)
 		return NULL;
 
 	for (uint32_t ix = 0; ix < signals_count; ix++)
-		if (strcmp((char *)signal_name, (char *)signals[ix]->GetName()) == 0)
+		if (signals[ix]->NameIs(signal_name))
 			return signals[ix];
 
 	return NULL;
@@ -689,10 +692,12 @@ void ldf::UpdateSignal(uint8_t *old_signal_name, ldfsignal *s)
 	if (old_signal_name == NULL)
 		return;
 
+	// Update signal with the new one
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		// Look for signal by ID
-		if (strcmp((char *)old_signal_name, (char *)signals[ix]->GetName()) != 0) continue;
+		if (!signals[ix]->NameIs(old_signal_name))
+			continue;
 
 		// Delete signal
 		delete signals[ix];
@@ -700,7 +705,11 @@ void ldf::UpdateSignal(uint8_t *old_signal_name, ldfsignal *s)
 		break;
 	}
 
-	// TODO:: Update signal in all frames
+	// Update signal name in frames
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+	{
+		frames[ix]->UpdateSignalName(old_signal_name, s->GetName());
+	}
 }
 
 void ldf::DeleteSignal(uint8_t *signal_name)
@@ -708,10 +717,12 @@ void ldf::DeleteSignal(uint8_t *signal_name)
 	if (signal_name == NULL)
 		return;
 
+	// Delete signal from signals
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		// Look for signal by ID
-		if (strcmp((char *)signal_name, (char *)signals[ix]->GetName()) != 0) continue;
+		if (!signals[ix]->NameIs(signal_name))
+			continue;
 
 		// Delete signal
 		delete signals[ix];
@@ -720,7 +731,11 @@ void ldf::DeleteSignal(uint8_t *signal_name)
 		break;
 	}
 
-	// TODO:: Delete signal from all frames
+	// Delete signal from frames
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+	{
+		frames[ix]->DeleteSignalByName(signal_name);
+	}
 }
 
 void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
@@ -746,7 +761,7 @@ ldfframe *ldf::GetFrameByName(uint8_t *frame_name)
 		return NULL;
 
 	for (uint32_t ix = 0; ix < frames_count; ix++)
-		if (strcmp((char *)frame_name, (char *)frames[ix]->GetName()) == 0)
+		if (frames[ix]->NameIs(frame_name))
 			return frames[ix];
 
 	return NULL;
@@ -773,12 +788,39 @@ void ldf::AddFrame(ldfframe *f)
 
 void ldf::UpdateFrame(uint8_t *old_frame_name, ldfframe *f)
 {
-	// TODO::
+	// Update frame
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+	{
+		// Skip frames
+		if (!frames[ix]->NameIs(old_frame_name))
+			continue;
+
+		// Replace frame in index
+		delete frames[ix];
+		frames[ix] = f;
+		break;
+	}
+
+	// TODO:: Update frame in schedule tables
 }
 
 void ldf::DeleteFrame(uint8_t *frame_name)
 {
-	// TODO::
+	// Delete frame
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+	{
+		// Skip frames
+		if (!frames[ix]->NameIs(frame_name))
+			continue;
+
+		// Delete frame and shuffle the rest ones
+		delete frames[ix];
+		frames_count--;
+		for (; ix < frames_count; ix++) frames[ix] = frames[ix + 1];
+		break;
+	}
+
+	// TODO:: Delete frame from schedule table
 }
 
 
