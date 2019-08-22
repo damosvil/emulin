@@ -233,7 +233,13 @@ void VentanaFrame::OnVentanaFrameSignalsEdit_clicked(GtkButton *button, gpointer
 
 void VentanaFrame::OnVentanaFrameSignalsDelete_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaFrame *v = (VentanaFrame *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
 
+	// Remove subscriber from list model
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
+	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
 
 void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user_data)

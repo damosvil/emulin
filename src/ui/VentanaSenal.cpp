@@ -6,7 +6,7 @@
  */
 
 #include <string.h>
-#include <VentanaSelectSignal.h>
+#include <VentanaSelectNode.h>
 #include <VentanaSenal.h>
 
 
@@ -296,7 +296,7 @@ void VentanaSenal::OnVentanaSenalSubscriberNew_clicked(GtkButton *button, gpoint
 		return;
 	}
 
-	VentanaSelectSignal w(v->builder, NULL, nodes, nodes_count);
+	VentanaSelectNode w(v->builder, NULL, nodes, nodes_count);
 	const char *new_signal_name = w.ShowModal(v->handle);
 
 	// Add signal to list
@@ -328,7 +328,7 @@ void VentanaSenal::OnVentanaSenalSubscriberEdit_clicked(GtkButton *button, gpoin
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaSenalSubscriberSelection), &model, &iter);
 	gtk_tree_model_get(model, &iter, 0, &nodes[nodes_count++], -1);
 
-	VentanaSelectSignal w(v->builder, NULL, nodes, nodes_count);
+	VentanaSelectNode w(v->builder, NULL, nodes, nodes_count);
 	const char *new_signal_name = w.ShowModal(v->handle);
 
 	// Add signal to list
