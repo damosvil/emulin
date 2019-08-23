@@ -17,8 +17,10 @@ using namespace lin;
 
 namespace ui {
 
+
 class VentanaFrameSignal
 {
+
 public:
 	struct frame_signals_raw_t
 	{

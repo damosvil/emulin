@@ -6,6 +6,7 @@
  */
 
 #include <VentanaFrame.h>
+#include <VentanaFrameSignal.h>
 
 namespace ui {
 
@@ -241,25 +242,106 @@ void VentanaFrame::OnVentanaFrameSignalsSelection_changed(GtkTreeSelection *widg
 
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
 	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsDelete), enable);		}
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsDelete), enable);
+}
 
 void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaFrame *v = (VentanaFrame *)user_data;
 
+	const char *publisher = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaFramePublisher));
+	char *signal_names[1000];
+	int signal_names_count = 0;
+	VentanaFrameSignal::frame_signals_raw_t *frame_signals[1000];
+	int frame_signals_count = 0;
+
+	// Select all signals that have the same publisher than the frame and not in use by the frame yet
+	for (uint32_t i = 0; i < v->db->GetSignalsCount(); i++)
+	{
+		// Skip signals
+		ldfsignal *s = v->db->GetSignalByIndex(i);
+		if (!s->PublisherIs((uint8_t *)publisher))
+			continue;
+
+		signal_names[signal_names_count++] = (char *)s->GetName();
+	}
+
+	// Select all frame signals already selected
+	GtkTreeIter iter;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaFrameSignalsList));
+	if (gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			gtk_tree_model_get(model, &iter, 0, &frame_signals[frame_signals_count]->offset, -1);	// Offset
+			gtk_tree_model_get(model, &iter, 1, &frame_signals[frame_signals_count]->name, -1);		// Name
+			frame_signals_count++;
+		}
+		while (gtk_tree_model_iter_next(model, &iter));
+	}
+
+	// Remove all signals previously selected
+	for (int i = 0; i < signal_names_count; )
+	{
+		// Skip no selected signals
+		bool selected = false;
+		for (int j = 0; !selected && (j < frame_signals_count); j++)
+		{
+			selected = strcmp(signal_names[i], frame_signals[j]->name) == 0;
+		}
+		if (!selected)
+		{
+			i++;
+			continue;
+		}
+
+		// Remove signal from list
+		signal_names_count--;
+		for (int j = i; j < signal_names_count; j++)
+			signal_names[j] = signal_names[j + 1];
+	}
+
+	// Ask user to enter new signal
+	VentanaFrameSignal w(v->builder, v->db, signal_names, signal_names_count, frame_signals, frame_signals_count);
+	ldfframesignal *fs = w.ShowModal(v->handle);
+	if (fs == NULL)
+		return;
+
+	// Look in frame_signals where to insert the new framesignal
+	int ix;
+	for (ix = 0; ix < frame_signals_count; ix++)
+		if (MultiParseInt(frame_signals[ix]->offset) > fs->GetOffset())
+			break;
+
+	// Insert item in list store
+	gtk_list_store_insert(GTK_LIST_STORE(model), &iter, ix);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, (gchar *)GetStrPrintf("%d", fs->GetOffset()), -1);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, (gchar *)fs->GetName(), -1);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 2, (gchar *)GetStrPrintf("%d", v->db->GetSignalByName(fs->GetName())->GetBitSize()), -1);
+
+	// Delete frame signal
+	delete fs;
 }
 
 void VentanaFrame::OnVentanaFrameSignalsEdit_clicked(GtkButton *button, gpointer user_data)
 {
+	GtkTreeIter iter;
+	VentanaFrame *v = (VentanaFrame *)user_data;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaFrameSignalsList));
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
 
+
+	// TODO: implement Edit
 }
 
 void VentanaFrame::OnVentanaFrameSignalsDelete_clicked(GtkButton *button, gpointer user_data)
 {
-	VentanaFrame *v = (VentanaFrame *)user_data;
-	GtkTreeModel *model;
 	GtkTreeIter iter;
+	VentanaFrame *v = (VentanaFrame *)user_data;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaFrameSignalsList));
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
 
-	// Remove subscriber from list model	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
+	// Remove subscriber from list model
 	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
 

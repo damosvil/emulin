@@ -155,6 +155,11 @@ bool ldfsignal::NameIs(uint8_t *name)
 	return strcmp((char *)name, (char *)this->name) == 0;
 }
 
+bool ldfsignal::PublisherIs(uint8_t *publisher)
+{
+	return strcmp((char *)publisher, (char *)this->publisher) == 0;
+}
+
 bool ldfsignal::UsesSlave(uint8_t *slave_name)
 {
 	bool in_use = strcmp((char *)slave_name, (char *)publisher) == 0;

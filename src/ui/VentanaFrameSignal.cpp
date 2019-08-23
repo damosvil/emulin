@@ -95,7 +95,26 @@ void VentanaFrameSignal::OnVentanaFrameSignalAccept_clicked(GtkButton *button, g
 {
 	VentanaFrameSignal *v = (VentanaFrameSignal *)user_data;
 
-	// TODO:: Check signal overriding a previous signal
+	// Check signal collision
+	const char *new_signal_name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaFrameSignalName));
+	int new_signal_offset = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameSignalOffset)));
+	int new_signal_size = v->db->GetSignalByName((uint8_t *)new_signal_name)->GetBitSize();
+	for (int i = 0; i < v->frame_signals_count; i++)
+	{
+		int signal_offset = MultiParseInt(v->frame_signals[i]->offset);
+		int signal_size = v->db->GetSignalByName((uint8_t *)v->frame_signals[i]->name)->GetBitSize();
+
+		int a = new_signal_offset;
+		int A = new_signal_offset + new_signal_size;
+		int b = signal_offset;
+		int B = signal_offset + signal_size;
+
+		if ((a >= b && a < B) || (A > b && A <= B) || (b >= a && b < A) || (B > a && B <= A))
+		{
+			ShowErrorMessageBox(v->handle, "Signal '%s' collides with '%s'.", new_signal_name, v->frame_signals[i]->name);
+			return;
+		}
+	}
 
 	// Return false
 	gtk_dialog_response(GTK_DIALOG(v->handle), true);
