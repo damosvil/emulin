@@ -219,6 +219,8 @@
   </object>
   <object class="GtkDialog" id="VentanaFrameSignal">
     <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Frame signal</property>
+    <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
     <child>
       <placeholder/>
@@ -233,10 +235,30 @@
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
-              <placeholder/>
+              <object class="GtkButton" id="VentanaFrameSignalCancel">
+                <property name="label" translatable="yes">Cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkButton" id="VentanaFrameSignalAccept">
+                <property name="label" translatable="yes">Accept</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
             </child>
           </object>
           <packing>
@@ -246,7 +268,88 @@
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkFixed">
+            <property name="width_request">300</property>
+            <property name="height_request">100</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Offset</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="VentanaFrameSignalOffset">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="max_length">3</property>
+                <property name="width_chars">3</property>
+                <property name="truncate_multiline">True</property>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Signal</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">40</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="VentanaFrameSignalName">
+                <property name="width_request">210</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">35</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Bit size</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">70</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="VentanaFrameSignalSize">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="editable">False</property>
+                <property name="max_length">3</property>
+                <property name="width_chars">3</property>
+                <property name="truncate_multiline">True</property>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">65</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
         </child>
       </object>
     </child>

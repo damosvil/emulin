@@ -38,6 +38,7 @@ private:
 	G_VAR(VentanaFrameCancel);
 
 	void PrepareListSignals();
+	uint32_t CalculateMaxSignalOffset();
 
 	// Signal events
 	static void OnVentanaFramePublisher_changed(GtkComboBoxText *widget, gpointer user_data);

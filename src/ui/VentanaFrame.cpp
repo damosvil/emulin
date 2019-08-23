@@ -196,6 +196,29 @@ void VentanaFrame::PrepareListSignals()
 	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaFrameSignalsDelete), FALSE);
 }
 
+uint32_t VentanaFrame::CalculateMaxSignalOffset()
+{
+	uint32_t max_signal_pos = 0;
+	GtkTreeIter iter;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(g_VentanaFrameSignalsList));
+	if (gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			char *p;
+			uint32_t q;
+			gtk_tree_model_get(model, &iter, 0, &p, -1);	// Offset
+			q = MultiParseInt(p);
+			gtk_tree_model_get(model, &iter, 2, &p, -1);	// Bit size
+			q += MultiParseInt(p);
+			max_signal_pos = (q > max_signal_pos) ? q : max_signal_pos;
+		}
+		while (gtk_tree_model_iter_next(model, &iter));
+	}
+
+	return max_signal_pos;
+}
+
 void VentanaFrame::OnVentanaFramePublisher_changed(GtkComboBoxText *widget, gpointer user_data)
 {
 	VentanaFrame *v = (VentanaFrame *)user_data;
@@ -218,8 +241,7 @@ void VentanaFrame::OnVentanaFrameSignalsSelection_changed(GtkTreeSelection *widg
 
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
 	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsDelete), enable);
-}
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsDelete), enable);		}
 
 void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer user_data)
 {
@@ -237,8 +259,7 @@ void VentanaFrame::OnVentanaFrameSignalsDelete_clicked(GtkButton *button, gpoint
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 
-	// Remove subscriber from list model
-	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
+	// Remove subscriber from list model	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
 	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
 
@@ -256,23 +277,7 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 	uint32_t max_frame_pos = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameSize))) * 8;
 
 	// Store maximum signal position
-	uint32_t max_signal_pos = 0;
-	GtkTreeIter iter;
-	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaFrameSignalsList));
-	if (gtk_tree_model_get_iter_first(model, &iter))
-	{
-		do
-		{
-			char *p;
-			uint32_t q;
-			gtk_tree_model_get(model, &iter, 0, &p, -1);	// Offset
-			q = MultiParseInt(p);
-			gtk_tree_model_get(model, &iter, 2, &p, -1);	// Bit size
-			q += MultiParseInt(p);
-			max_signal_pos = (q > max_signal_pos) ? q : max_signal_pos;
-		}
-		while (gtk_tree_model_iter_next(model, &iter));
-	}
+	uint32_t max_signal_pos = v->CalculateMaxSignalOffset();
 
 	if (strlen(new_frame_name) == 0)
 	{

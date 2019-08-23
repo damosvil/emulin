@@ -76,5 +76,4 @@ bool ldfframesignal::NameIs(const uint8_t *name)
 }
 
 
-
 } /* namespace lin */
