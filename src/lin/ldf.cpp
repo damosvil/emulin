@@ -803,10 +803,16 @@ void ldf::DeleteSignal(uint8_t *signal_name)
 
 void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
 {
-	// Update node name in signals
+	// Update master node name in signals
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		signals[ix]->UpdateNodeName(old_name, new_name);
+	}
+
+	// Update master node name in frames
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+	{
+		frames[ix]->UpdateNodeName(old_name, new_name);
 	}
 
 	// Update master node name

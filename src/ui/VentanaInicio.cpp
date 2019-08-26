@@ -413,6 +413,7 @@ void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, g
 	v->db->UpdateMasterNodeName(v->db->GetMasterNode()->GetName(), (uint8_t *)new_master_name);
 	v->db->SortData();
 	v->ReloadListSignals();
+	v->ReloadListFrames();
 }
 
 void VentanaInicio::OnPanelDatabaseMasterTimebase_changed(GtkCellEditable *widget, gpointer user_data)
