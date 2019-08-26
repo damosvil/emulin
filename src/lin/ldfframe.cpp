@@ -195,7 +195,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 	if (this->size > 8)
 	{
 		sprintf(str, STR_ERR "Frame '%s' size %d incorrect.", this->name, this->size);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
 		return;
 	}
 
@@ -218,17 +218,17 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		if (s == NULL)
 		{
 			sprintf(str, STR_ERR "Signal '%s' used in frame '%s' not defined.", this->signals[i]->GetName(), name);
-			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+			validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
 			continue;
 		}
 
 		// Check signal name for repetition
 		for (j = i + 1; j < this->signals_count; j++)
 		{
-			if (this->signals[i]->NameIs(signals[j]->GetName()))
+			if (this->signals[i]->NameIs(this->signals[j]->GetName()))
 			{
 				sprintf(str, STR_ERR "Signal name '%s' used twice in frame '%s'.", this->signals[i]->GetName(), name);
-				validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+				validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
 			}
 		}
 
@@ -236,7 +236,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		if (this->signals[i]->GetOffset() + s->GetBitSize() > frame_bit_length)
 		{
 			sprintf(str, STR_ERR "Signal '%s' used in frame '%s' outside of frame boundaries.", this->signals[i]->GetName(), name);
-			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+			validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
 			continue;
 		}
 
@@ -255,7 +255,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		if (overlapping)
 		{
 			sprintf(str, STR_ERR "Signal '%s' used in frame '%s' overlapping previous signal.", this->signals[i]->GetName(), name);
-			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+			validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
 		}
 	}
 }
