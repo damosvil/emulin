@@ -31,7 +31,7 @@ public:
 private:
 	GObject *handle;
 	ldf *db;
-	frame_signals_raw_t **frame_signals;
+	frame_signals_raw_t *frame_signals;
 	int frame_signals_count;
 
 	G_VAR(VentanaFrameSignalOffset);
@@ -46,7 +46,7 @@ private:
 	static void OnVentanaFrameSignalCancel_clicked(GtkButton *button, gpointer user_data);
 
 public:
-	VentanaFrameSignal(GtkBuilder *builder, ldf *db, char **signal_names, int signal_names_count, frame_signals_raw_t **frame_signals, int frame_signals_count);
+	VentanaFrameSignal(GtkBuilder *builder, ldf *db, char **signal_names, int signal_names_count, frame_signals_raw_t *frame_signals, int frame_signals_count);
 	virtual ~VentanaFrameSignal();
 
 	ldfframesignal *ShowModal(GObject *parent);

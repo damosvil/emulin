@@ -252,7 +252,7 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 	const char *publisher = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaFramePublisher));
 	char *signal_names[1000];
 	int signal_names_count = 0;
-	VentanaFrameSignal::frame_signals_raw_t *frame_signals[1000];
+	VentanaFrameSignal::frame_signals_raw_t frame_signals[1000];
 	int frame_signals_count = 0;
 
 	// Select all signals that have the same publisher than the frame and not in use by the frame yet
@@ -273,8 +273,8 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 	{
 		do
 		{
-			gtk_tree_model_get(model, &iter, 0, &frame_signals[frame_signals_count]->offset, -1);	// Offset
-			gtk_tree_model_get(model, &iter, 1, &frame_signals[frame_signals_count]->name, -1);		// Name
+			gtk_tree_model_get(model, &iter, 0, &frame_signals[frame_signals_count].offset, -1);	// Offset
+			gtk_tree_model_get(model, &iter, 1, &frame_signals[frame_signals_count].name, -1);		// Name
 			frame_signals_count++;
 		}
 		while (gtk_tree_model_iter_next(model, &iter));
@@ -287,7 +287,7 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 		bool selected = false;
 		for (int j = 0; !selected && (j < frame_signals_count); j++)
 		{
-			selected = strcmp(signal_names[i], frame_signals[j]->name) == 0;
+			selected = strcmp(signal_names[i], frame_signals[j].name) == 0;
 		}
 		if (!selected)
 		{
@@ -301,6 +301,13 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 			signal_names[j] = signal_names[j + 1];
 	}
 
+	// Check whether there is a signal to add
+	if (signal_names_count ==  0)
+	{
+		ShowErrorMessageBox(v->handle, "There are no more suitable signals to choose from.");
+		return;
+	}
+
 	// Ask user to enter new signal
 	VentanaFrameSignal w(v->builder, v->db, signal_names, signal_names_count, frame_signals, frame_signals_count);
 	ldfframesignal *fs = w.ShowModal(v->handle);
@@ -310,7 +317,7 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 	// Look in frame_signals where to insert the new framesignal
 	int ix;
 	for (ix = 0; ix < frame_signals_count; ix++)
-		if (MultiParseInt(frame_signals[ix]->offset) > fs->GetOffset())
+		if (MultiParseInt(frame_signals[ix].offset) > fs->GetOffset())
 			break;
 
 	// Insert item in list store
@@ -330,8 +337,49 @@ void VentanaFrame::OnVentanaFrameSignalsEdit_clicked(GtkButton *button, gpointer
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaFrameSignalsList));
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
 
+	char *signal_name;
+	VentanaFrameSignal::frame_signals_raw_t frame_signals[1000];
+	int frame_signals_count = 0;
 
-	// TODO: implement Edit
+	// Select current signal to choose from
+	gtk_tree_model_get(model, &iter, 1, &signal_name, -1);		// Name
+
+	// Select all frame signals already selected
+	if (gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			gtk_tree_model_get(model, &iter, 0, &frame_signals[frame_signals_count].offset, -1);	// Offset
+			gtk_tree_model_get(model, &iter, 1, &frame_signals[frame_signals_count].name, -1);		// Name
+			frame_signals_count++;
+		}
+		while (gtk_tree_model_iter_next(model, &iter));
+	}
+
+	// Ask user to enter new signal
+	VentanaFrameSignal w(v->builder, v->db, &signal_name, 1, frame_signals, frame_signals_count);
+	ldfframesignal *fs = w.ShowModal(v->handle);
+	if (fs == NULL)
+		return;
+
+	// Delete editing frame signal
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
+	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+
+	// Look in frame_signals where to insert the new frame signal
+	int ix;
+	for (ix = 0; ix < frame_signals_count; ix++)
+		if (MultiParseInt(frame_signals[ix].offset) > fs->GetOffset())
+			break;
+
+	// Insert item in list store
+	gtk_list_store_insert(GTK_LIST_STORE(model), &iter, ix);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, (gchar *)GetStrPrintf("%d", fs->GetOffset()), -1);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, (gchar *)fs->GetName(), -1);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 2, (gchar *)GetStrPrintf("%d", v->db->GetSignalByName(fs->GetName())->GetBitSize()), -1);
+
+	// Delete frame signal
+	delete fs;
 }
 
 void VentanaFrame::OnVentanaFrameSignalsDelete_clicked(GtkButton *button, gpointer user_data)

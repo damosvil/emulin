@@ -12,7 +12,7 @@ namespace ui {
 VentanaFrameSignal::VentanaFrameSignal(
 		GtkBuilder *builder, ldf *db,
 		char **signal_names, int signal_names_count,
-		frame_signals_raw_t **frame_signals, int frame_signals_count)
+		frame_signals_raw_t *frame_signals, int frame_signals_count)
 {
 	// Store input info
 	this->handle = gtk_builder_get_object(builder, "VentanaFrameSignal");
@@ -35,28 +35,28 @@ VentanaFrameSignal::VentanaFrameSignal(
 	// Set offset
 	int frame_signal_ix = -1;
 	for (int i = 0; (frame_signal_ix == -1) && (i < frame_signals_count); i++)
-		frame_signal_ix = (strcmp(signal_names[0], frame_signals[i]->name) == 0) ? i : -1;
+		frame_signal_ix = (strcmp(signal_names[0], frame_signals[i].name) == 0) ? i : -1;
 	if (frame_signal_ix == -1)
 	{
 		int offset = 0;
 		for (int i = 0; i < frame_signals_count; i++)
 		{
-			int q = MultiParseInt(frame_signals[i]->offset);
-			q += db->GetSignalByName((uint8_t *)frame_signals[i]->name)->GetBitSize();
+			int q = MultiParseInt(frame_signals[i].offset);
+			q += db->GetSignalByName((uint8_t *)frame_signals[i].name)->GetBitSize();
 			offset = (q > offset) ? q : offset;
 		}
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalOffset), GetStrPrintf("%d", offset));
 	}
 	else
 	{
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalOffset), frame_signals[frame_signal_ix]->offset);
+		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalOffset), frame_signals[frame_signal_ix].offset);
 	}
 
 	// Select signal
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaFrameSignalName), signal_names[0]);
 
 	// Set bit size
-	gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalSize), GetStrPrintf("%d", db->GetSignalByName((uint8_t *)signal_names)->GetBitSize()));
+	gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalSize), GetStrPrintf("%d", db->GetSignalByName((uint8_t *)signal_names[0])->GetBitSize()));
 
 	// Connect text fields
 	G_CONNECT_INSTXT(VentanaFrameSignalOffset, INT3_EXPR);
@@ -101,8 +101,13 @@ void VentanaFrameSignal::OnVentanaFrameSignalAccept_clicked(GtkButton *button, g
 	int new_signal_size = v->db->GetSignalByName((uint8_t *)new_signal_name)->GetBitSize();
 	for (int i = 0; i < v->frame_signals_count; i++)
 	{
-		int signal_offset = MultiParseInt(v->frame_signals[i]->offset);
-		int signal_size = v->db->GetSignalByName((uint8_t *)v->frame_signals[i]->name)->GetBitSize();
+		// Skip editing signal
+		if (strcmp(new_signal_name, v->frame_signals[i].name) == 0)
+			continue;
+
+		// Check collision
+		int signal_offset = MultiParseInt(v->frame_signals[i].offset);
+		int signal_size = v->db->GetSignalByName((uint8_t *)v->frame_signals[i].name)->GetBitSize();
 
 		int a = new_signal_offset;
 		int A = new_signal_offset + new_signal_size;
@@ -111,7 +116,7 @@ void VentanaFrameSignal::OnVentanaFrameSignalAccept_clicked(GtkButton *button, g
 
 		if ((a >= b && a < B) || (A > b && A <= B) || (b >= a && b < A) || (B > a && B <= A))
 		{
-			ShowErrorMessageBox(v->handle, "Signal '%s' collides with '%s'.", new_signal_name, v->frame_signals[i]->name);
+			ShowErrorMessageBox(v->handle, "Signal '%s' collides with '%s'.", new_signal_name, v->frame_signals[i].name);
 			return;
 		}
 	}
