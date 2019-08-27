@@ -118,6 +118,7 @@ VentanaFrame::~VentanaFrame()
 	G_DISCONNECT_FUNC(VentanaFrameSize, EditableInsertValidator);
 
 	// Disconnect lists
+	G_DISCONNECT_DATA(VentanaFramePublisher, this);
 	G_DISCONNECT_DATA(VentanaFrameSignalsSelection, this);
 	G_DISCONNECT_DATA(VentanaFrameSignalsList, this);
 

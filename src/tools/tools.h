@@ -32,7 +32,7 @@
 #define INT_1_8_EXPR			(gpointer)"^[1-8]{1}$"
 #define INT3_EXPR				(gpointer)"^[0-9]{1,3}$"
 #define INT5_EXPR				(gpointer)"^[0-9]{1,5}$"
-#define NAME_EXPR				(gpointer)"^[A-Za-z]{1}([A-Za-z_0-9])+$"
+#define NAME_EXPR				(gpointer)"^[A-Za-z]{1}[A-Za-z_0-9]{0,31}$"
 #define SFLOAT_EXPR				(gpointer)"^[0-9]{1,2}[.]{0,1}[0-9]{0,3}$"
 #define HEX2_EXPR				(gpointer)"^0x[0-9A-Fa-f]{1,2}$"
 #define HEX4_EXPR				(gpointer)"^0x[0-9A-Fa-f]{1,4}$"

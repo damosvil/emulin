@@ -629,6 +629,7 @@ void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointe
 	// Update frame
 	v->db->UpdateFrame((uint8_t *)frame_name, f);
 	v->db->SortData();
+	v->ReloadListSignals();
 	v->ReloadListFrames();
 	// TODO: Reload schedule list
 }
@@ -652,6 +653,7 @@ void VentanaInicio::OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpoin
 	v->db->DeleteFrame((uint8_t *)frame_name);
 	v->db->SortData();
 	v->ReloadListSignals();
+	v->ReloadListFrames();
 	// TODO: Reload schedule list
 }
 
