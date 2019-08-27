@@ -21,7 +21,7 @@ class VentanaNodoEsclavo {
 private:
 	GObject *handle;
 	ldf *db;
-	uint8_t *slave_name;
+	char *slave_name;
 
 	G_VAR(VentanaNodoEsclavoName);
 	G_VAR(VentanaNodoEsclavoProtocolVersion);
@@ -50,7 +50,7 @@ private:
 	static void OnVentanaNodoEsclavoCancel_clicked(GtkButton *button, gpointer user_data);
 
 public:
-	VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *slave_name);
+	VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char  *slave_name);
 	virtual ~VentanaNodoEsclavo();
 
 	ldfnodeattributes *ShowModal(GObject *parent);

@@ -460,7 +460,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	gtk_tree_model_get(model, &iter, 0, &slave_name, -1);
 
 	// Create slave window
-	VentanaNodoEsclavo w(v->builder, v->db, (uint8_t *)slave_name);
+	VentanaNodoEsclavo w(v->builder, v->db, slave_name);
 	ldfnodeattributes *na = w.ShowModal(v->handle);
 
 	// Update slave node

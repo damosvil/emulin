@@ -13,7 +13,7 @@ using namespace tools;
 
 namespace ui {
 
-VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *slave_name)
+VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave_name)
 {
 	// Store input info
 	this->db = db;
@@ -41,14 +41,14 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	G_PIN(VentanaNodoEsclavoCancel);
 
 	// Fill dialog fields with data
-	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNodeAttributesByName(slave_name) : NULL;
+	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNodeAttributesByName((uint8_t *)slave_name) : NULL;
 	if (a != NULL)
 	{
 		// Name
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoName), (gchar *)a->GetName());
 
 		// Protocol version
-		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion), GetLinProtocolVersionStringID(db->GetLinProtocolVersion()));
+		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion), GetLinProtocolVersionStringID(a->GetProtocolVersion()));
 
 		// Initial NAD
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD), GetStrPrintf("0x%02X", a->GetInitialNAD()));
@@ -69,7 +69,20 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal));
 		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal), "", "None");
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal), "");
-		// TODO: Load this list with all 1 bit signals published by this node. Leave this way for now
+
+		// Load response error signal list
+		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal));
+		for (uint32_t i = 0; i < db->GetSignalsCount(); i++)
+		{
+			// Skip signals not published by this node or size different to 1
+			ldfsignal *s = db->GetSignalByIndex(i);
+			if (s->GetBitSize() != 1 || !s->PublisherIs((uint8_t *)slave_name))
+				continue;
+
+			// Add signal to list
+			gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal), (char *)s->GetName(), (char *)s->GetName());
+		}
+		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal), (char *)a->GetResponseErrorSignalName());
 
 		// P2 min
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min), GetStrPrintf("%d", a->GetP2_min()));
@@ -103,14 +116,11 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 		// Function ID
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoFunctionID), "0x0000");
 
-		// Variant
+		// Variant(uint8_t *)
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant), "0x00");
 
 		// Response error signal
 		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal));
-		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal), "", "None");
-		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal), "");
-		// TODO: Load this list with all 1 bit signals published by this node. Leave this way for now
 
 		// P2 min
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min), "50");
@@ -138,7 +148,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, uint8_t *sl
 	G_CONNECT_INSTXT(VentanaNodoEsclavoN_Cr_timeout, INT5_EXPR);
 
 	// Connect buttons
-	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, clicked);
+	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, clicked);(uint8_t *)
 	G_CONNECT(VentanaNodoEsclavoConfigFrameEdit, clicked);
 	G_CONNECT(VentanaNodoEsclavoConfigFrameDelete, clicked);
 	G_CONNECT(VentanaNodoEsclavoAccept, clicked);
@@ -180,6 +190,9 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 		// Name
 		res = new ldfnodeattributes((uint8_t *)gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoName)));
 
+		// Protocol version
+		res->SetProtocolVersion(GetProtocolVersionByStringID(gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion))));
+
 		// Initial NAD
 		res->SetInitialNAD(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD))));
 
@@ -194,6 +207,11 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 
 		// Variant
 		res->SetVariant(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant))));
+
+		// Response error signal name
+		const char *resn = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal));
+		if (resn != NULL)
+			res->SetResponseErrorSignalName((uint8_t *)resn);
 
 		// P2 min
 		res->SetP2_min(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min))));

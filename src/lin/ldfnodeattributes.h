@@ -54,6 +54,7 @@ public:
 	void ValidateFrames(ldfframe **frames, uint32_t frames_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
 	uint8_t *GetName();
+	lin_protocol_version_e GetProtocolVersion();
 	uint8_t GetInitialNAD();
 	uint8_t GetConfiguredNAD();
 	uint16_t GetSupplierID();
@@ -67,6 +68,7 @@ public:
 	ldfconfigurableframe *GetConfigurableFrame(uint32_t ix);
 	uint16_t GetConfigurableFramesCount();
 
+	void SetProtocolVersion(lin_protocol_version_e v);
 	void SetInitialNAD(uint8_t v);
 	void SetConfiguredNAD(uint8_t v);
 	void SetSupplierID(uint16_t v);

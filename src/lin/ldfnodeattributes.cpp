@@ -184,6 +184,11 @@ uint8_t *ldfnodeattributes::GetName()
 	return name;
 }
 
+lin_protocol_version_e ldfnodeattributes::GetProtocolVersion()
+{
+	return protocol;
+}
+
 uint8_t ldfnodeattributes::GetInitialNAD()
 {
 	return initial_NAD;
@@ -242,6 +247,11 @@ uint16_t ldfnodeattributes::GetN_As_timeout()
 uint16_t ldfnodeattributes::GetN_Cr_timeout()
 {
 	return N_Cr_timeout;
+}
+
+void ldfnodeattributes::SetProtocolVersion(lin_protocol_version_e v)
+{
+	protocol = v;
 }
 
 void ldfnodeattributes::SetInitialNAD(uint8_t v)
