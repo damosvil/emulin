@@ -34,6 +34,7 @@ private:
 	frame_signals_raw_t *frame_signals;
 	int frame_signals_count;
 
+	// Widgets
 	G_VAR(VentanaFrameSignalOffset);
 	G_VAR(VentanaFrameSignalName);
 	G_VAR(VentanaFrameSignalSize);

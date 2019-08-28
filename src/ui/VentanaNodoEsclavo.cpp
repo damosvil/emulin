@@ -144,11 +144,11 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 
 	// Connect text fields
 	G_CONNECT_INSTXT(VentanaNodoEsclavoName, NAME_EXPR);
-	G_CONNECT_INSTXT(VentanaNodoEsclavoInitialNAD, HEX2_EXPR);
-	G_CONNECT_INSTXT(VentanaNodoEsclavoConfiguredNAD, HEX2_EXPR);
-	G_CONNECT_INSTXT(VentanaNodoEsclavoSupplierID, HEX4_EXPR);
-	G_CONNECT_INSTXT(VentanaNodoEsclavoFunctionID, HEX4_EXPR);
-	G_CONNECT_INSTXT(VentanaNodoEsclavoVariant, HEX2_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoInitialNAD, INT3_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoConfiguredNAD, INT3_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoSupplierID, INT5_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoFunctionID, INT5_EXPR);
+	G_CONNECT_INSTXT(VentanaNodoEsclavoVariant, INT3_EXPR);
 	G_CONNECT_INSTXT(VentanaNodoEsclavoP2_min, INT5_EXPR);
 	G_CONNECT_INSTXT(VentanaNodoEsclavoST_min, INT5_EXPR);
 	G_CONNECT_INSTXT(VentanaNodoEsclavoN_As_timeout, INT5_EXPR);
