@@ -23,6 +23,7 @@ private:
 	ldf *db;
 	char *slave_name;
 
+	// Widgets
 	G_VAR(VentanaNodoEsclavoName);
 	G_VAR(VentanaNodoEsclavoProtocolVersion);
 	G_VAR(VentanaNodoEsclavoInitialNAD);
@@ -36,13 +37,20 @@ private:
 	G_VAR(VentanaNodoEsclavoN_As_timeout);
 	G_VAR(VentanaNodoEsclavoN_Cr_timeout);
 	G_VAR(VentanaNodoEsclavoConfigFrameList);
+	G_VAR(VentanaNodoEsclavoConfigFrameSelection);
 	G_VAR(VentanaNodoEsclavoConfigFrameNew);
 	G_VAR(VentanaNodoEsclavoConfigFrameEdit);
 	G_VAR(VentanaNodoEsclavoConfigFrameDelete);
 	G_VAR(VentanaNodoEsclavoAccept);
 	G_VAR(VentanaNodoEsclavoCancel);
 
+	// Processes
+	void PrepareListConfigurableFrames();
+	void ReloadListConfigurableFrames();
+
 	// Signal events
+	static void OnVentanaNodoEsclavoConfigFrameList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+	static void OnVentanaNodoEsclavoConfigFrameSelection_changed(GtkTreeSelection *widget, gpointer user_data);
 	static void OnVentanaNodoEsclavoConfigFrameNew_clicked(GtkButton *button, gpointer user_data);
 	static void OnVentanaNodoEsclavoConfigFrameEdit_clicked(GtkButton *button, gpointer user_data);
 	static void OnVentanaNodoEsclavoConfigFrameDelete_clicked(GtkButton *button, gpointer user_data);

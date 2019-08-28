@@ -34,11 +34,15 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 	G_PIN(VentanaNodoEsclavoN_As_timeout);
 	G_PIN(VentanaNodoEsclavoN_Cr_timeout);
 	G_PIN(VentanaNodoEsclavoConfigFrameList);
+	G_PIN(VentanaNodoEsclavoConfigFrameSelection);
 	G_PIN(VentanaNodoEsclavoConfigFrameNew);
 	G_PIN(VentanaNodoEsclavoConfigFrameEdit);
 	G_PIN(VentanaNodoEsclavoConfigFrameDelete);
 	G_PIN(VentanaNodoEsclavoAccept);
 	G_PIN(VentanaNodoEsclavoCancel);
+
+	// Initialize list views
+	PrepareListConfigurableFrames();
 
 	// Fill dialog fields with data
 	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNodeAttributesByName((uint8_t *)slave_name) : NULL;
@@ -95,6 +99,9 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 
 		// N_Cr_timeout
 		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout), GetStrPrintf("%d", a->GetN_Cr_timeout()));
+
+		// Load configurable frame list
+		ReloadListConfigurableFrames();
 	}
 	else
 	{
@@ -147,8 +154,12 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 	G_CONNECT_INSTXT(VentanaNodoEsclavoN_As_timeout, INT5_EXPR);
 	G_CONNECT_INSTXT(VentanaNodoEsclavoN_Cr_timeout, INT5_EXPR);
 
+	// Connect lists
+	G_CONNECT(VentanaNodoEsclavoConfigFrameList, row_activated);
+	G_CONNECT(VentanaNodoEsclavoConfigFrameSelection, changed);
+
 	// Connect buttons
-	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, clicked);(uint8_t *)
+	G_CONNECT(VentanaNodoEsclavoConfigFrameNew, clicked);
 	G_CONNECT(VentanaNodoEsclavoConfigFrameEdit, clicked);
 	G_CONNECT(VentanaNodoEsclavoConfigFrameDelete, clicked);
 	G_CONNECT(VentanaNodoEsclavoAccept, clicked);
@@ -224,10 +235,92 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 
 		// N_Cr_timeout
 		res->SetN_Cr_timeout(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout))));
+
+		// Configurable frames
+		char *frame_id;
+		char *frame_name;
+		GtkTreeIter iter;
+		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(g_VentanaNodoEsclavoConfigFrameList));
+		if (gtk_tree_model_get_iter_first(model, &iter))
+		{
+			do
+			{
+				gtk_tree_model_get(model, &iter, 0, &frame_id, -1);
+				gtk_tree_model_get(model, &iter, 1, &frame_name, -1);
+				res->AddConfigurableFrame(new ldfconfigurableframe((uint8_t *)frame_name, MultiParseInt(frame_id)));
+			}
+			while (gtk_tree_model_iter_next(model, &iter));
+		}
 	}
 	gtk_widget_hide(GTK_WIDGET(handle));
 
 	return res;
+}
+
+void VentanaNodoEsclavo::PrepareListConfigurableFrames()
+{
+	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	GtkTreeView *v = GTK_TREE_VIEW(g_VentanaNodoEsclavoConfigFrameList);
+
+	// Add columns
+	TreeViewRemoveColumn(v, 0);
+	TreeViewRemoveColumn(v, 0);
+	TreeViewAddColumn(v, "ID", 0);
+	TreeViewAddColumn(v, "Frame", 1);
+
+	// Set model and unmanage reference from this code
+	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
+	g_object_unref(s);
+
+	// Disable edit and delete buttons
+	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaNodoEsclavoConfigFrameEdit), FALSE);
+	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaNodoEsclavoConfigFrameDelete), FALSE);
+}
+
+void VentanaNodoEsclavo::ReloadListConfigurableFrames()
+{
+	GtkTreeIter it;
+	GtkTreeView *v = GTK_TREE_VIEW(g_VentanaNodoEsclavoConfigFrameList);
+	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
+
+	// Clear list store
+	gtk_list_store_clear(s);
+
+	// Skip if no slave
+	ldfnodeattributes *a = db->GetSlaveNodeAttributesByName((uint8_t *)slave_name);
+	if (a == NULL)
+		return;
+
+	// Add data to list store
+	for (uint32_t i = 0; i < a->GetConfigurableFramesCount(); i++)
+	{
+		ldfconfigurableframe *f = a->GetConfigurableFrame(i);
+
+		// Append a new list item
+		gtk_list_store_append(s, &it);
+
+		// ID
+		gtk_list_store_set(s, &it, 0, GetStrPrintf("0x%X", f->GetId()), -1);
+
+		// name
+		gtk_list_store_set(s, &it, 1, f->GetName(), -1);
+	}
+}
+
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
+{
+	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
+
+	gtk_widget_activate(GTK_WIDGET(v->g_VentanaNodoEsclavoConfigFrameEdit));
+}
+
+void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+{
+	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
+
+	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaNodoEsclavoConfigFrameEdit), enable);
+	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaNodoEsclavoConfigFrameDelete), enable);
 }
 
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameNew_clicked(GtkButton *button, gpointer user_data)
@@ -245,7 +338,12 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameEdit_clicked(GtkButton *
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameDelete_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
 
+	// Remove subscriber from list model
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaNodoEsclavoConfigFrameSelection), &model, &iter);
+	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
 }
 
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, gpointer user_data)

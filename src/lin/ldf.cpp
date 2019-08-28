@@ -594,6 +594,10 @@ ldfnodeattributes *ldf::GetSlaveNodeAttributesByName(uint8_t *slave_name)
 	uint32_t ix;
 	ldfnodeattributes *ret = NULL;
 
+	// Skip if parameter is invalid
+	if (slave_name == NULL)
+		return NULL;
+
 	// Look for node attributes
 	for (ix = 0; (ret == NULL) && (ix < node_attributes_count); ix++)
 	{
