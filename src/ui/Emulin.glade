@@ -5,6 +5,7 @@
   <object class="GtkDialog" id="VentanaFrame">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Frame</property>
+    <property name="resizable">False</property>
     <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
     <child>
@@ -220,6 +221,7 @@
   <object class="GtkDialog" id="VentanaFrameSignal">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Frame signal</property>
+    <property name="resizable">False</property>
     <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
     <child>
@@ -963,7 +965,6 @@
     <property name="resizable">False</property>
     <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
-    <property name="deletable">False</property>
     <child>
       <placeholder/>
     </child>
@@ -1506,7 +1507,6 @@
     <property name="resizable">False</property>
     <property name="icon_name">network-wired</property>
     <property name="type_hint">dialog</property>
-    <property name="deletable">False</property>
     <child>
       <placeholder/>
     </child>

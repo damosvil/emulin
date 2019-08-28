@@ -180,6 +180,10 @@ VentanaNodoEsclavo::~VentanaNodoEsclavo()
 	G_DISCONNECT_FUNC(VentanaNodoEsclavoN_As_timeout, EditableInsertValidator);
 	G_DISCONNECT_FUNC(VentanaNodoEsclavoN_Cr_timeout, EditableInsertValidator);
 
+	// Disconnect lists
+	G_DISCONNECT_DATA(VentanaNodoEsclavoConfigFrameList, this);
+	G_DISCONNECT_DATA(VentanaNodoEsclavoConfigFrameSelection, this);
+
 	// Disconnect buttons
 	G_DISCONNECT_DATA(VentanaNodoEsclavoConfigFrameNew, this);
 	G_DISCONNECT_DATA(VentanaNodoEsclavoConfigFrameEdit, this);
