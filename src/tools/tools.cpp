@@ -24,7 +24,7 @@ uint32_t GetStrIndexByID(const char **ids, uint32_t ids_count, const char *id)
 	{
 		if (id == NULL) break;
 		if (ids[ix] == NULL) continue;
-		if (strcmp(id, ids[ix]) == 0) break;
+		if (Same(id, ids[ix])) break;
 	}
 
 	return ix;
@@ -175,5 +175,21 @@ int32_t MultiParseInt(const char *p)
 {
 	return (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
 }
+
+bool Same(const char *a, const char *b)
+{
+	return strcmp(a, b) == 0;
+}
+
+bool Same(int a, const char *b)
+{
+	return a == MultiParseInt(b);
+}
+
+bool Same(const char *a, int b)
+{
+	return MultiParseInt(a) == b;
+}
+
 
 }

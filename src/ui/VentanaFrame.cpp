@@ -288,7 +288,7 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 		bool selected = false;
 		for (int j = 0; !selected && (j < frame_signals_count); j++)
 		{
-			selected = strcmp(signal_names[i], frame_signals[j].name) == 0;
+			selected = Same(signal_names[i], frame_signals[j].name);
 		}
 		if (!selected)
 		{
@@ -420,7 +420,7 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 		ShowErrorMessageBox(v->handle, "Frame name '%s' is already in use.", new_frame_name);
 		return;
 	}
-	else if (v->frame_name != NULL && strcmp((char *)v->frame_name, new_frame_name) != 0 && frame_by_new_name != NULL)
+	else if (v->frame_name != NULL && !Same((char *)v->frame_name, new_frame_name) && frame_by_new_name != NULL)
 	{
 		ShowErrorMessageBox(v->handle, "Frame name changed to '%s' that is already in use.", new_frame_name);
 		return;

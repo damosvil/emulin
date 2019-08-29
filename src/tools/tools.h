@@ -49,6 +49,10 @@ const char *GetStrPrintf(const char *format, ...);
 void ShowErrorMessageBox(GObject *parent, const char *format, ...);
 bool ShowChooseMessageBox(GObject *parent, const char *format, ...);
 int32_t MultiParseInt(const char *p);
+bool Same(const char *a, const char *b);
+bool Same(int a, const char *b);
+bool Same(const char *a, int b);
+
 
 }
 

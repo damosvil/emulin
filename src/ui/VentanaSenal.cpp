@@ -224,7 +224,7 @@ void VentanaSenal::GetAllFreeSubscriberNodes(const char **nodes, int *count)
 		// Check whether node in use
 		bool in_use = false;
 		for (int jx = 0; !in_use && jx < nodes_used_count; jx++)
-			in_use = strcmp(nodes[ix], nodes_used[jx]) == 0;
+			in_use = Same(nodes[ix], nodes_used[jx]);
 		if (!in_use)
 		{
 			ix++;
@@ -253,7 +253,8 @@ void VentanaSenal::OnVentanaSenalPublisher_changed(GtkComboBoxText *widget, gpoi
 		{
 			// Get publisher in list
 			gtk_tree_model_get(model, &iter, 0, &model_publisher_name, -1);
-			if (strcmp(publisher_name, model_publisher_name) != 0) continue;
+			if (!Same(publisher_name, model_publisher_name))
+				continue;
 
 			// Remove publisher from model
 			gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
@@ -366,7 +367,7 @@ void VentanaSenal::OnVentanaSenalAccept_clicked(GtkButton *button, gpointer user
 		ShowErrorMessageBox(v->handle, "Signal name '%s' is already in use.", new_signal_name);
 		return;
 	}
-	else if (v->signal_name != NULL && strcmp((char *)v->signal_name, new_signal_name) != 0 && v->db->GetSignalByName((uint8_t *)new_signal_name) != NULL)
+	else if (v->signal_name != NULL && !Same((char *)v->signal_name, new_signal_name) && v->db->GetSignalByName((uint8_t *)new_signal_name) != NULL)
 	{
 		ShowErrorMessageBox(v->handle, "Signal name changed to '%s' that is already in use.", new_signal_name);
 		return;

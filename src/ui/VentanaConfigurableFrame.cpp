@@ -30,15 +30,12 @@ VentanaConfigurableFrame::VentanaConfigurableFrame(GtkBuilder *builder, ldf *db,
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaConfigurableFrameName), frame_names[0]);
 
 	// Set ID
-	for (int i = 0; i < config_frames_count; i++)
+	configurable_frame_raw_t *c = NULL;
+	for (int i = 0; (c == NULL) && (i < config_frames_count); i++)
 	{
-		// Skip configurable frames with different name
-		if (strcmp(frame_names[0], config_frames[i].name) != 0)
-			continue;
-
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaConfigurableFrameID), config_frames[i].id);
-		break;
+		c = Same(frame_names[0], config_frames[i].name) ? &config_frames[i] : NULL;
 	}
+	gtk_entry_set_text(GTK_ENTRY(g_VentanaConfigurableFrameID), (c != NULL) ? c->id : GetStrPrintf("0x%02X", db->GetFrameByName((uint8_t *)frame_names[0])->GetId()));
 
 	// Connect text fields
 	G_CONNECT_INSTXT(VentanaConfigurableFrameID, INT3_EXPR);
@@ -87,15 +84,20 @@ void VentanaConfigurableFrame::OnVentanaConfigurableFrameAccept_clicked(GtkButto
 	VentanaConfigurableFrame *v = (VentanaConfigurableFrame *)user_data;
 
 	// Check frame ID is unique
+	const char *new_frame_name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaConfigurableFrameName));
 	int new_frame_id = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaConfigurableFrameID)));
 	for (int i = 0; i < v->config_frames_count; i++)
 	{
+		// Skip configurable frames with the same name than the one being edited
+		if (Same(new_frame_name, v->config_frames[i].name))
+			continue;
+
 		// Skip configurable frames with different IDs
-		if (new_frame_id == MultiParseInt(v->config_frames[i].id))
-		{
-			ShowErrorMessageBox(v->handle, "Signals shall have subscribers.");
-			return;
-		}
+		if (!Same(new_frame_id, v->config_frames[i].id))
+			continue;
+
+		ShowErrorMessageBox(v->handle, "Configurable frame '%s' is already using the identifier '%s'.", v->config_frames[i].name, v->config_frames[i].id);
+		return;
 	}
 
 	// Return true

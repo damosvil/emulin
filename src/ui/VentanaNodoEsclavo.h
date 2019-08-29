@@ -19,6 +19,7 @@ namespace ui {
 class VentanaNodoEsclavo {
 
 private:
+	GtkBuilder *builder;
 	GObject *handle;
 	ldf *db;
 	char *slave_name;

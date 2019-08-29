@@ -35,7 +35,7 @@ VentanaFrameSignal::VentanaFrameSignal(
 	// Set offset
 	int frame_signal_ix = -1;
 	for (int i = 0; (frame_signal_ix == -1) && (i < frame_signals_count); i++)
-		frame_signal_ix = (strcmp(signal_names[0], frame_signals[i].name) == 0) ? i : -1;
+		frame_signal_ix = Same(signal_names[0], frame_signals[i].name) ? i : -1;
 	if (frame_signal_ix == -1)
 	{
 		int offset = 0;
@@ -102,7 +102,7 @@ void VentanaFrameSignal::OnVentanaFrameSignalAccept_clicked(GtkButton *button, g
 	for (int i = 0; i < v->frame_signals_count; i++)
 	{
 		// Skip editing signal
-		if (strcmp(new_signal_name, v->frame_signals[i].name) == 0)
+		if (Same(new_signal_name, v->frame_signals[i].name))
 			continue;
 
 		// Check collision

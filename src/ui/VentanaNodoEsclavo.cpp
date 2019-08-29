@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <VentanaNodoEsclavo.h>
+#include <VentanaConfigurableFrame.h>
 #include "tools.h"
 
 using namespace tools;
@@ -16,6 +17,7 @@ namespace ui {
 VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave_name)
 {
 	// Store input info
+	this->builder = builder;
 	this->db = db;
 	this->slave_name = slave_name;
 	this->handle = gtk_builder_get_object(builder, "VentanaNodoEsclavo");
@@ -304,7 +306,7 @@ void VentanaNodoEsclavo::ReloadListConfigurableFrames()
 		gtk_list_store_append(s, &it);
 
 		// ID
-		gtk_list_store_set(s, &it, 0, GetStrPrintf("0x%X", f->GetId()), -1);
+		gtk_list_store_set(s, &it, 0, GetStrPrintf("0x%02X", f->GetId()), -1);
 
 		// name
 		gtk_list_store_set(s, &it, 1, f->GetName(), -1);
@@ -330,12 +332,134 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameSelection_changed(GtkTre
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameNew_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
+	char *frame_names[1000];
+	int frame_names_count = 0;
+	VentanaConfigurableFrame::configurable_frame_raw_t configurable_frames[1000];
+	int configurable_frames_count = 0;
 
+	// Put in a list the frames this slave is publisher
+	for (uint32_t i = 0; i < v->db->GetFramesCount(); i++)
+	{
+		ldfframe *f = v->db->GetFrameByIndex(i);
+
+		// Skip other publishers' frames
+		if (!f->PublisherIs((uint8_t*)v->slave_name))
+			continue;
+
+		frame_names[frame_names_count++] = (char *)f->GetName();
+	}
+
+	// Put in a list existing configurable frames for this slave
+	GtkTreeIter iter;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaNodoEsclavoConfigFrameList));
+	if (gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			gtk_tree_model_get(model, &iter, 0, &configurable_frames[configurable_frames_count].id, -1);
+			gtk_tree_model_get(model, &iter, 1, &configurable_frames[configurable_frames_count].name, -1);
+			configurable_frames_count++;
+		}
+		while (gtk_tree_model_iter_next(model, &iter));
+	}
+
+	// Remove already configured frames from frame_names_list
+	for (int i = 0; i < frame_names_count; )
+	{
+		VentanaConfigurableFrame::configurable_frame_raw_t *c = NULL;
+
+		// Skip frames not configured
+		for (int j = 0; c == NULL && j < configurable_frames_count; j++)
+		{
+			c = Same(frame_names[i], configurable_frames[j].name) ? &configurable_frames[j] : NULL;
+		}
+		if (c == NULL)
+		{
+			i++;
+			continue;
+		}
+
+		// Remove frame
+		frame_names_count--;
+		for (int j = i; j < frame_names_count; j++)
+			frame_names[j] = frame_names[j + 1];
+	}
+
+	// Check if there is any frame to add to configurable frames list
+	if (frame_names_count == 0)
+	{
+		ShowErrorMessageBox(v->handle, "There are no more suitable frames to choose from.");
+		return;
+	}
+
+	VentanaConfigurableFrame w(v->builder, v->db, frame_names, frame_names_count, configurable_frames, configurable_frames_count);
+	ldfconfigurableframe *f = w.ShowModal(v->handle);
+	if (f == NULL)
+		return;
+
+	// Look for a place to insert the new configurable frame
+	int ix = -1;
+	for (int i = 0; (ix == -1) && i < configurable_frames_count; i++)
+		if (MultiParseInt(configurable_frames[i].id) > f->GetId())
+			ix = i;
+
+	// Insert item in list store
+	gtk_list_store_insert(GTK_LIST_STORE(model), &iter, ix);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, (gchar *)GetStrPrintf("0x%02X", f->GetId()), -1);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, (gchar *)f->GetName(), -1);
+
+	// Delete configurable frame
+	delete f;
 }
 
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameEdit_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
+	char *frame_name;
+	VentanaConfigurableFrame::configurable_frame_raw_t configurable_frames[1000];
+	int configurable_frames_count = 0;
+
+	GtkTreeIter iter;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaNodoEsclavoConfigFrameList));
+
+	// Get selected frame_name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaNodoEsclavoConfigFrameSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 1, &frame_name, -1);
+
+	// Put in a list existing configurable frames for this slave
+	if (gtk_tree_model_get_iter_first(model, &iter))
+	{
+		do
+		{
+			gtk_tree_model_get(model, &iter, 0, &configurable_frames[configurable_frames_count].id, -1);
+			gtk_tree_model_get(model, &iter, 1, &configurable_frames[configurable_frames_count].name, -1);
+			configurable_frames_count++;
+		}
+		while (gtk_tree_model_iter_next(model, &iter));
+	}
+
+	VentanaConfigurableFrame w(v->builder, v->db, &frame_name, 1, configurable_frames, configurable_frames_count);
+	ldfconfigurableframe *f = w.ShowModal(v->handle);
+	if (f == NULL)
+		return;
+
+	// Remove selected configurable frame
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaNodoEsclavoConfigFrameSelection), &model, &iter);
+	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+
+	// Look for a place to insert the new configurable frame
+	int ix = -1;
+	for (int i = 0; (ix == -1) && i < configurable_frames_count; i++)
+		if (MultiParseInt(configurable_frames[i].id) > f->GetId())
+			ix = i;
+
+	// Insert item in list store
+	gtk_list_store_insert(GTK_LIST_STORE(model), &iter, ix);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, (gchar *)GetStrPrintf("0x%02X", f->GetId()), -1);
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, (gchar *)f->GetName(), -1);
+
+	// Delete configurable frame
+	delete f;
 
 }
 
@@ -369,13 +493,13 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, g
 		ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use.", new_slave_name);
 		return;
 	}
-	else if (v->slave_name != NULL && strcmp(new_slave_name, (char *)v->slave_name) != 0 && v->db->GetMasterNode()->NameIs((uint8_t *)new_slave_name))
+	else if (v->slave_name != NULL && !Same(new_slave_name, (char *)v->slave_name) && v->db->GetMasterNode()->NameIs((uint8_t *)new_slave_name))
 	{
 		// Identifier in use
 		ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use by master node.", new_slave_name);
 		return;
 	}
-	else if (v->slave_name != NULL && strcmp(new_slave_name, (char *)v->slave_name) != 0 && attributes != NULL)
+	else if (v->slave_name != NULL && !Same(new_slave_name, (char *)v->slave_name) && attributes != NULL)
 	{
 		// Identifier in use
 		ShowErrorMessageBox(v->handle, "Slave name changed to another one that '%s' is already in use.", new_slave_name);
