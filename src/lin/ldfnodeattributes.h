@@ -43,6 +43,8 @@ private:
 	ldfconfigurableframe *configurable_frames[1000];
 	uint16_t configurable_frames_count;
 
+	static int32_t SorterConfigurableFrames(const void *a, const void *b);
+
 public:
 	ldfnodeattributes(uint8_t *name);
 	virtual ~ldfnodeattributes();
@@ -81,6 +83,7 @@ public:
 	void SetResponseErrorSignalName(uint8_t *v);
 
 	bool NameIs(uint8_t *name);
+	void SortData();
 
 };
 

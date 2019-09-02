@@ -443,24 +443,12 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameEdit_clicked(GtkButton *
 	if (f == NULL)
 		return;
 
-	// Remove selected configurable frame
+	// Update configurable frame
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaNodoEsclavoConfigFrameSelection), &model, &iter);
-	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-
-	// Look for a place to insert the new configurable frame
-	int ix = -1;
-	for (int i = 0; (ix == -1) && i < configurable_frames_count; i++)
-		if (MultiParseInt(configurable_frames[i].id) > f->GetId())
-			ix = i;
-
-	// Insert item in list store
-	gtk_list_store_insert(GTK_LIST_STORE(model), &iter, ix);
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, (gchar *)GetStrPrintf("0x%02X", f->GetId()), -1);
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, (gchar *)f->GetName(), -1);
 
 	// Delete configurable frame
 	delete f;
-
 }
 
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameDelete_clicked(GtkButton *button, gpointer user_data)

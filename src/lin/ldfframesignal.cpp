@@ -49,6 +49,20 @@ ldfframesignal *ldfframesignal::FromLdfStatement(uint8_t *statement)
 	}
 }
 
+int32_t ldfframesignal::SorterFrameSignals(const void *a, const void *b)
+{
+	ldfframesignal *aa = *(ldfframesignal **)a;
+	ldfframesignal *bb = *(ldfframesignal **)b;
+
+	int res = aa->offset - bb->offset;
+	if (res == 0)
+	{
+		res = strcmp((char *)aa->name, (char *)bb->name);
+	}
+
+	return res;
+}
+
 uint8_t *ldfframesignal::GetName()
 {
 	return name;

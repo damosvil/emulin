@@ -46,6 +46,19 @@ ldfconfigurableframe *ldfconfigurableframe::FromLdfStatement(uint8_t *statement)
 	}
 }
 
+int32_t ldfconfigurableframe::SorterConfigurableFrames(const void *a, const void *b)
+{
+	ldfconfigurableframe *aa = *(ldfconfigurableframe **)a;
+	ldfconfigurableframe *bb = *(ldfconfigurableframe **)b;
+
+	int res = aa->id - bb->id;
+	if (res == 0)
+	{
+		res = strcmp((char *)aa->name, (char *)bb->name);
+	}
+	return res;
+}
+
 uint8_t *ldfconfigurableframe::GetName()
 {
 	return name;

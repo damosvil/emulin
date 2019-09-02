@@ -310,6 +310,12 @@ bool ldfnodeattributes::NameIs(uint8_t *name)
 	return strcmp((char *)name, (char *)this->name) == 0;
 }
 
+void ldfnodeattributes::SortData()
+{
+	qsort(configurable_frames, configurable_frames_count, sizeof(configurable_frames[0]), ldfconfigurableframe::SorterConfigurableFrames);
+}
+
+
 
 
 } /* namespace lin */

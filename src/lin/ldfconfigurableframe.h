@@ -23,6 +23,7 @@ public:
 	virtual ~ldfconfigurableframe();
 
 	static ldfconfigurableframe *FromLdfStatement(uint8_t *statement);
+	static int32_t SorterConfigurableFrames(const void *a, const void *b);
 
 	uint8_t *GetName();
 	uint8_t GetId();

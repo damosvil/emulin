@@ -54,6 +54,8 @@ public:
 
 	static int32_t CompareId(const ldfframe *a, const ldfframe *b);
 	static int32_t ComparePublisher(const ldfframe *a, const ldfframe *b);
+	int32_t SortData();
+
 };
 
 } /* namespace lin */

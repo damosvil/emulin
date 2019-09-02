@@ -82,6 +82,18 @@ void ldf::SortData()
 	// Sort signals
 	qsort(signals, signals_count, sizeof(signals[0]), SorterSignals);
 	qsort(frames, frames_count, sizeof(frames[0]), SorterFrames);
+
+	// Sort nodes configurable frames
+	for (uint32_t i = 0; i < node_attributes_count; i++)
+	{
+		node_attributes[i]->SortData();
+	}
+
+	// Sort frames frame signals
+	for (uint32_t i = 0; i < frames_count; i++)
+	{
+		frames[i]->SortData();
+	}
 }
 
 bool ldf::Validate(void)

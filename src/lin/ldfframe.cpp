@@ -272,5 +272,10 @@ int32_t ldfframe::ComparePublisher(const ldfframe *a, const ldfframe *b)
 	return strcmp((char *)a->publisher, (char *)b->publisher);
 }
 
+int32_t ldfframe::SortData()
+{
+	qsort(signals, signals_count, sizeof(signals[0]), ldfframesignal::SorterFrameSignals);
+}
+
 
 } /* namespace lin */

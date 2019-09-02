@@ -23,6 +23,7 @@ public:
 	virtual ~ldfframesignal();
 
 	static ldfframesignal *FromLdfStatement(uint8_t *statement);
+	static int32_t SorterFrameSignals(const void *a, const void *b);
 
 	uint8_t *GetName();
 	uint16_t GetOffset();

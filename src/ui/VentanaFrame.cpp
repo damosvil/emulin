@@ -363,21 +363,9 @@ void VentanaFrame::OnVentanaFrameSignalsEdit_clicked(GtkButton *button, gpointer
 	if (fs == NULL)
 		return;
 
-	// Delete editing frame signal
+	// Update frame signal
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaFrameSignalsSelection), &model, &iter);
-	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-
-	// Look in frame_signals where to insert the new frame signal
-	int ix;
-	for (ix = 0; ix < frame_signals_count; ix++)
-		if (MultiParseInt(frame_signals[ix].offset) > fs->GetOffset())
-			break;
-
-	// Insert item in list store
-	gtk_list_store_insert(GTK_LIST_STORE(model), &iter, ix);
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, (gchar *)GetStrPrintf("%d", fs->GetOffset()), -1);
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, (gchar *)fs->GetName(), -1);
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 2, (gchar *)GetStrPrintf("%d", v->db->GetSignalByName(fs->GetName())->GetBitSize()), -1);
 
 	// Delete frame signal
 	delete fs;
