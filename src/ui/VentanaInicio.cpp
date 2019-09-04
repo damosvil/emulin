@@ -218,7 +218,7 @@ void VentanaInicio::ReloadListSlaves()
 		str[0] = 0;
 		for (jx = 0; jx < a->GetConfigurableFramesCount(); jx++)
 		{
-			if (jx > 0) strcat(str, ", ");
+			if (jx > 0) strcat(str, "\r\n");
 			strcat(str, (char *)a->GetConfigurableFrame(jx)->GetName());
 		}
 		gtk_list_store_set(s, &it, 4, str, -1);
@@ -271,7 +271,7 @@ void VentanaInicio::ReloadListSignals()
 		str[0] = 0;
 		for (jx = 0; jx < signal->GetSubscribersCount(); jx++)
 		{
-			if (jx != 0) strcat(str, ", ");
+			if (jx != 0) strcat(str, "\r\n");
 			strcat(str, (char *)signal->GetSubscriber(jx));
 		}
 		gtk_list_store_set(s, &it, 4, str, -1);
@@ -324,11 +324,29 @@ void VentanaInicio::ReloadListFrames()
 		str[0] = 0;
 		for (jx = 0; jx < frame->GetSignalsCount(); jx++)
 		{
-			if (jx != 0) strcat(str, ", ");
-			strcat(str, (char *)frame->GetSignal(jx)->GetName());
+			if (jx != 0) strcat(str, "\r\n");
+			strcat(str, GetStrPrintf("%02d: %s", frame->GetSignal(jx)->GetOffset(), frame->GetSignal(jx)->GetName()));
 		}
 		gtk_list_store_set(s, &it, 4, str, -1);
 	}
+}
+
+void VentanaInicio::PrepareListScheduleTables()
+{
+	const char *columns[] = { "Frame", "ID", "Publisher", "Size", "Signals", NULL };
+
+	// Prepare tree view
+	TreeViewPrepare(g_PanelDatabaseFramesList, columns);
+
+	// Disable edit and delete buttons
+	WidgetEnable(g_PanelDatabaseFramesEdit, FALSE);
+	WidgetEnable(g_PanelDatabaseFramesDelete, FALSE);
+
+}
+
+void VentanaInicio::ReloadListScheduleTables()
+{
+
 }
 
 void VentanaInicio::OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data)
@@ -406,6 +424,8 @@ void VentanaInicio::OnPanelDatabaseMasterJitter_changed(GtkCellEditable *widget,
 void VentanaInicio::OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	GetLinProtocolVersionStringID(LIN_PROTOCOL_VERSION_2_1);
 
 	// Create slave window
 	VentanaNodoEsclavo w(v->builder, v->db, NULL);
@@ -602,6 +622,7 @@ void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointe
 	// Update frame
 	v->db->UpdateFrame((uint8_t *)frame_name, f);
 	v->db->SortData();
+	v->ReloadListSlaves();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
 	// TODO: Reload schedule list
@@ -625,6 +646,7 @@ void VentanaInicio::OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpoin
 	// Delete the frame
 	v->db->DeleteFrame((uint8_t *)frame_name);
 	v->db->SortData();
+	v->ReloadListSlaves();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
 	// TODO: Reload schedule list

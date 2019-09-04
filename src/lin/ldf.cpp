@@ -873,6 +873,12 @@ void ldf::AddFrame(ldfframe *f)
 
 void ldf::UpdateFrame(uint8_t *old_frame_name, ldfframe *f)
 {
+	// Update frame in configurable frames
+	for (uint32_t i = 0; i < node_attributes_count; i++)
+	{
+		node_attributes[i]->UpdateConfigurableFrames(old_frame_name, f->GetName());
+	}
+
 	// Update frame
 	for (uint32_t ix = 0; ix < frames_count; ix++)
 	{
@@ -891,6 +897,14 @@ void ldf::UpdateFrame(uint8_t *old_frame_name, ldfframe *f)
 
 void ldf::DeleteFrame(uint8_t *frame_name)
 {
+	// Update frame in configurable frames
+	for (uint32_t i = 0; i < node_attributes_count; i++)
+	{
+		node_attributes[i]->DeleteConfigurableFrames(frame_name);
+	}
+
+	// TODO:: Delete frame from schedule table
+
 	// Delete frame
 	for (uint32_t ix = 0; ix < frames_count; ix++)
 	{
@@ -902,8 +916,6 @@ void ldf::DeleteFrame(uint8_t *frame_name)
 		DeleteFrameByIndex(ix);
 		break;
 	}
-
-	// TODO:: Delete frame from schedule table
 }
 
 

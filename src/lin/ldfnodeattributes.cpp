@@ -315,7 +315,32 @@ void ldfnodeattributes::SortData()
 	qsort(configurable_frames, configurable_frames_count, sizeof(configurable_frames[0]), ldfconfigurableframe::SorterConfigurableFrames);
 }
 
+void ldfnodeattributes::UpdateConfigurableFrames(const uint8_t *old_frame_name, const uint8_t *new_frame_name)
+{
+	for (int i = 0; i < configurable_frames_count; i++)
+	{
+		configurable_frames[i]->UpdateName(old_frame_name, new_frame_name);
+	}
+}
 
+void ldfnodeattributes::DeleteConfigurableFrames(const uint8_t *frame_name)
+{
+	for (int i = 0; i < configurable_frames_count; i++)
+	{
+		// Skip configurable frames with different name
+		if (strcmp((char *)configurable_frames[i], (char* )frame_name) != 0)
+		{
+			continue;
+		}
+
+		// Delete configurable frame and move back the other frames over the gap
+		delete configurable_frames[i];
+		configurable_frames_count--;
+		for (; i < configurable_frames_count; i++)
+			configurable_frames[i] = configurable_frames[i + 1];
+		break;
+	}
+}
 
 
 } /* namespace lin */

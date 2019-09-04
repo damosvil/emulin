@@ -86,5 +86,14 @@ void ldfconfigurableframe::ValidateUnicity(uint8_t *attributes, ldfconfigurablef
 	}
 }
 
+void ldfconfigurableframe::UpdateName(const uint8_t *old_frame_name, const uint8_t *new_frame_name)
+{
+	if (strcmp((char *)name, (char *)old_frame_name) == 0)
+	{
+		delete name;
+		name = (uint8_t *)strdup((char *)new_frame_name);
+	}
+}
+
 
 } /* namespace lin */

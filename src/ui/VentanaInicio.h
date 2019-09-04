@@ -55,6 +55,8 @@ private:
 	void ReloadListSignals();
 	void PrepareListFrames();
 	void ReloadListFrames();
+	void PrepareListScheduleTables();
+	void ReloadListScheduleTables();
 
 	// Signal events
 	static void OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data);

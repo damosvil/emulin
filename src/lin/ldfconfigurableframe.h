@@ -29,6 +29,7 @@ public:
 	uint8_t GetId();
 
 	void ValidateUnicity(uint8_t *attributes, ldfconfigurableframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count);
+	void UpdateName(const uint8_t *old_frame_name, const uint8_t *new_frame_name);
 
 };
 

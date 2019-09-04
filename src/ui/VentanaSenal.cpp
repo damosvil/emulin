@@ -76,7 +76,7 @@ VentanaSenal::VentanaSenal(GtkBuilder *builder, ldf *db, const char *signal_name
 		EntrySet(g_VentanaSenalName, "signal");
 
 		// Bit size
-		EntrySet(g_VentanaSenalBitSize, "0");
+		EntrySet(g_VentanaSenalBitSize, "1");
 
 		// Default value
 		EntrySet(g_VentanaSenalDefaultValue, "0");
@@ -344,6 +344,7 @@ void VentanaSenal::OnVentanaSenalAccept_clicked(GtkButton *button, gpointer user
 	GtkTreeIter iter;
 	VentanaSenal *v = (VentanaSenal *)user_data;
 	const char *new_signal_name = EntryGetStr(v->g_VentanaSenalName);
+	int new_signal_size = EntryGetInt(v->g_VentanaSenalBitSize);
 
 	if (strlen(new_signal_name) == 0)
 	{
@@ -363,6 +364,11 @@ void VentanaSenal::OnVentanaSenalAccept_clicked(GtkButton *button, gpointer user
 	else if (!gtk_tree_model_get_iter_first(gtk_tree_view_get_model(GTK_TREE_VIEW(v->g_VentanaSenalSubscriberList)), &iter))
 	{
 		ShowErrorMessageBox(v->handle, "Signals shall have subscribers.");
+		return;
+	}
+	else if (new_signal_size == 0)
+	{
+		ShowErrorMessageBox(v->handle, "Signal bit size shall be bigger than 0.");
 		return;
 	}
 

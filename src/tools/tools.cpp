@@ -131,6 +131,8 @@ void TreeViewPrepare(GObject *v, const char **columns)
 		TreeViewAddColumn(GTK_TREE_VIEW(v), columns[i], i);
 	}
 
+	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(v), GTK_TREE_VIEW_GRID_LINES_HORIZONTAL);
+
 	// Set model and unmanage reference from this code
 	gtk_tree_view_set_model(GTK_TREE_VIEW(v), GTK_TREE_MODEL(s));
 	g_object_unref(s);
@@ -138,14 +140,20 @@ void TreeViewPrepare(GObject *v, const char **columns)
 
 const char *GetStrPrintf(const char *format, ...)
 {
-	static char str[10000];
+	static char str[100000];
+	static int ix = 0;
 	va_list argptr;
 
+	// Increase index
+	ix = (ix < 90000) ? ix + 10000 : 0;
+
+	// Print string
 	va_start(argptr, format);
-	vsprintf(str, format, argptr);
+	vsprintf(str + ix, format, argptr);
 	va_end(argptr);
 
-	return str;
+	// return string
+	return str + ix;
 }
 
 void ShowErrorMessageBox(GObject *parent, const char *format, ...)
@@ -214,7 +222,7 @@ void EntrySet(GObject *w, const char *format, ...)
 	vsprintf(str, format, argptr);
 	va_end(argptr);
 
-	gtk_entry_set_text(GTK_ENTRY(w), (gchar *)str);
+	gtk_entry_set_text(GTK_ENTRY(w), str);
 }
 
 const char * EntryGetStr(GObject *w)
