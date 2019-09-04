@@ -9,7 +9,9 @@ The main milestones of this project are:
 Prerequisites:
 * Eclipse CDT Photon - Project's Official IDE
 * Pkg-config Eclipse plugin 
-* GTK3 - For user interfaces
+* GTK3 - For user interfaces (https://developer.gnome.org/gtk3/stable/gtk-compiling.html). Check the commands:
+** 'pkg-config --cflags gtk+-3.0'
+** 'pkg-config --libs gtk+-3.0'
 * Glade - To design the user interfaces
 * en_US locale - Install it: "sudo locale-gen en_US"
 
