@@ -178,24 +178,13 @@ ldfframe *VentanaFrame::ShowModal(GObject *parent)
 
 void VentanaFrame::PrepareListSignals()
 {
-	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	GtkTreeView *v = GTK_TREE_VIEW(g_VentanaFrameSignalsList);
+	const char *columns[] = { "Offset", "Signal", "Bit size", NULL };
 
-	// Add columns
-	TreeViewRemoveColumn(v, 0);
-	TreeViewRemoveColumn(v, 0);
-	TreeViewRemoveColumn(v, 0);
-	TreeViewAddColumn(v, "Offset", 0);
-	TreeViewAddColumn(v, "Signal", 1);
-	TreeViewAddColumn(v, "Bit size", 2);
-
-	// Set model and unmanage reference from this code
-	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
-	g_object_unref(s);
+	TreeViewPrepare(g_VentanaFrameSignalsList, columns);
 
 	// Disable edit and delete buttons
-	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaFrameSignalsEdit), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaFrameSignalsDelete), FALSE);
+	WidgetEnable(g_VentanaFrameSignalsEdit, false);
+	WidgetEnable(g_VentanaFrameSignalsDelete, false);
 }
 
 uint32_t VentanaFrame::CalculateMaxSignalOffset()
@@ -242,8 +231,8 @@ void VentanaFrame::OnVentanaFrameSignalsSelection_changed(GtkTreeSelection *widg
 	VentanaFrame *v = (VentanaFrame *)user_data;
 
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaFrameSignalsDelete), enable);
+	WidgetEnable(v->g_VentanaFrameSignalsEdit, enable);
+	WidgetEnable(v->g_VentanaFrameSignalsDelete, enable);
 }
 
 void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer user_data)

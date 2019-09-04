@@ -174,23 +174,14 @@ void VentanaInicio::ReloadDatabase()
 
 void VentanaInicio::PrepareListSlaves()
 {
-	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSlavesList);
+	const char *columns[] = { "Slave", "INAD", "CNAD", "ERR SIG", "CFG FRM", NULL };
 
-	// Add columns
-	TreeViewAddColumn(v, "Slave", 0);
-	TreeViewAddColumn(v, "INAD", 1);
-	TreeViewAddColumn(v, "CNAD", 2);
-	TreeViewAddColumn(v, "ERR SIG", 3);
-	TreeViewAddColumn(v, "CFG FRM", 4);
-
-	// Set model and unmanage reference from this code
-	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
-	g_object_unref(s);
+	// Prepare tree view
+	TreeViewPrepare(g_PanelDatabaseSlavesList, columns);
 
 	// Disable edit and delete buttons
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesEdit), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSlavesDelete), FALSE);
+	WidgetEnable(g_PanelDatabaseSlavesEdit, FALSE);
+	WidgetEnable(g_PanelDatabaseSlavesDelete, FALSE);
 }
 
 void VentanaInicio::ReloadListSlaves()
@@ -236,23 +227,14 @@ void VentanaInicio::ReloadListSlaves()
 
 void VentanaInicio::PrepareListSignals()
 {
-	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseSignalsList);
+	const char *columns[] = { "Signal", "Size", "Ini.Val", "Publisher", "Subscribers", NULL };
 
-	// Add columns
-	TreeViewAddColumn(v, "Signal", 0);
-	TreeViewAddColumn(v, "Size", 1);
-	TreeViewAddColumn(v, "Ini.Val", 2);
-	TreeViewAddColumn(v, "Publisher", 3);
-	TreeViewAddColumn(v, "Subscribers", 4);
-
-	// Set model and unmanage reference from this code
-	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
-	g_object_unref(s);
+	// Prepare tree view
+	TreeViewPrepare(g_PanelDatabaseSignalsList, columns);
 
 	// Disable edit and delete buttons
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSignalsEdit), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseSignalsDelete), FALSE);
+	WidgetEnable(g_PanelDatabaseSignalsEdit, FALSE);
+	WidgetEnable(g_PanelDatabaseSignalsDelete, FALSE);
 }
 
 void VentanaInicio::ReloadListSignals()
@@ -298,23 +280,14 @@ void VentanaInicio::ReloadListSignals()
 
 void VentanaInicio::PrepareListFrames()
 {
-	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseFramesList);
+	const char *columns[] = { "Frame", "ID", "Publisher", "Size", "Signals", NULL };
 
-	// Add columns
-	TreeViewAddColumn(v, "Frame", 0);
-	TreeViewAddColumn(v, "ID", 1);
-	TreeViewAddColumn(v, "Publisher", 2);
-	TreeViewAddColumn(v, "Size", 3);
-	TreeViewAddColumn(v, "Signals", 4);
-
-	// Set model and unmanage reference from this code
-	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
-	g_object_unref(s);
+	// Prepare tree view
+	TreeViewPrepare(g_PanelDatabaseFramesList, columns);
 
 	// Disable edit and delete buttons
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseFramesEdit), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(g_PanelDatabaseFramesDelete), FALSE);
+	WidgetEnable(g_PanelDatabaseFramesEdit, FALSE);
+	WidgetEnable(g_PanelDatabaseFramesDelete, FALSE);
 }
 
 void VentanaInicio::ReloadListFrames()
@@ -511,8 +484,8 @@ void VentanaInicio::OnPanelDatabaseSlavesSelection_changed(GtkTreeSelection *wid
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSlavesEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSlavesDelete), enable);
+	WidgetEnable(v->g_PanelDatabaseSlavesEdit, enable);
+	WidgetEnable(v->g_PanelDatabaseSlavesDelete, enable);
 }
 
 void VentanaInicio::OnPanelDatabaseSignalsNew_clicked(GtkButton *button, gpointer user_data)
@@ -589,8 +562,8 @@ void VentanaInicio::OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *wi
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSignalsEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseSignalsDelete), enable);
+	WidgetEnable(v->g_PanelDatabaseSignalsEdit, enable);
+	WidgetEnable(v->g_PanelDatabaseSignalsDelete, enable);
 }
 
 void VentanaInicio::OnPanelDatabaseFramesNew_clicked(GtkButton *button, gpointer user_data)
@@ -669,8 +642,8 @@ void VentanaInicio::OnPanelDatabaseFramesSelection_changed(GtkTreeSelection *wid
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseFramesEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_PanelDatabaseFramesDelete), enable);
+	WidgetEnable(v->g_PanelDatabaseFramesEdit, enable);
+	WidgetEnable(v->g_PanelDatabaseFramesDelete, enable);
 }
 
 

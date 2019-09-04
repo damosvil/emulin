@@ -265,22 +265,14 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 
 void VentanaNodoEsclavo::PrepareListConfigurableFrames()
 {
-	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	GtkTreeView *v = GTK_TREE_VIEW(g_VentanaNodoEsclavoConfigFrameList);
+	const char *columns[] = { "ID", "Frame", NULL };
 
-	// Add columns
-	TreeViewRemoveColumn(v, 0);
-	TreeViewRemoveColumn(v, 0);
-	TreeViewAddColumn(v, "ID", 0);
-	TreeViewAddColumn(v, "Frame", 1);
-
-	// Set model and unmanage reference from this code
-	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
-	g_object_unref(s);
+	// Prepare tree view
+	TreeViewPrepare(g_VentanaNodoEsclavoConfigFrameList, columns);
 
 	// Disable edit and delete buttons
-	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaNodoEsclavoConfigFrameEdit), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaNodoEsclavoConfigFrameDelete), FALSE);
+	WidgetEnable(g_VentanaNodoEsclavoConfigFrameEdit, false);
+	WidgetEnable(g_VentanaNodoEsclavoConfigFrameDelete, false);
 }
 
 void VentanaNodoEsclavo::ReloadListConfigurableFrames()
@@ -325,8 +317,8 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameSelection_changed(GtkTre
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 
 	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaNodoEsclavoConfigFrameEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaNodoEsclavoConfigFrameDelete), enable);
+	WidgetEnable(v->g_VentanaNodoEsclavoConfigFrameEdit, enable);
+	WidgetEnable(v->g_VentanaNodoEsclavoConfigFrameDelete, enable);
 }
 
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameNew_clicked(GtkButton *button, gpointer user_data)

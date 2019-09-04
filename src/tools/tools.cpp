@@ -95,7 +95,7 @@ void EditableDeleteValidator(GtkEditable *editable, gint start_pos, gint end_pos
 	free((void *)new_expr);
 }
 
-void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index)
+static void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index)
 {
 	GtkTreeViewColumn *c = gtk_tree_view_column_new();
 	GtkCellRenderer *r = gtk_cell_renderer_text_new();
@@ -106,10 +106,34 @@ void TreeViewAddColumn(GtkTreeView *v, const gchar *title, gint column_index)
 	gtk_tree_view_column_add_attribute(c, r, "text", column_index);
 }
 
-void TreeViewRemoveColumn(GtkTreeView *v, int ix)
+static void TreeViewRemoveColumn(GtkTreeView *v, int ix)
 {
 	GtkTreeViewColumn *c = gtk_tree_view_get_column(v, ix);
 	if (c != NULL) gtk_tree_view_remove_column(v, c);
+}
+
+void TreeViewPrepare(GObject *v, const char **columns)
+{
+	// Generic list store with 10 columns
+	GtkListStore *s = gtk_list_store_new(10,
+			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+			G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
+	// Remove columns
+	for (int i = 0; columns[i] != NULL; i++)
+	{
+		TreeViewRemoveColumn(GTK_TREE_VIEW(v), 0);
+	}
+
+	// Add columns
+	for (int i = 0; columns[i] != NULL; i++)
+	{
+		TreeViewAddColumn(GTK_TREE_VIEW(v), columns[i], i);
+	}
+
+	// Set model and unmanage reference from this code
+	gtk_tree_view_set_model(GTK_TREE_VIEW(v), GTK_TREE_MODEL(s));
+	g_object_unref(s);
 }
 
 const char *GetStrPrintf(const char *format, ...)
@@ -169,6 +193,11 @@ bool ShowChooseMessageBox(GObject *parent, const char *format, ...)
 	gtk_widget_destroy(d);
 
 	return res;
+}
+
+void WidgetEnable(GObject *w, bool enable)
+{
+	gtk_widget_set_sensitive(GTK_WIDGET(w), enable);
 }
 
 int32_t MultiParseInt(const char *p)

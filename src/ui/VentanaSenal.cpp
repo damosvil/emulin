@@ -172,20 +172,14 @@ ldfsignal *VentanaSenal::ShowModal(GObject *parent)
 
 void VentanaSenal::PrepareListSubscribers()
 {
-	GtkListStore *s = gtk_list_store_new(5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	GtkTreeView *v = GTK_TREE_VIEW(g_VentanaSenalSubscriberList);
+	const char *columns[] = { "Subscriber", NULL };
 
-	// Add columns
-	TreeViewRemoveColumn(v, 0);
-	TreeViewAddColumn(v, "Subscriber", 0);
-
-	// Set model and unmanage reference from this code
-	gtk_tree_view_set_model(v, GTK_TREE_MODEL(s));
-	g_object_unref(s);
+	// Prepare tree view
+	TreeViewPrepare(g_VentanaSenalSubscriberList, columns);
 
 	// Disable edit and delete buttons
-	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaSenalSubscriberEdit), FALSE);
-	gtk_widget_set_sensitive(GTK_WIDGET(g_VentanaSenalSubscriberDelete), FALSE);
+	WidgetEnable(g_VentanaSenalSubscriberEdit, false);
+	WidgetEnable(g_VentanaSenalSubscriberDelete, false);
 }
 
 void VentanaSenal::GetAllFreeSubscriberNodes(const char **nodes, int *count)
@@ -276,8 +270,8 @@ void VentanaSenal::OnVentanaSenalSubscriberSelection_changed(GtkTreeSelection *w
 
 	// Update subscriber list buttons
 	gboolean enable = gtk_tree_selection_count_selected_rows(widget);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaSenalSubscriberEdit), enable);
-	gtk_widget_set_sensitive(GTK_WIDGET(v->g_VentanaSenalSubscriberDelete), enable);
+	WidgetEnable(v->g_VentanaSenalSubscriberEdit, enable);
+	WidgetEnable(v->g_VentanaSenalSubscriberDelete, enable);
 }
 
 void VentanaSenal::OnVentanaSenalSubscriberNew_clicked(GtkButton *button, gpointer user_data)
