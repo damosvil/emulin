@@ -51,25 +51,25 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 	if (a != NULL)
 	{
 		// Name
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoName), (gchar *)a->GetName());
+		EntrySet(g_VentanaNodoEsclavoName, a->GetName());
 
 		// Protocol version
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion), GetLinProtocolVersionStringID(a->GetProtocolVersion()));
 
 		// Initial NAD
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD), GetStrPrintf("0x%02X", a->GetInitialNAD()));
+		EntrySet(g_VentanaNodoEsclavoInitialNAD, "0x%02X", a->GetInitialNAD());
 
 		// Configured NAD
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoConfiguredNAD), GetStrPrintf("0x%02X", a->GetConfiguredNAD()));
+		EntrySet(g_VentanaNodoEsclavoConfiguredNAD, "0x%02X", a->GetConfiguredNAD());
 
 		// Supplier ID
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoSupplierID), GetStrPrintf("0x%04X", a->GetSupplierID()));
+		EntrySet(g_VentanaNodoEsclavoSupplierID, "0x%04X", a->GetSupplierID());
 
 		// Function ID
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoFunctionID), GetStrPrintf("0x%04X", a->GetFunctionID()));
+		EntrySet(g_VentanaNodoEsclavoFunctionID, "0x%04X", a->GetFunctionID());
 
 		// Variant
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant), GetStrPrintf("0x%02X", a->GetVariant()));
+		EntrySet(g_VentanaNodoEsclavoVariant, "0x%02X", a->GetVariant());
 
 		// Response error signal
 		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal));
@@ -91,16 +91,16 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal), (char *)a->GetResponseErrorSignalName());
 
 		// P2 min
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min), GetStrPrintf("%d", a->GetP2_min()));
+		EntrySet(g_VentanaNodoEsclavoP2_min, "%d", a->GetP2_min());
 
 		// ST min
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), GetStrPrintf("%d", a->GetST_min()));
+		EntrySet(g_VentanaNodoEsclavoST_min, "%d", a->GetST_min());
 
 		// N_As_timeout
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_As_timeout), GetStrPrintf("%d", a->GetN_As_timeout()));
+		EntrySet(g_VentanaNodoEsclavoN_As_timeout, "%d", a->GetN_As_timeout());
 
 		// N_Cr_timeout
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout), GetStrPrintf("%d", a->GetN_Cr_timeout()));
+		EntrySet(g_VentanaNodoEsclavoN_Cr_timeout, "%d", a->GetN_Cr_timeout());
 
 		// Load configurable frame list
 		ReloadListConfigurableFrames();
@@ -108,40 +108,40 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 	else
 	{
 		// Name
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoName), "node");
+		EntrySet(g_VentanaNodoEsclavoName, "node");
 
 		// Protocol version
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion), GetLinProtocolVersionStringID(LIN_PROTOCOL_VERSION_2_1));
 
 		// Initial NAD
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD), "0xFF");
+		EntrySet(g_VentanaNodoEsclavoInitialNAD, "0xFF");
 
 		// Configured NAD
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoConfiguredNAD), "0xFF");
+		EntrySet(g_VentanaNodoEsclavoConfiguredNAD, "0xFF");
 
 		// Supplier ID
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoSupplierID), "0x0000");
+		EntrySet(g_VentanaNodoEsclavoSupplierID, "0x0000");
 
 		// Function ID
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoFunctionID), "0x0000");
+		EntrySet(g_VentanaNodoEsclavoFunctionID, "0x0000");
 
 		// Variant(uint8_t *)
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant), "0x00");
+		EntrySet(g_VentanaNodoEsclavoVariant, "0x00");
 
 		// Response error signal
 		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaNodoEsclavoResponseErrorSignal));
 
 		// P2 min
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min), "50");
+		EntrySet(g_VentanaNodoEsclavoP2_min, "50");
 
 		// ST min
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min), "0");
+		EntrySet(g_VentanaNodoEsclavoST_min, "0");
 
 		// N_As_timeout
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_As_timeout), "1000");
+		EntrySet(g_VentanaNodoEsclavoN_As_timeout, "1000");
 
 		// N_Cr_timeout
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout), "1000");
+		EntrySet(g_VentanaNodoEsclavoN_Cr_timeout, "1000");
 	}
 
 	// Connect text fields
@@ -205,25 +205,25 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
 		// Name
-		res = new ldfnodeattributes((uint8_t *)gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoName)));
+		res = new ldfnodeattributes((uint8_t *)EntryGetStr(g_VentanaNodoEsclavoName));
 
 		// Protocol version
 		res->SetProtocolVersion(GetProtocolVersionByStringID(gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion))));
 
 		// Initial NAD
-		res->SetInitialNAD(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoInitialNAD))));
+		res->SetInitialNAD(EntryGetInt(g_VentanaNodoEsclavoInitialNAD));
 
 		// Configured NAD
-		res->SetConfiguredNAD(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoConfiguredNAD))));
+		res->SetConfiguredNAD(EntryGetInt(g_VentanaNodoEsclavoConfiguredNAD));
 
 		// Supplier ID
-		res->SetSupplierID(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoSupplierID))));
+		res->SetSupplierID(EntryGetInt(g_VentanaNodoEsclavoSupplierID));
 
 		// Function ID
-		res->SetFunctionID(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoFunctionID))));
+		res->SetFunctionID(EntryGetInt(g_VentanaNodoEsclavoFunctionID));
 
 		// Variant
-		res->SetVariant(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoVariant))));
+		res->SetVariant(EntryGetInt(g_VentanaNodoEsclavoVariant));
 
 		// Response error signal name
 		const char *resn = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal));
@@ -231,16 +231,16 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 			res->SetResponseErrorSignalName((uint8_t *)resn);
 
 		// P2 min
-		res->SetP2_min(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoP2_min))));
+		res->SetP2_min(EntryGetInt(g_VentanaNodoEsclavoP2_min));
 
 		// ST min
-		res->SetST_min(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoST_min))));
+		res->SetST_min(EntryGetInt(g_VentanaNodoEsclavoST_min));
 
 		// N_As_timeout
-		res->SetN_As_timeout(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoN_As_timeout))));
+		res->SetN_As_timeout(EntryGetInt(g_VentanaNodoEsclavoN_As_timeout));
 
 		// N_Cr_timeout
-		res->SetN_Cr_timeout(MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaNodoEsclavoN_Cr_timeout))));
+		res->SetN_Cr_timeout(EntryGetInt(g_VentanaNodoEsclavoN_Cr_timeout));
 
 		// Configurable frames
 		char *frame_id;
@@ -457,7 +457,7 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameDelete_clicked(GtkButton
 void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
-	const char *new_slave_name = gtk_entry_get_text(GTK_ENTRY(v->g_VentanaNodoEsclavoName));
+	const char *new_slave_name = EntryGetStr(v->g_VentanaNodoEsclavoName);
 	ldfnodeattributes *attributes = v->db->GetSlaveNodeAttributesByName((uint8_t *)new_slave_name);
 
 	// Validate slave name

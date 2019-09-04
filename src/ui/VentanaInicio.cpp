@@ -139,16 +139,16 @@ void VentanaInicio::ReloadDatabase()
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinLanguageVersion), GetLinLanguageVersionStringID(db->GetLinLanguageVersion()));
 
 	// Database LIN speed
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseLinSpeed), GetStrPrintf("%d", db->GetLinSpeed()));
+	EntrySet(g_PanelDatabaseLinSpeed, "%d", db->GetLinSpeed());
 
 	// Master's name
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterName), (char *)db->GetMasterNode()->GetName());
+	EntrySet(g_PanelDatabaseMasterName, db->GetMasterNode()->GetName());
 
 	// Master's timebase
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterTimebase), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetTimebase() / 10.0f));
+	EntrySet(g_PanelDatabaseMasterTimebase, "%0.1f", (double)db->GetMasterNode()->GetTimebase() / 10.0f);
 
 	// Master's jitter
-	gtk_entry_set_text(GTK_ENTRY(g_PanelDatabaseMasterJitter), GetStrPrintf("%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f));
+	EntrySet(g_PanelDatabaseMasterJitter, "%0.1f", (double)db->GetMasterNode()->GetJitter() / 10.0f);
 
 	// Sort database data
 	db->SortData();
@@ -360,13 +360,13 @@ void VentanaInicio::OnPanelDatabaseLinSpeed_changed(GtkCellEditable *widget, gpo
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->SetLinSpeed(atoi(gtk_entry_get_text(GTK_ENTRY(widget))));
+	v->db->SetLinSpeed(EntryGetInt(G_OBJECT(widget)));
 }
 
 void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
-	const char *new_master_name = gtk_entry_get_text(GTK_ENTRY(widget));
+	const char *new_master_name = EntryGetStr(G_OBJECT(widget));
 
 	// Check that the identifier is not being used by a slave
 	if (v->db->GetSlaveNodeAttributesByName((uint8_t *)new_master_name) != NULL)
@@ -376,7 +376,7 @@ void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, g
 		// Undo changes
 		g_signal_handlers_block_matched(widget, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, v);
 		g_signal_handlers_block_matched(widget, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
-		gtk_entry_set_text(GTK_ENTRY(widget), (gchar *)v->db->GetMasterNode()->GetName());
+		EntrySet(G_OBJECT(widget), v->db->GetMasterNode()->GetName());
 		g_signal_handlers_unblock_matched(widget, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, v);
 		g_signal_handlers_unblock_matched(widget, G_SIGNAL_MATCH_FUNC, 0, 0, 0, (gpointer)EditableInsertValidator, 0);
 		return;
@@ -393,14 +393,14 @@ void VentanaInicio::OnPanelDatabaseMasterTimebase_changed(GtkCellEditable *widge
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->GetMasterNode()->SetTimebase(atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
+	v->db->GetMasterNode()->SetTimebase((uint16_t)EntryGetFloat(G_OBJECT(widget)) * 10);
 }
 
 void VentanaInicio::OnPanelDatabaseMasterJitter_changed(GtkCellEditable *widget, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	v->db->GetMasterNode()->SetJitter((uint16_t)atof(gtk_entry_get_text(GTK_ENTRY(widget))) * 10);
+	v->db->GetMasterNode()->SetJitter((uint16_t)EntryGetFloat(G_OBJECT(widget)) * 10);
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer user_data)

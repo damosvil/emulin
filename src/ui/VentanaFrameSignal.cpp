@@ -45,18 +45,18 @@ VentanaFrameSignal::VentanaFrameSignal(
 			q += db->GetSignalByName((uint8_t *)frame_signals[i].name)->GetBitSize();
 			offset = (q > offset) ? q : offset;
 		}
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalOffset), GetStrPrintf("%d", offset));
+		EntrySet(g_VentanaFrameSignalOffset, "%d", offset);
 	}
 	else
 	{
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalOffset), frame_signals[frame_signal_ix].offset);
+		EntrySet(g_VentanaFrameSignalOffset, frame_signals[frame_signal_ix].offset);
 	}
 
 	// Select signal
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaFrameSignalName), signal_names[0]);
 
 	// Set bit size
-	gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSignalSize), GetStrPrintf("%d", db->GetSignalByName((uint8_t *)signal_names[0])->GetBitSize()));
+	EntrySet(g_VentanaFrameSignalSize, "%d", db->GetSignalByName((uint8_t *)signal_names[0])->GetBitSize());
 
 	// Connect text fields
 	G_CONNECT_INSTXT(VentanaFrameSignalOffset, INT3_EXPR);
@@ -88,7 +88,7 @@ void VentanaFrameSignal::OnVentanaFrameSignalName_changed(GtkComboBoxText *widge
 	const char *new_signal_name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaFrameSignalName));
 
 	// Set bit size
-	gtk_entry_set_text(GTK_ENTRY(v->g_VentanaFrameSignalSize), GetStrPrintf("%d", v->db->GetSignalByName((uint8_t *)new_signal_name)->GetBitSize()));
+	EntrySet(v->g_VentanaFrameSignalSize, "%d", v->db->GetSignalByName((uint8_t *)new_signal_name)->GetBitSize());
 }
 
 void VentanaFrameSignal::OnVentanaFrameSignalAccept_clicked(GtkButton *button, gpointer user_data)
@@ -97,7 +97,7 @@ void VentanaFrameSignal::OnVentanaFrameSignalAccept_clicked(GtkButton *button, g
 
 	// Check signal collision
 	const char *new_signal_name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaFrameSignalName));
-	int new_signal_offset = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameSignalOffset)));
+	int new_signal_offset = EntryGetInt(v->g_VentanaFrameSignalOffset);
 	int new_signal_size = v->db->GetSignalByName((uint8_t *)new_signal_name)->GetBitSize();
 	for (int i = 0; i < v->frame_signals_count; i++)
 	{
@@ -144,7 +144,7 @@ ldfframesignal *VentanaFrameSignal::ShowModal(GObject *parent)
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
 		// Offset
-		uint16_t offset = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaFrameSignalOffset)));
+		uint16_t offset = EntryGetInt(g_VentanaFrameSignalOffset);
 
 		// Name
 		const gchar *name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaFrameSignalName));

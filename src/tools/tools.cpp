@@ -200,6 +200,38 @@ void WidgetEnable(GObject *w, bool enable)
 	gtk_widget_set_sensitive(GTK_WIDGET(w), enable);
 }
 
+void EntrySet(GObject *w, const uint8_t *v)
+{
+	gtk_entry_set_text(GTK_ENTRY(w), (gchar *)v);
+}
+
+void EntrySet(GObject *w, const char *format, ...)
+{
+	static char str[10000];
+	va_list argptr;
+
+	va_start(argptr, format);
+	vsprintf(str, format, argptr);
+	va_end(argptr);
+
+	gtk_entry_set_text(GTK_ENTRY(w), (gchar *)str);
+}
+
+const char * EntryGetStr(GObject *w)
+{
+	return gtk_entry_get_text(GTK_ENTRY(w));
+}
+
+int EntryGetInt(GObject *w)
+{
+	return MultiParseInt(EntryGetStr(w));
+}
+
+double EntryGetFloat(GObject *w)
+{
+	return atof(EntryGetStr(w));
+}
+
 int32_t MultiParseInt(const char *p)
 {
 	return (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);

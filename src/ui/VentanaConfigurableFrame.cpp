@@ -35,7 +35,14 @@ VentanaConfigurableFrame::VentanaConfigurableFrame(GtkBuilder *builder, ldf *db,
 	{
 		c = Same(frame_names[0], config_frames[i].name) ? &config_frames[i] : NULL;
 	}
-	gtk_entry_set_text(GTK_ENTRY(g_VentanaConfigurableFrameID), (c != NULL) ? c->id : GetStrPrintf("0x%02X", db->GetFrameByName((uint8_t *)frame_names[0])->GetId()));
+	if (c != NULL)
+	{
+		EntrySet(g_VentanaConfigurableFrameID, c->id);
+	}
+	else
+	{
+		EntrySet(g_VentanaConfigurableFrameID, "0x%02X", db->GetFrameByName((uint8_t *)frame_names[0])->GetId());
+	}
 
 	// Connect text fields
 	G_CONNECT_INSTXT(VentanaConfigurableFrameID, INT3_EXPR);
@@ -66,7 +73,7 @@ ldfconfigurableframe *VentanaConfigurableFrame::ShowModal(GObject *parent)
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
 		// Offset
-		uint16_t id = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaConfigurableFrameID)));
+		uint16_t id = EntryGetInt(g_VentanaConfigurableFrameID);
 
 		// Name
 		const gchar *name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaConfigurableFrameName));
@@ -85,7 +92,7 @@ void VentanaConfigurableFrame::OnVentanaConfigurableFrameAccept_clicked(GtkButto
 
 	// Check frame ID is unique
 	const char *new_frame_name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaConfigurableFrameName));
-	int new_frame_id = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaConfigurableFrameID)));
+	int new_frame_id = EntryGetInt(v->g_VentanaConfigurableFrameID);
 	for (int i = 0; i < v->config_frames_count; i++)
 	{
 		// Skip configurable frames with the same name than the one being edited

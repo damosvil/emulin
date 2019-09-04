@@ -50,13 +50,13 @@ VentanaSenal::VentanaSenal(GtkBuilder *builder, ldf *db, const char *signal_name
 	if (s != NULL)
 	{
 		// Name
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaSenalName), (gchar *)s->GetName());
+		EntrySet(g_VentanaSenalName, s->GetName());
 
 		// Bit size
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaSenalBitSize), GetStrPrintf("%d", s->GetBitSize()));
+		EntrySet(g_VentanaSenalBitSize, "%d", s->GetBitSize());
 
 		// Default value
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaSenalDefaultValue), GetStrPrintf("%d", s->GetDefaultValue()));
+		EntrySet(g_VentanaSenalDefaultValue, "%d", s->GetDefaultValue());
 
 		// Publisher
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaSenalPublisher), (gchar *)s->GetPublisher());
@@ -73,13 +73,13 @@ VentanaSenal::VentanaSenal(GtkBuilder *builder, ldf *db, const char *signal_name
 	else
 	{
 		// Name
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaSenalName), "signal");
+		EntrySet(g_VentanaSenalName, "signal");
 
 		// Bit size
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaSenalBitSize), "0");
+		EntrySet(g_VentanaSenalBitSize, "0");
 
 		// Default value
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaSenalDefaultValue), "0");
+		EntrySet(g_VentanaSenalDefaultValue, "0");
 
 		// Publisher should be a default one
 
@@ -137,13 +137,13 @@ ldfsignal *VentanaSenal::ShowModal(GObject *parent)
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
 		// Name
-		const char *signal_name = gtk_entry_get_text(GTK_ENTRY(g_VentanaSenalName));
+		const char *signal_name = EntryGetStr(g_VentanaSenalName);
 
 		// Bit size
-		uint16_t bit_size = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaSenalBitSize)));
+		uint16_t bit_size = EntryGetInt(g_VentanaSenalBitSize);
 
 		// Default value
-		uint32_t default_value = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaSenalDefaultValue)));
+		uint32_t default_value = EntryGetInt(g_VentanaSenalDefaultValue);
 
 		// Publisher
 		const gchar *publisher = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaSenalPublisher));
@@ -349,7 +349,7 @@ void VentanaSenal::OnVentanaSenalAccept_clicked(GtkButton *button, gpointer user
 {
 	GtkTreeIter iter;
 	VentanaSenal *v = (VentanaSenal *)user_data;
-	const char *new_signal_name = gtk_entry_get_text(GTK_ENTRY(v->g_VentanaSenalName));
+	const char *new_signal_name = EntryGetStr(v->g_VentanaSenalName);
 
 	if (strlen(new_signal_name) == 0)
 	{

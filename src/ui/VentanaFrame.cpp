@@ -48,13 +48,13 @@ VentanaFrame::VentanaFrame(GtkBuilder *builder, ldf *db, const char *frame_name)
 	if (f != NULL)
 	{
 		// Name
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameName), (gchar *)f->GetName());
+		EntrySet(g_VentanaFrameName, f->GetName());
 
 		// ID
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameID), GetStrPrintf("%d", f->GetId()));
+		EntrySet(g_VentanaFrameID, "%d", f->GetId());
 
 		// Size
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSize), GetStrPrintf("%d", f->GetSize()));
+		EntrySet(g_VentanaFrameSize, "%d", f->GetSize());
 
 		// Publisher
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaFramePublisher), (gchar *)f->GetPublisher());
@@ -77,13 +77,13 @@ VentanaFrame::VentanaFrame(GtkBuilder *builder, ldf *db, const char *frame_name)
 	else
 	{
 		// Name
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameName), "frame");
+		EntrySet(g_VentanaFrameName, "frame");
 
 		// ID
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameID), "0");
+		EntrySet(g_VentanaFrameID, "0");
 
 		// Size
-		gtk_entry_set_text(GTK_ENTRY(g_VentanaFrameSize), "8");
+		EntrySet(g_VentanaFrameSize, "8");
 
 		// Publisher should be a default one
 
@@ -141,13 +141,13 @@ ldfframe *VentanaFrame::ShowModal(GObject *parent)
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
 		// Name
-		const char *name = gtk_entry_get_text(GTK_ENTRY(g_VentanaFrameName));
+		const char *name = EntryGetStr(g_VentanaFrameName);
 
 		// ID
-		uint16_t id = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaFrameID)));
+		uint16_t id = EntryGetInt(g_VentanaFrameID);
 
 		// Size
-		uint32_t size = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(g_VentanaFrameSize)));
+		uint32_t size = EntryGetInt(g_VentanaFrameSize);
 
 		// Publisher
 		const gchar *publisher = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaFramePublisher));
@@ -374,15 +374,15 @@ void VentanaFrame::OnVentanaFrameSignalsDelete_clicked(GtkButton *button, gpoint
 void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaFrame *v = (VentanaFrame *)user_data;
-	const char *new_frame_name = gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameName));
-	const uint8_t new_frame_id = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameID)));
+	const char *new_frame_name = EntryGetStr(v->g_VentanaFrameName);
+	const uint8_t new_frame_id = EntryGetInt(v->g_VentanaFrameID);
 
 	ldfframe *frame_by_new_name = v->db->GetFrameByName((uint8_t *)new_frame_name);
 	ldfframe *frame_by_old_name = v->db->GetFrameByName((uint8_t *)v->frame_name);
 	ldfframe *frame_by_new_id = v->db->GetFrameById(new_frame_id);
 
 	// Store maximum frame position depending on the frame size
-	uint32_t max_frame_pos = MultiParseInt(gtk_entry_get_text(GTK_ENTRY(v->g_VentanaFrameSize))) * 8;
+	uint32_t max_frame_pos = EntryGetInt(v->g_VentanaFrameSize) * 8;
 
 	// Store maximum signal position
 	uint32_t max_signal_pos = v->CalculateMaxSignalOffset();
