@@ -9,7 +9,7 @@
 
 namespace ui {
 
-VentanaSelectNode::VentanaSelectNode(GtkBuilder *builder, const char *node_name, const char **node_names, int node_names_count)
+VentanaSelectNode::VentanaSelectNode(GtkBuilder *builder, const char **node_names, int node_names_count)
 {
 	// Store input info
 	this->handle = gtk_builder_get_object(builder, "VentanaSelectNode");
@@ -19,13 +19,11 @@ VentanaSelectNode::VentanaSelectNode(GtkBuilder *builder, const char *node_name,
 	G_PIN(VentanaSelectNodeAccept);
 	G_PIN(VentanaSelectNodeCancel);
 
-	// Fill lin nodes list with data
+	// Fill lin nodes list with data and select lin node
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaSelectNodeName));
 	for (int ix = 0; ix < node_names_count; ix++)
 		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaSelectNodeName), (char *)node_names[ix], (char *)node_names[ix]);
-
-	// Select lin nodes
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaSelectNodeName), (node_name != NULL) ? node_name : node_names[0]);
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaSelectNodeName), node_names[0]);
 
 	// Connect nodes
 	G_CONNECT(VentanaSelectNodeAccept, clicked);

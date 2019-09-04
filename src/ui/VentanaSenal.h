@@ -38,7 +38,7 @@ private:
 	G_VAR(VentanaSenalCancel);
 
 	void PrepareListSubscribers();
-	void GetAllFreeSubscriberNodes(const char **nodes, int *count);
+	int GetAllFreeSubscriberNodes(const char **nodes);
 
 	// Signal events
 	static void OnVentanaSenalPublisher_changed(GtkComboBoxText *widget, gpointer user_data);

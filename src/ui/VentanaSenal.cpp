@@ -182,23 +182,23 @@ void VentanaSenal::PrepareListSubscribers()
 	WidgetEnable(g_VentanaSenalSubscriberDelete, false);
 }
 
-void VentanaSenal::GetAllFreeSubscriberNodes(const char **nodes, int *count)
+int VentanaSenal::GetAllFreeSubscriberNodes(const char **nodes)
 {
 	const char *nodes_used[1000];
 	int nodes_used_count = 0;
 	GtkTreeIter iter;
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(g_VentanaSenalSubscriberList));
+	int count = 0;
 
 	// Initialize count
-	*count = 0;
 
 	// Get all nodes
-	nodes[*count] = (char *)db->GetMasterNode()->GetName();
-	*count += 1;
+	nodes[count] = (char *)db->GetMasterNode()->GetName();
+	count += 1;
 	for (uint32_t ix = 0; ix < db->GetSlaveNodesCount(); ix++)
 	{
-		nodes[*count] = (char *)db->GetSlaveNode(ix)->GetName();
-		*count += 1;
+		nodes[count] = (char *)db->GetSlaveNode(ix)->GetName();
+		count += 1;
 	}
 
 	// Get all nodes in use
@@ -213,7 +213,7 @@ void VentanaSenal::GetAllFreeSubscriberNodes(const char **nodes, int *count)
 	}
 
 	// Remove nodes in use from all nodes list
-	for (int ix = 0; ix < *count; )
+	for (int ix = 0; ix < count; )
 	{
 		// Check whether node in use
 		bool in_use = false;
@@ -226,10 +226,12 @@ void VentanaSenal::GetAllFreeSubscriberNodes(const char **nodes, int *count)
 		}
 
 		// Remove node
-		*count -= 1;
-		for (int jx = ix; jx < *count; jx++)
+		count -= 1;
+		for (int jx = ix; jx < count; jx++)
 			nodes[jx] = nodes[jx + 1];
 	}
+
+	return count;
 }
 
 void VentanaSenal::OnVentanaSenalPublisher_changed(GtkComboBoxText *widget, gpointer user_data)
@@ -283,22 +285,21 @@ void VentanaSenal::OnVentanaSenalSubscriberNew_clicked(GtkButton *button, gpoint
 	GtkTreeIter iter;
 
 	// Get all nodes
-	v->GetAllFreeSubscriberNodes(nodes, &nodes_count);
-
+	nodes_count = v->GetAllFreeSubscriberNodes(nodes);
 	if (nodes_count == 0)
 	{
 		ShowErrorMessageBox(v->handle, "There are no more nodes for subscription");
 		return;
 	}
 
-	VentanaSelectNode w(v->builder, NULL, nodes, nodes_count);
-	const char *new_signal_name = w.ShowModal(v->handle);
+	VentanaSelectNode w(v->builder, nodes, nodes_count);
+	const char *new_node_name = w.ShowModal(v->handle);
 
-	// Add signal to list
-	if (new_signal_name != NULL)
+	// Add node to list
+	if (new_node_name != NULL)
 	{
 		gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-		gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, new_signal_name, -1);
+		gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, new_node_name, -1);
 	}
 }
 
@@ -310,27 +311,20 @@ void VentanaSenal::OnVentanaSenalSubscriberEdit_clicked(GtkButton *button, gpoin
 	int nodes_count = 0;
 	GtkTreeIter iter;
 
-	// Get all nodes
-	v->GetAllFreeSubscriberNodes(nodes, &nodes_count);
-
-	if (nodes_count == 0)
-	{
-		ShowErrorMessageBox(v->handle, "There are no more nodes for subscription");
-		return;
-	}
-
-	// Also add current selected node
+	// Get current selected node
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaSenalSubscriberSelection), &model, &iter);
 	gtk_tree_model_get(model, &iter, 0, &nodes[nodes_count++], -1);
 
-	VentanaSelectNode w(v->builder, NULL, nodes, nodes_count);
-	const char *new_signal_name = w.ShowModal(v->handle);
+	// Get other nodes
+	nodes_count = v->GetAllFreeSubscriberNodes(nodes + 1);
 
-	// Add signal to list
-	if (new_signal_name != NULL)
+	VentanaSelectNode w(v->builder, nodes, nodes_count + 1);
+	const char *new_node_name = w.ShowModal(v->handle);
+
+	// Update node in list
+	if (new_node_name != NULL)
 	{
-		gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-		gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, new_signal_name, -1);
+		gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, new_node_name, -1);
 	}
 }
 

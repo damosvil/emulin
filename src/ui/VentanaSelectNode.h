@@ -32,7 +32,7 @@ private:
 	static void OnVentanaSelectNodeCancel_clicked(GtkButton *button, gpointer user_data);
 
 public:
-	VentanaSelectNode(GtkBuilder *builder, const char *signal_name, const char **signal_names, int signal_names_count);
+	VentanaSelectNode(GtkBuilder *builder, const char **node_names, int node_names_count);
 	virtual ~VentanaSelectNode();
 
 	const char *ShowModal(GObject *parent);
