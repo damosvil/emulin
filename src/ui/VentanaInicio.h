@@ -46,6 +46,11 @@ private:
 	G_VAR(PanelDatabaseFramesNew);
 	G_VAR(PanelDatabaseFramesEdit);
 	G_VAR(PanelDatabaseFramesDelete);
+	G_VAR(PanelDatabaseScheduleTablesList);
+	G_VAR(PanelDatabaseScheduleTablesSelection);
+	G_VAR(PanelDatabaseScheduleTablesNew);
+	G_VAR(PanelDatabaseScheduleTablesEdit);
+	G_VAR(PanelDatabaseScheduleTablesDelete);
 
 	// Processes
 	void ReloadDatabase();
@@ -86,6 +91,12 @@ private:
 	static void OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpointer user_data);
 	static void OnPanelDatabaseFramesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
 	static void OnPanelDatabaseFramesSelection_changed(GtkTreeSelection *widget, gpointer user_data);
+
+	static void OnPanelDatabaseScheduleTablesNew_clicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseScheduleTablesEdit_clicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseScheduleTablesDelete_clicked(GtkButton *button, gpointer user_data);
+	static void OnPanelDatabaseScheduleTablesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+	static void OnPanelDatabaseScheduleTablesSelection_changed(GtkTreeSelection *widget, gpointer user_data);
 
 public:
 	VentanaInicio(GtkBuilder *builder);

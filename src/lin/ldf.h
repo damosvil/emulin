@@ -142,6 +142,9 @@ public:
 	void UpdateFrame(uint8_t *old_frame_name, ldfframe *f);
 	void DeleteFrame(uint8_t *frame_name);
 
+	ldfscheduletable *GetScheduleTableByIndex(uint32_t ix);
+	uint32_t GetScheduleTablesCount();
+
 };
 
 } /* namespace lin */

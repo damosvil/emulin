@@ -918,5 +918,15 @@ void ldf::DeleteFrame(uint8_t *frame_name)
 	}
 }
 
+ldfscheduletable *ldf::GetScheduleTableByIndex(uint32_t ix)
+{
+	return schedule_tables[ix];
+}
+
+uint32_t ldf::GetScheduleTablesCount()
+{
+	return schedule_tables_count;
+}
+
 
 } /* namespace ldf */

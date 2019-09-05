@@ -53,6 +53,11 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseFramesNew);
 	G_PIN(PanelDatabaseFramesEdit);
 	G_PIN(PanelDatabaseFramesDelete);
+	G_PIN(PanelDatabaseScheduleTablesList);
+	G_PIN(PanelDatabaseScheduleTablesSelection);
+	G_PIN(PanelDatabaseScheduleTablesNew);
+	G_PIN(PanelDatabaseScheduleTablesEdit);
+	G_PIN(PanelDatabaseScheduleTablesDelete);
 
 	// Connect Window signals
 	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -67,6 +72,7 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	PrepareListSlaves();
 	PrepareListSignals();
 	PrepareListFrames();
+	PrepareListScheduleTables();
 
 	// Connect widget signals
 	G_CONNECT(PanelConfiguracionDatabase, file_set);
@@ -95,6 +101,11 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseFramesDelete, clicked);
 	G_CONNECT(PanelDatabaseFramesList, row_activated);
 	G_CONNECT(PanelDatabaseFramesSelection, changed);
+	G_CONNECT(PanelDatabaseScheduleTablesNew, clicked);
+	G_CONNECT(PanelDatabaseScheduleTablesEdit, clicked);
+	G_CONNECT(PanelDatabaseScheduleTablesDelete, clicked);
+	G_CONNECT(PanelDatabaseScheduleTablesList, row_activated);
+	G_CONNECT(PanelDatabaseScheduleTablesSelection, changed);
 
 	// Load database
 	ReloadDatabase();
@@ -157,6 +168,7 @@ void VentanaInicio::ReloadDatabase()
 	ReloadListSlaves();
 	ReloadListSignals();
 	ReloadListFrames();
+	ReloadListScheduleTables();
 
 	// Play all signal handlers
 	G_PLAY_DATA(PanelConfiguracionDatabase, this);
@@ -207,6 +219,7 @@ void VentanaInicio::ReloadListSlaves()
 		gtk_list_store_set(s, &it, 1, GetStrPrintf("0x%02X", a->GetInitialNAD()), -1);
 
 		// Configured node address
+
 		gtk_list_store_set(s, &it, 2, GetStrPrintf("0x%02X", a->GetConfiguredNAD()), -1);
 
 		// Response error signal name
@@ -297,6 +310,7 @@ void VentanaInicio::ReloadListFrames()
 	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseFramesList);
 	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
 
+
 	// Clear list store
 	gtk_list_store_clear(s);
 
@@ -333,20 +347,53 @@ void VentanaInicio::ReloadListFrames()
 
 void VentanaInicio::PrepareListScheduleTables()
 {
-	const char *columns[] = { "Frame", "ID", "Publisher", "Size", "Signals", NULL };
+	const char *columns[] = { "Name", "Cycle", "Frames", NULL };
 
 	// Prepare tree view
-	TreeViewPrepare(g_PanelDatabaseFramesList, columns);
+	TreeViewPrepare(g_PanelDatabaseScheduleTablesList, columns);
 
 	// Disable edit and delete buttons
-	WidgetEnable(g_PanelDatabaseFramesEdit, FALSE);
-	WidgetEnable(g_PanelDatabaseFramesDelete, FALSE);
-
+	WidgetEnable(g_PanelDatabaseScheduleTablesEdit, FALSE);
+	WidgetEnable(g_PanelDatabaseScheduleTablesDelete, FALSE);
 }
 
 void VentanaInicio::ReloadListScheduleTables()
 {
+	uint32_t ix;
+	GtkTreeIter it;
+	GtkTreeView *v = GTK_TREE_VIEW(g_PanelDatabaseScheduleTablesList);
+	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
 
+	// Clear list store
+	gtk_list_store_clear(s);
+
+	// Add data to list store
+	for (ix = 0; ix < db->GetScheduleTablesCount(); ix++)
+	{
+		ldfscheduletable *table = db->GetScheduleTableByIndex(ix);
+
+		// Schedule table name
+		gtk_list_store_append(s, &it);
+		gtk_list_store_set(s, &it, 0, table->GetName(), -1);
+
+		// Cycle
+		uint32_t cycle = 0;
+		for (int j = 0; j < table->GetCommandsCount(); j++)
+			cycle += table->GetCommandByIndex(j)->GetTimeoutMs();
+		gtk_list_store_set(s, &it, 1, GetStrPrintf("%d ms", cycle), -1);
+
+		// Frames
+		char str[100000];
+		str[0] = 0;
+		for (int j = 0; j < table->GetCommandsCount(); j++)
+		{
+			ldfschedulecommand *cc = table->GetCommandByIndex(j);
+
+			if (j != 0) strcat(str, "\r\n");
+			strcat(str, GetStrPrintf("%s (%d ms)", cc->GetName(), cc->GetTimeoutMs()));
+		}
+		gtk_list_store_set(s, &it, 2, str, -1);
+	}
 }
 
 void VentanaInicio::OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data)
@@ -667,6 +714,38 @@ void VentanaInicio::OnPanelDatabaseFramesSelection_changed(GtkTreeSelection *wid
 	WidgetEnable(v->g_PanelDatabaseFramesEdit, enable);
 	WidgetEnable(v->g_PanelDatabaseFramesDelete, enable);
 }
+
+void VentanaInicio::OnPanelDatabaseScheduleTablesNew_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseScheduleTablesEdit_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseScheduleTablesDelete_clicked(GtkButton *button, gpointer user_data)
+{
+
+}
+
+void VentanaInicio::OnPanelDatabaseScheduleTablesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	gtk_widget_activate(GTK_WIDGET(v->g_PanelDatabaseScheduleTablesEdit));
+}
+
+void VentanaInicio::OnPanelDatabaseScheduleTablesSelection_changed(GtkTreeSelection *widget, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	bool enable = gtk_tree_selection_count_selected_rows(widget) == 1;
+	WidgetEnable(v->g_PanelDatabaseScheduleTablesEdit, enable);
+	WidgetEnable(v->g_PanelDatabaseScheduleTablesDelete, enable);
+}
+
 
 
 } /* namespace lin */

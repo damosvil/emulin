@@ -54,7 +54,7 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 	return new ldfschedulecommand((uint8_t *)frame_name, timeout);
 }
 
-uint8_t *ldfschedulecommand::GetFrameName()
+uint8_t *ldfschedulecommand::GetName()
 {
 	return frame_name;
 }
@@ -62,6 +62,15 @@ uint8_t *ldfschedulecommand::GetFrameName()
 uint16_t ldfschedulecommand::GetTimeoutMs()
 {
 	return timeout;
+}
+
+void ldfschedulecommand::UpdateName(const uint8_t *old_name, const uint8_t *new_name)
+{
+	if (strcmp((char *)frame_name, (char *)old_name) == 0)
+	{
+		delete frame_name;
+		frame_name = (uint8_t *)strdup((char *)new_name);
+	}
 }
 
 void ldfschedulecommand::ValidateUnicity(uint8_t *schedule_table, ldfschedulecommand *command, uint8_t **validation_messages, uint32_t *validation_messages_count)

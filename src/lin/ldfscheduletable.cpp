@@ -26,6 +26,49 @@ ldfscheduletable::~ldfscheduletable()
 	while (commands_number > 0) delete commands[--commands_number];
 }
 
+uint8_t *ldfscheduletable::GetName()
+{
+	return name;
+}
+
+ldfschedulecommand *ldfscheduletable::GetCommandByIndex(uint32_t ix)
+{
+	return commands[ix];
+}
+
+uint16_t ldfscheduletable::GetCommandsCount()
+{
+	return commands_number;
+}
+
+void ldfscheduletable::UpdateCommandName(const uint8_t *old_name, const uint8_t *new_name)
+{
+	for (int i = 0; i < commands_number; i++)
+	{
+		commands[i]->UpdateName(old_name, new_name);
+	}
+}
+
+void ldfscheduletable::DeleteCommand(const uint8_t *name)
+{
+	for (int i = 0; i < commands_number; )
+	{
+		// Skip commands with different name
+		if (strcmp((char *)name, (char*)commands[i]->GetName()) != 0)
+		{
+			i++;
+			continue;
+		}
+
+		// Delete command and move back the rest ones
+		delete commands[i];
+		commands_number--;
+		for (int j = i; j < commands_number; j++)
+			commands[j] = commands[j + 1];
+	}
+}
+
+
 void ldfscheduletable::AddCommand(ldfschedulecommand *command)
 {
 	commands[commands_number++] = command;
@@ -54,13 +97,13 @@ void ldfscheduletable::ValidateFrames(ldfframe **frames, uint32_t frames_count, 
 		// Look for frame definition
 		for (j = 0; (f == NULL) && (j < frames_count); j++)
 		{
-			f = (strcmp((char *)frames[j]->GetName(), (char *)commands[i]->GetFrameName()) == 0) ? frames[j] : NULL;
+			f = (strcmp((char *)frames[j]->GetName(), (char *)commands[i]->GetName()) == 0) ? frames[j] : NULL;
 		}
 
 		// Check frame exists
 		if (f == NULL)
 		{
-			sprintf(str, STR_ERR "Schedule table '%s' command frame '%s' not defined.", name, commands[i]->GetFrameName());
+			sprintf(str, STR_ERR "Schedule table '%s' command frame '%s' not defined.", name, commands[i]->GetName());
 			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
 			continue;
 		}
