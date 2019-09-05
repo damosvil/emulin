@@ -1577,6 +1577,175 @@
       </object>
     </child>
   </object>
+  <object class="GtkDialog" id="VentanaScheduleCommand">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Schedule table command</property>
+    <property name="resizable">False</property>
+    <property name="icon_name">network-wired</property>
+    <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="VentanaScheduleCommandCancel">
+                <property name="label" translatable="yes">Cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="VentanaScheduleCommandAccept">
+                <property name="label" translatable="yes">Accept</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFixed">
+            <property name="width_request">405</property>
+            <property name="height_request">130</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Type</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="VentanaScheduleCommandType">
+                <property name="width_request">300</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="active_id">UnconditionalFrame</property>
+                <items>
+                  <item id="UnconditionalFrame" translatable="yes">UnconditionalFrame</item>
+                  <item id="MasterReq" translatable="yes">MasterReq</item>
+                  <item id="SlaveResp" translatable="yes">SlaveResp</item>
+                  <item id="AssignNAD" translatable="yes">AssignNAD</item>
+                  <item id="DataDump" translatable="yes">DataDump</item>
+                  <item id="SaveConfig" translatable="yes">SaveConfig</item>
+                  <item id="FreeFormat" translatable="yes">FreeFormat</item>
+                  <item id="AssignFrameIdRange" translatable="yes">AssignFrameIdRange</item>
+                  <item translatable="yes">AssignFrameId</item>
+                </items>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Node</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">40</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="VentanaScheduleCommandNode">
+                <property name="width_request">300</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">35</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Frame name</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">70</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="VentanaScheduleCommandFrameName">
+                <property name="width_request">300</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">65</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Data</property>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">100</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="VentanaScheduleCommandData">
+                <property name="width_request">300</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00</property>
+                <property name="truncate_multiline">True</property>
+              </object>
+              <packing>
+                <property name="x">100</property>
+                <property name="y">95</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkDialog" id="VentanaSelectNode">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Select node</property>

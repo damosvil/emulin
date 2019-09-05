@@ -315,7 +315,7 @@ void ldfnodeattributes::SortData()
 	qsort(configurable_frames, configurable_frames_count, sizeof(configurable_frames[0]), ldfconfigurableframe::SorterConfigurableFrames);
 }
 
-void ldfnodeattributes::UpdateConfigurableFrames(const uint8_t *old_frame_name, const uint8_t *new_frame_name)
+void ldfnodeattributes::UpdateConfigurableFrameNames(const uint8_t *old_frame_name, const uint8_t *new_frame_name)
 {
 	for (int i = 0; i < configurable_frames_count; i++)
 	{
@@ -323,7 +323,7 @@ void ldfnodeattributes::UpdateConfigurableFrames(const uint8_t *old_frame_name, 
 	}
 }
 
-void ldfnodeattributes::DeleteConfigurableFrames(const uint8_t *frame_name)
+void ldfnodeattributes::DeleteConfigurableFramesByName(const uint8_t *frame_name)
 {
 	for (int i = 0; i < configurable_frames_count; i++)
 	{

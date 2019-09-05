@@ -41,7 +41,7 @@ uint16_t ldfscheduletable::GetCommandsCount()
 	return commands_number;
 }
 
-void ldfscheduletable::UpdateCommandName(const uint8_t *old_name, const uint8_t *new_name)
+void ldfscheduletable::UpdateCommandsFrameName(const uint8_t *old_name, const uint8_t *new_name)
 {
 	for (int i = 0; i < commands_number; i++)
 	{
@@ -49,7 +49,7 @@ void ldfscheduletable::UpdateCommandName(const uint8_t *old_name, const uint8_t 
 	}
 }
 
-void ldfscheduletable::DeleteCommand(const uint8_t *name)
+void ldfscheduletable::DeleteCommandsByName(const uint8_t *name)
 {
 	for (int i = 0; i < commands_number; )
 	{

@@ -376,6 +376,7 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 	VentanaFrame *v = (VentanaFrame *)user_data;
 	const char *new_frame_name = EntryGetStr(v->g_VentanaFrameName);
 	const uint8_t new_frame_id = EntryGetInt(v->g_VentanaFrameID);
+	const char *reserved_identifiers[] = { "MasterReq", "SlaveResp", "AssignNAD", "ConditionalChangeNAD", "DataDump", "SaveConfiguration", "AssignFrameIdRange", "FreeFormat", "AssignFrameId", NULL };
 
 	ldfframe *frame_by_new_name = v->db->GetFrameByName((uint8_t *)new_frame_name);
 	ldfframe *frame_by_old_name = v->db->GetFrameByName((uint8_t *)v->frame_name);
@@ -387,7 +388,13 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 	// Store maximum signal position
 	uint32_t max_signal_pos = v->CalculateMaxSignalOffset();
 
-	if (strlen(new_frame_name) == 0)
+	// Check if identifier is forbidden
+	if (GetStrIndexByID(reserved_identifiers, ARR_SIZE(reserved_identifiers), new_frame_name) != ARR_SIZE(reserved_identifiers))
+	{
+		ShowErrorMessageBox(v->handle, "Identifier '%s' is reserved for diagnostic frames.", new_frame_name);
+		return;
+	}
+	else if (strlen(new_frame_name) == 0)
 	{
 		ShowErrorMessageBox(v->handle, "Frame name length shall not be 0.");
 		return;

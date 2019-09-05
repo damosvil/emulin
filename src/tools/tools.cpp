@@ -18,16 +18,11 @@ namespace tools
 
 uint32_t GetStrIndexByID(const char **ids, uint32_t ids_count, const char *id)
 {
-	uint32_t ix = 0;
+	for (uint32_t i = 0; i < ids_count; i++)
+		if (Same(id, ids[i]))
+			return i;
 
-	for (ix = 0; ix < ids_count; ix++)
-	{
-		if (id == NULL) break;
-		if (ids[ix] == NULL) continue;
-		if (Same(id, ids[ix])) break;
-	}
-
-	return ix;
+	return ids_count;
 }
 
 bool RegExprCheck(const char *string, const char *pattern)
@@ -247,6 +242,11 @@ int32_t MultiParseInt(const char *p)
 
 bool Same(const char *a, const char *b)
 {
+	if (a == b)
+		return true;
+	if ((a == NULL) || (b == NULL))
+		return false;
+
 	return strcmp(a, b) == 0;
 }
 

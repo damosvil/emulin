@@ -85,8 +85,8 @@ public:
 	bool NameIs(uint8_t *name);
 	void SortData();
 
-	void UpdateConfigurableFrames(const uint8_t *old_frame_name, const uint8_t *new_frame_name);
-	void DeleteConfigurableFrames(const uint8_t *frame_name);
+	void UpdateConfigurableFrameNames(const uint8_t *old_frame_name, const uint8_t *new_frame_name);
+	void DeleteConfigurableFramesByName(const uint8_t *frame_name);
 
 };
 
