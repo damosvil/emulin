@@ -143,6 +143,7 @@ public:
 	void DeleteFrame(uint8_t *frame_name);
 
 	ldfscheduletable *GetScheduleTableByIndex(uint32_t ix);
+	ldfscheduletable *GetScheduleTableByName(const uint8_t *name);
 	uint32_t GetScheduleTablesCount();
 
 };

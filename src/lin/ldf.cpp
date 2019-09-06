@@ -931,6 +931,18 @@ ldfscheduletable *ldf::GetScheduleTableByIndex(uint32_t ix)
 	return schedule_tables[ix];
 }
 
+ldfscheduletable *ldf::GetScheduleTableByName(const uint8_t *name)
+{
+	if (name == NULL)
+		return NULL;
+
+	for (int i = 0; i < schedule_tables_count; i++)
+		if (strcmp((char *)name, (char *)schedule_tables[i]->GetName()) == 0)
+			return schedule_tables[i];
+
+	return NULL;
+}
+
 uint32_t ldf::GetScheduleTablesCount()
 {
 	return schedule_tables_count;
