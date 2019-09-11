@@ -15,7 +15,7 @@ namespace lin {
 
 ldfconfigurableframe::ldfconfigurableframe(uint8_t *name, uint8_t id)
 {
-	this->name = (uint8_t *)strdup((char *)name);
+	this->name = StrDup(name);
 	this->id = id;
 }
 
@@ -34,7 +34,7 @@ ldfconfigurableframe *ldfconfigurableframe::FromLdfStatement(uint8_t *statement)
 	if (p) name = p;
 
 	if (p) p = strtok(NULL, "=" BLANK_CHARACTERS);
-	if (p) id = (p[1] == 'x' || p[1] == 'X') ? strtol(p, NULL, 16) : atoi(p);
+	if (p) id = ParseInt(p);
 
 	if (name)
 	{
@@ -73,25 +73,25 @@ void ldfconfigurableframe::ValidateUnicity(uint8_t *attributes, ldfconfigurablef
 {
 	char str[1000];
 
-	if (strcmp((char *)name, (char *)frame->name) == 0)
+	if (StrEq((char *)name, (char *)frame->name))
 	{
 		sprintf(str, STR_ERR "Node_attributes '%s' configurable frame name '%s' repeated.", attributes, name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 
 	if (id == frame->id)
 	{
 		sprintf(str, STR_ERR "Node_attributes '%s' configurable frame ID 0x%X repeated.", attributes, id);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 }
 
 void ldfconfigurableframe::UpdateName(const uint8_t *old_frame_name, const uint8_t *new_frame_name)
 {
-	if (strcmp((char *)name, (char *)old_frame_name) == 0)
+	if (StrEq((char *)name, (char *)old_frame_name))
 	{
 		delete name;
-		name = (uint8_t *)strdup((char *)new_frame_name);
+		name = StrDup(new_frame_name);
 	}
 }
 

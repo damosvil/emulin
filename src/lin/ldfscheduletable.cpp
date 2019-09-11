@@ -16,7 +16,7 @@ namespace lin
 
 ldfscheduletable::ldfscheduletable(uint8_t *name)
 {
-	this->name = (uint8_t *)strdup((char *) name);
+	this->name = StrDup(name);
 	this->commands_number = 0;
 }
 
@@ -45,7 +45,7 @@ void ldfscheduletable::UpdateCommandsFrameName(const uint8_t *old_name, const ui
 {
 	for (int i = 0; i < commands_number; i++)
 	{
-		commands[i]->UpdateName(old_name, new_name);
+		commands[i]->UpdateFrameName(old_name, new_name);
 	}
 }
 
@@ -54,7 +54,7 @@ void ldfscheduletable::DeleteCommandsByName(const uint8_t *name)
 	for (int i = 0; i < commands_number; )
 	{
 		// Skip commands with different name
-		if (strcmp((char *)name, (char*)commands[i]->GetName()) != 0)
+		if (!StrEq(name, commands[i]->GetFrameName()))
 		{
 			i++;
 			continue;
@@ -78,10 +78,10 @@ void ldfscheduletable::ValidateUnicity(ldfscheduletable *table, uint8_t **valida
 {
 	char str[1000];
 
-	if (strcmp((char *)name, (char *)table->name) == 0)
+	if (StrEq(name, table->name))
 	{
 		sprintf(str, STR_ERR "Schedule table name '%s' repeated.", name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 }
 
@@ -97,14 +97,14 @@ void ldfscheduletable::ValidateFrames(ldfframe **frames, uint32_t frames_count, 
 		// Look for frame definition
 		for (j = 0; (f == NULL) && (j < frames_count); j++)
 		{
-			f = (strcmp((char *)frames[j]->GetName(), (char *)commands[i]->GetName()) == 0) ? frames[j] : NULL;
+			f = StrEq(frames[j]->GetName(), commands[i]->GetFrameName()) ? frames[j] : NULL;
 		}
 
 		// Check frame exists
 		if (f == NULL)
 		{
-			sprintf(str, STR_ERR "Schedule table '%s' command frame '%s' not defined.", name, commands[i]->GetName());
-			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+			sprintf(str, STR_ERR "Schedule table '%s' command frame '%s' not defined.", name, commands[i]->GetFrameName());
+			validation_messages[*validation_messages_count++] = StrDup(str);
 			continue;
 		}
 

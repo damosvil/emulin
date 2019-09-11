@@ -55,6 +55,9 @@ int EntryGetInt(GObject *w);
 double EntryGetFloat(GObject *w);
 int32_t MultiParseInt(const char *p);
 bool Same(const char *a, const char *b);
+bool Same(const uint8_t *a, const char *b);
+bool Same(const char *a, const uint8_t *b);
+bool Same(const uint8_t *a, const uint8_t *b);
 bool Same(int a, const char *b);
 bool Same(const char *a, int b);
 

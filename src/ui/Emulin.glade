@@ -1762,7 +1762,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Frame</property>
+                <property name="label" translatable="yes">1st Frame</property>
               </object>
               <packing>
                 <property name="x">5</property>
@@ -1771,12 +1771,34 @@
             </child>
             <child>
               <object class="GtkComboBoxText" id="VentanaScheduleCommandDataFrame">
-                <property name="width_request">305</property>
+                <property name="width_request">230</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="x">100</property>
+                <property name="y">155</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Count</property>
+              </object>
+              <packing>
+                <property name="x">335</property>
+                <property name="y">160</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="VentanaScheduleCommandDataCount">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="width_chars">1</property>
+              </object>
+              <packing>
+                <property name="x">380</property>
                 <property name="y">155</property>
               </packing>
             </child>

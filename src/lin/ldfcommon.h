@@ -8,6 +8,9 @@
 #ifndef LIN_LDFCOMMON_H_
 #define LIN_LDFCOMMON_H_
 
+#include <stdint.h>
+
+
 #define BLANK_CHARACTERS					" \t\r\n"
 
 #define STR_ERR								"ERR: "
@@ -35,6 +38,14 @@ const char *GetLinProtocolVersionStringID(lin_protocol_version_e v);
 const char *GetLinLanguageVersionStringID(lin_language_version_e v);
 lin_protocol_version_e GetProtocolVersionByStringID(const char *id);
 lin_language_version_e GetLanguageVersionByStringID(const char *id);
+int32_t ParseInt(const char *p);
+bool StrEq(const uint8_t *a, const uint8_t *b);
+bool StrEq(const uint8_t *a, const char *b);
+bool StrEq(const char *a, const uint8_t *b);
+bool StrEq(const char *a, const char *b);
+uint8_t *StrDup(const char *a);
+uint8_t *StrDup(const uint8_t *a);
+
 
 }
 

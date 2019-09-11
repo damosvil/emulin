@@ -16,7 +16,7 @@ namespace lin {
 
 ldfframesignal::ldfframesignal(uint8_t *name, uint16_t offset)
 {
-	this->name = (uint8_t *)strdup((char *)name);
+	this->name = StrDup(name);
 	this->offset = offset;
 }
 
@@ -37,7 +37,7 @@ ldfframesignal *ldfframesignal::FromLdfStatement(uint8_t *statement)
 
 	// ID
 	if (p) p = strtok(NULL, ":," BLANK_CHARACTERS);
-	if (p) offset = atoi(p);
+	if (p) offset = ParseInt(p);
 
 	if (name)
 	{
@@ -76,7 +76,7 @@ uint16_t ldfframesignal::GetOffset()
 void ldfframesignal::SetName(const uint8_t *name)
 {
 	delete this->name;
-	this->name = (uint8_t *)strdup((char *)name);
+	this->name = StrDup(name);
 }
 
 void ldfframesignal::SetOffset(uint16_t offset)
@@ -86,7 +86,7 @@ void ldfframesignal::SetOffset(uint16_t offset)
 
 bool ldfframesignal::NameIs(const uint8_t *name)
 {
-	return strcmp((char *)name, (char *)this->name) == 0;
+	return StrEq(name, this->name);
 }
 
 

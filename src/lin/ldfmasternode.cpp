@@ -35,7 +35,7 @@ ldfmasternode *ldfmasternode::FromLdfStatement(uint8_t *statement)
 
 	// Timebase
 	if (p) p = strtok(NULL, "," BLANK_CHARACTERS);
-	if (p) timebase = atoi(p);
+	if (p) timebase = ParseInt(p);
 
 	// Jitter
 	if (p) p = strtok(NULL, "," BLANK_CHARACTERS);	// Skip word ms

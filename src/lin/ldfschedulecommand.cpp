@@ -10,22 +10,26 @@
 #include <stdio.h>
 #include <ldfcommon.h>
 #include <ldfschedulecommand.h>
+#include <ldf.h>
 
 namespace lin {
 
-ldfschedulecommand::ldfschedulecommand(ldfschedulecommandtype_t type, uint8_t *frame_name, uint16_t timeout, uint8_t *slave, uint8_t *data, uint8_t *assign_frame)
+
+ldfschedulecommand::ldfschedulecommand(ldfschedulecommandtype_t type, uint8_t *frame_name, uint16_t timeout, uint8_t *slave_name, uint8_t *data, uint8_t *assign_frame_name)
 {
 	this->type = type;
-	this->frame_name = (uint8_t *)strdup((char *) frame_name);
+	this->frame_name = StrDup(frame_name);
 	this->timeout = timeout;
-	this->slave = (uint8_t *)strdup((char *) slave);
-	this->data = (uint8_t *)strdup((char *) data);
-	this->assign_frame = (uint8_t *)strdup((char *) assign_frame);
+	this->slave_name = (slave_name != NULL) ? StrDup(slave_name) : NULL;
+	for (uint32_t i = 0; i < 8 ; i++) this->data[i] = data[i];
+	this->assign_frame_name = (assign_frame_name != NULL) ? StrDup(assign_frame_name) : NULL;
 }
 
 ldfschedulecommand::~ldfschedulecommand()
 {
 	if (frame_name) delete frame_name;
+	if (slave_name) delete slave_name;
+	if (assign_frame_name) delete assign_frame_name;
 }
 
 ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
@@ -35,57 +39,180 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 	char *frame_name = NULL;
 	uint16_t timeout = 0;
 	uint8_t *slave = NULL;
-	uint8_t *data = NULL;
 	uint8_t *assign_frame = NULL;
+	uint8_t data[8];
 
 	// Frame name
 	p = strtok((char *) statement, BLANK_CHARACTERS);
 	if (p == NULL) return NULL;
 	frame_name = p;
 
-	if (strcmp(frame_name, "MasterReq") == 0)
+	if (StrEq(frame_name, "MasterReq"))
 	{
-		type = LDF_SCMD_TYPE_MarterReq;
+		type = LDF_SCMD_TYPE_MasterReq;
 	}
-	else if (strcmp(frame_name, "SlaveResp") == 0)
+	else if (StrEq(frame_name, "SlaveResp"))
 	{
 		type = LDF_SCMD_TYPE_SlaveResp;
 	}
-	else if (strcmp(frame_name, "AssignNAD") == 0)
+	else if (StrEq(frame_name, "AssignNAD"))
 	{
 		type = LDF_SCMD_TYPE_AssignNAD;
+
+		// Read open bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "{")) return NULL;
+
+		// Read slave name
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		slave = (uint8_t *)p;
+
+		// Read close bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "}")) return NULL;
 	}
-	else if (strcmp(frame_name, "DataDump") == 0)
+	else if (StrEq(frame_name, "DataDump"))
 	{
 		type = LDF_SCMD_TYPE_DataDump;
+
+		// Read open bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "{")) return NULL;
+
+		// Read slave name
+		p = strtok(NULL, "," BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		slave = (uint8_t *)p;
+
+		// Read data
+		for (int i = 0; i < 5; i++)
+		{
+			p = strtok(NULL, "," BLANK_CHARACTERS);
+			if (p == NULL) return NULL;
+			data[i] = ParseInt(p);
+		}
+
+		// Read close bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "}")) return NULL;
 	}
-	else if (strcmp(frame_name, "SaveConfig") == 0)
+	else if (StrEq(frame_name, "SaveConfiguration"))
 	{
-		type = LDF_SCMD_TYPE_SaveConfig;
+		type = LDF_SCMD_TYPE_SaveConfiguration;
+
+		// Read open bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "{")) return NULL;
+
+		// Read slave name
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		slave = (uint8_t *)p;
+
+		// Read close bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "}")) return NULL;
 	}
-	else if (strcmp(frame_name, "FreeFormat") == 0)
+	else if (StrEq(frame_name, "FreeFormat"))
 	{
 		type = LDF_SCMD_TYPE_FreeFormat;
+
+		// Read open bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "{")) return NULL;
+
+		// Read data
+		for (int i = 0; i < 8; i++)
+		{
+			p = strtok(NULL, "," BLANK_CHARACTERS);
+			if (p == NULL) return NULL;
+			data[i] = ParseInt(p);
+		}
+
+		// Read close bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "}")) return NULL;
 	}
-	else if (strcmp(frame_name, "AssignFrameIdRange") == 0)
+	else if (StrEq(frame_name, "AssignFrameIdRange"))
 	{
 		type = LDF_SCMD_TYPE_AssignFrameIdRange;
+
+		// Read open bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "{")) return NULL;
+
+		// Read slave name
+		p = strtok(NULL, "," BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		slave = (uint8_t *)p;
+
+		// data[0] contains frame index in configurable_frames slave node list
+		// Read frame index on configurable_frames slave list
+		p = strtok(NULL, "," BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		data[0] = ParseInt(p);
+
+		// data[1] contains frame count
+		// Count frames
+		data[1] = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			p = strtok(NULL, "," BLANK_CHARACTERS);
+			if (p == NULL) break;
+			data[1]++;
+		}
+
+		// Check there is at least one frame pid
+		if (data[1] == 0) return NULL;
+
+		// Read close bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "}")) return NULL;
 	}
-	else if (strcmp(frame_name, "AssignFrameId") == 0)
+	else if (StrEq(frame_name, "AssignFrameId"))
 	{
 		type = LDF_SCMD_TYPE_AssignFrameId;
+
+		// Read open bracket
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "{")) return NULL;
+
+		// Read slave name
+		p = strtok(NULL, "," BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		slave = (uint8_t *)p;
+
+		// Read frame name
+		p = strtok(NULL, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		assign_frame = (uint8_t *)p;
+
+		// Read close bracket
+		p = strtok((char *) statement, BLANK_CHARACTERS);
+		if (p == NULL) return NULL;
+		if (!StrEq(p, "}")) return NULL;
 	}
 	else
 	{
 		type = LDF_SCMD_TYPE_UnconditionalFrame;
 	}
 
-	// TODO: Parse diagnostic frames
-
 	// Check delay word
 	p = strtok(NULL, BLANK_CHARACTERS);
 	if (p == NULL) return NULL;
-	if (strcmp(p, "delay") != 0) return NULL;
+	if (!StrEq(p, "delay")) return NULL;
 
 	// Timeout
 	p = strtok(NULL, BLANK_CHARACTERS);
@@ -95,13 +222,18 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 	// Check ms word
 	p = strtok(NULL, BLANK_CHARACTERS);
 	if (p == NULL) return NULL;
-	if (strcmp(p, "ms") != 0) return NULL;
+	if (!StrEq(p, "ms")) return NULL;
 
 	// Return command
 	return new ldfschedulecommand(type, (uint8_t *)frame_name, timeout, slave, data, assign_frame);
 }
 
-uint8_t *ldfschedulecommand::GetName()
+ldfschedulecommand::ldfschedulecommandtype_t ldfschedulecommand::GetType()
+{
+	return type;
+}
+
+uint8_t *ldfschedulecommand::GetFrameName()
 {
 	return frame_name;
 }
@@ -111,12 +243,27 @@ uint16_t ldfschedulecommand::GetTimeoutMs()
 	return timeout;
 }
 
-void ldfschedulecommand::UpdateName(const uint8_t *old_name, const uint8_t *new_name)
+uint8_t *ldfschedulecommand::GetSlaveName()
 {
-	if (strcmp((char *)frame_name, (char *)old_name) == 0)
+	return slave_name;
+}
+
+uint8_t *ldfschedulecommand::GetData()
+{
+	return data;
+}
+
+uint8_t *ldfschedulecommand::GetAssignFrameName()
+{
+	return assign_frame_name;
+}
+
+void ldfschedulecommand::UpdateFrameName(const uint8_t *old_name, const uint8_t *new_name)
+{
+	if (StrEq(frame_name, old_name))
 	{
 		delete frame_name;
-		frame_name = (uint8_t *)strdup((char *)new_name);
+		frame_name = StrDup(new_name);
 	}
 }
 
@@ -124,11 +271,68 @@ void ldfschedulecommand::ValidateUnicity(uint8_t *schedule_table, ldfschedulecom
 {
 	char str[1000];
 
-	if (strcmp((char *)frame_name, (char *)command->frame_name) == 0)
+	if (StrEq(frame_name, command->frame_name))
 	{
 		sprintf(str, STR_ERR "Schedule table '%s' schedule command frame name '%s' repeated.", schedule_table, frame_name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
+}
+
+uint8_t * ldfschedulecommand::GetCommandText(ldf *db)
+{
+	static char res[1000];
+	ldfnodeattributes *a;
+
+	switch (type)
+	{
+
+	case LDF_SCMD_TYPE_MasterReq:
+		strcpy(res, "MasterReq");
+		break;
+
+	case LDF_SCMD_TYPE_SlaveResp:
+		strcpy(res, "SlaveResp");
+		break;
+
+	case LDF_SCMD_TYPE_AssignNAD:
+		sprintf(res, "AssignNAD { %s }", slave_name);
+		break;
+
+	case LDF_SCMD_TYPE_DataDump:
+		sprintf(res, "DataDump { %s, %02X, %02X, %02X, %02X, %02X }", slave_name, data[0], data[1], data[2], data[3], data[4]);
+		break;
+
+	case LDF_SCMD_TYPE_SaveConfiguration:
+		sprintf(res, "SaveConfiguration { %s }", slave_name);
+		break;
+
+	case LDF_SCMD_TYPE_FreeFormat:
+		sprintf(res, "FreeFormat { %02X, %02X, %02X, %02X, %02X, %02X, %02X, %02X }", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+		break;
+
+	case LDF_SCMD_TYPE_AssignFrameIdRange:
+		a = db->GetSlaveNodeAttributesByName(slave_name);
+		sprintf(res, "AssignFrameIdRange { %s", slave_name);
+
+		// data[0] is index, data[1] is count in configurable_frames
+		for (int i = data[0]; i < data[1] && i < a->GetConfigurableFramesCount(); i++)
+		{
+			sprintf(res + strlen(res), ", %s", a->GetConfigurableFrame(i)->GetName());
+		}
+		strcat(res, " }");
+		break;
+
+	case LDF_SCMD_TYPE_AssignFrameId:
+		sprintf(res, "AssignFrameId { %s, %s }", slave_name, assign_frame_name);
+		break;
+
+	default:
+		strcpy(res, (char *)frame_name);
+		break;
+
+	}
+
+	return (uint8_t *)res;
 }
 
 

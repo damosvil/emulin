@@ -82,7 +82,6 @@ public:
 	void SetN_Cr_timeout(uint16_t v);
 	void SetResponseErrorSignalName(uint8_t *v);
 
-	bool NameIs(uint8_t *name);
 	void SortData();
 
 	void UpdateConfigurableFrameNames(const uint8_t *old_frame_name, const uint8_t *new_frame_name);

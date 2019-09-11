@@ -18,12 +18,12 @@ namespace lin {
 ldfsignal::ldfsignal(uint8_t *name, uint8_t bit_size, uint32_t default_value, uint8_t *publisher, uint8_t **subscribers, uint8_t subscribers_count)
 {
 	// Copy name
-	this->name = (uint8_t *)strdup((char *)name);
+	this->name = StrDup(name);
 	this->bit_size = bit_size;
 	this->default_value = default_value;
-	this->publisher = (uint8_t *)strdup((char *) publisher);
+	this->publisher = StrDup(publisher);
 	for (this->subscribers_count = 0; this->subscribers_count < subscribers_count; this->subscribers_count++)
-		this->subscribers[this->subscribers_count] = (uint8_t *)strdup((char *)subscribers[this->subscribers_count]);
+		this->subscribers[this->subscribers_count] = StrDup(subscribers[this->subscribers_count]);
 }
 
 ldfsignal::~ldfsignal()
@@ -55,12 +55,12 @@ ldfsignal *ldfsignal::FromLdfStatement(uint8_t *statement)
 	// Bit size
 	p = strtok(NULL, ":," BLANK_CHARACTERS);
 	if (!p) return NULL;
-	bit_size = atoi(p);
+	bit_size = ParseInt(p);
 
 	// Default value
 	p = strtok(NULL, ":," BLANK_CHARACTERS);
 	if (!p) return NULL;
-	default_value = (p[1] == 'x' || p[1] == 'X') ? strtol(p, NULL, 16) : atoi(p);
+	default_value = ParseInt(p);
 
 	// Publisher
 	p = strtok(NULL, ":," BLANK_CHARACTERS);
@@ -96,7 +96,7 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 	if (!ldfnode::CheckNodeName(publisher, master, slaves, slaves_count))
 	{
 		sprintf(str, STR_ERR "Publisher '%s' not defined in database", publisher);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 
 	for (i = 0; i < subscribers_count; i++)
@@ -104,7 +104,7 @@ void ldfsignal::ValidateNodes(ldfnode *master, ldfnode **slaves, uint32_t slaves
 		if (!ldfnode::CheckNodeName(subscribers[i], master, slaves, slaves_count))
 		{
 			sprintf(str, STR_ERR "Subscriber '%s' not defined in database", subscribers[i]);
-			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+			validation_messages[*validation_messages_count++] = StrDup(str);
 		}
 	}
 }
@@ -113,10 +113,10 @@ void ldfsignal::ValidateUnicity(ldfsignal *signal, uint8_t **validation_messages
 {
 	char str[1000];
 
-	if (strcmp((char *)name, (char *)signal->name) == 0)
+	if (StrEq(name, signal->name))
 	{
 		sprintf(str, STR_ERR "Signal '%s' is defined twice", name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)str;
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 }
 
@@ -152,19 +152,19 @@ uint8_t *ldfsignal::GetSubscriber(uint32_t ix)
 
 bool ldfsignal::NameIs(uint8_t *name)
 {
-	return strcmp((char *)name, (char *)this->name) == 0;
+	return StrEq(name, this->name);
 }
 
 bool ldfsignal::PublisherIs(uint8_t *publisher)
 {
-	return strcmp((char *)publisher, (char *)this->publisher) == 0;
+	return StrEq(publisher, this->publisher);
 }
 
 bool ldfsignal::UsesSlave(uint8_t *slave_name)
 {
-	bool in_use = strcmp((char *)slave_name, (char *)publisher) == 0;
+	bool in_use = StrEq(slave_name, publisher);
 	for (uint32_t jx = 0; !in_use && jx < subscribers_count; jx++)
-		in_use = strcmp((char *)slave_name, (char *)subscribers[jx]) == 0;
+		in_use = StrEq(slave_name, subscribers[jx]);
 
 	return in_use;
 }
@@ -172,19 +172,19 @@ bool ldfsignal::UsesSlave(uint8_t *slave_name)
 void ldfsignal::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
 {
 	// Update publisher, otherwise update subscribers
-	if (strcmp((char *)old_name, (char *)publisher) == 0)
+	if (StrEq(old_name, publisher))
 	{
 		delete publisher;
-		publisher = (uint8_t *)strdup((char *)new_name);
+		publisher = StrDup(new_name);
 	}
 	else
 	{
 		for (int i = 0; i < subscribers_count; i++)
 		{
-			if (strcmp((char *)old_name, (char *)subscribers[i]) != 0) continue;
+			if (!StrEq(old_name, subscribers[i])) continue;
 
 			delete subscribers[i];
-			subscribers[i] = (uint8_t *)strdup((char *)new_name);
+			subscribers[i] = StrDup(new_name);
 			break;
 		}
 	}

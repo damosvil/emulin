@@ -7,12 +7,13 @@
 
 #include <ldfnode.h>
 #include <string.h>
+#include <ldfcommon.h>
 
 namespace lin {
 
 ldfnode::ldfnode(uint8_t *name) {
 	// Copy the name
-	this->name = name != NULL ? (uint8_t *)strdup((char *)name) : NULL;
+	this->name = name != NULL ? StrDup(name) : NULL;
 }
 
 ldfnode::~ldfnode() {
@@ -28,13 +29,13 @@ bool ldfnode::CheckNodeName(uint8_t *name, ldfnode *master, ldfnode **slaves, ui
 	// Check publisher is master
 	if (master != NULL)
 	{
-		name_ok = master->NameIs(name);
+		name_ok = StrEq(name, master->name);
 	}
 
 	// Check publisher in slaves
 	for (i = 0; !name_ok && (i < slaves_count); i++)
 	{
-		name_ok = slaves[i]->NameIs(name);
+		name_ok = StrEq(name, slaves[i]->name);
 	}
 
 	return name_ok;
@@ -45,15 +46,13 @@ uint8_t *ldfnode::GetName()
 	return name;
 }
 
-void ldfnode::SetName(const uint8_t *name)
+void ldfnode::UpdateName(const uint8_t *old_name, const uint8_t *new_name)
 {
-	if (this->name) delete this->name;
-	this->name = (name != NULL) ? (uint8_t *)strdup((char *)name) : NULL;
-}
+	if (!StrEq(old_name, name))
+		return;
 
-bool ldfnode::NameIs(const uint8_t *name)
-{
-	return strcmp((char*)name, (char*)this->name) == 0;
+	delete name;
+	name = StrDup(new_name);
 }
 
 

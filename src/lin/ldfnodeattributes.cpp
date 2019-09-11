@@ -15,7 +15,7 @@ namespace lin {
 
 ldfnodeattributes::ldfnodeattributes(uint8_t *name)
 {
-	this->name = (uint8_t *)strdup((char *)name);
+	this->name = StrDup(name);
 	this->protocol = LIN_PROTOCOL_VERSION_NONE;
 	this->configured_NAD = 0xFF;
 	this->initial_NAD = 0xFF;
@@ -46,69 +46,69 @@ void ldfnodeattributes::UpdateFromLdfStatement(uint8_t *statement)
 	if (!p) return;
 
 	// Isolate and parse parameter value
-	if (strcmp(p, "LIN_protocol") == 0)
+	if (StrEq(p, "LIN_protocol"))
 	{
 		p = strtok(NULL, "=," BLANK_CHARACTERS);
 		if (!p) return;
 
-		if (strcmp(p, "\"2.1\"") == 0)
+		if (StrEq(p, "\"2.1\""))
 			protocol = LIN_PROTOCOL_VERSION_2_1;
-		else if (strcmp(p, "\"2.0\"") == 0)
+		else if (StrEq(p, "\"2.0\""))
 			protocol = LIN_PROTOCOL_VERSION_2_0;
 	}
-	else if (strcmp(p, "configured_NAD") == 0)
+	else if (StrEq(p, "configured_NAD"))
 	{
 		p = strtok(NULL, "=," BLANK_CHARACTERS);
-		if (p) configured_NAD = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
+		if (p) configured_NAD = ParseInt(p);
 	}
-	else if (strcmp(p, "initial_NAD") == 0)
+	else if (StrEq(p, "initial_NAD"))
 	{
 		p = strtok(NULL, "=," BLANK_CHARACTERS);
-		if (p) initial_NAD = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
+		if (p) initial_NAD = ParseInt(p);
 	}
-	else if (strcmp(p, "product_id") == 0)
+	else if (StrEq(p, "product_id"))
 	{
 		// Supplier ID
 		p = strtok(NULL, "=," BLANK_CHARACTERS);
-		if (p) product_id.supplier_id = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
+		if (p) product_id.supplier_id = ParseInt(p);
 
 		// Function ID
 		if (p) p = strtok(NULL, "=," BLANK_CHARACTERS);
-		if (p) product_id.function_id = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
+		if (p) product_id.function_id = ParseInt(p);
 
 		// Variant
 		if (p) p = strtok(NULL, "=," BLANK_CHARACTERS);
-		if (p) product_id.variant = (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
+		if (p) product_id.variant = ParseInt(p);
 	}
-	else if (strcmp(p, "response_error") == 0)
+	else if (StrEq(p, "response_error"))
 	{
 		p = strtok(NULL, "=,");
-		if (p) response_error_signal_name = (uint8_t *)strdup(p);
+		if (p) response_error_signal_name = StrDup(p);
 	}
-	else if (strcmp(p, "fault_state_signals") == 0)
+	else if (StrEq(p, "fault_state_signals"))
 	{
 		while (p)
 		{
 			p = strtok(NULL, "=,");
-			if (p) fault_state_signals[fault_state_signals_count++] = (uint8_t *)strdup(p);
+			if (p) fault_state_signals[fault_state_signals_count++] = StrDup(p);
 		}
 	}
-	else if (strcmp(p, "P2_min") == 0)
+	else if (StrEq(p, "P2_min"))
 	{
 		p = strtok(NULL, "=,");
 		if (p) P2_min = atof(p) * 10;
 	}
-	else if (strcmp(p, "ST_min") == 0)
+	else if (StrEq(p, "ST_min"))
 	{
 		p = strtok(NULL, "=,");
 		if (p) ST_min = atof(p) * 10;
 	}
-	else if (strcmp(p, "N_As_timeout") == 0)
+	else if (StrEq(p, "N_As_timeout"))
 	{
 		p = strtok(NULL, "=,");
 		if (p) N_As_timeout = atof(p) * 10;
 	}
-	else if (strcmp(p, "N_Cr_timeout") == 0)
+	else if (StrEq(p, "N_Cr_timeout"))
 	{
 		p = strtok(NULL, "=,");
 		if (p) N_Cr_timeout = atof(p) * 10;
@@ -127,13 +127,13 @@ void ldfnodeattributes::ValidateNode(ldfnode **slaves, uint32_t slaves_count, ui
 	if (this->protocol == LIN_PROTOCOL_VERSION_NONE)
 	{
 		sprintf(str, STR_ERR "Node_attributes '%s' protocol not defined.", name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 
 	if (!ldfnode::CheckNodeName(name, NULL, slaves, slaves_count))
 	{
 		sprintf(str, STR_ERR "Node_attributes '%s' node not defined in database's slaves", name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 }
 
@@ -141,10 +141,10 @@ void ldfnodeattributes::ValidateUnicity(ldfnodeattributes *attributes, uint8_t *
 {
 	char str[1000];
 
-	if (strcmp((char *)name, (char *)attributes->name) == 0)
+	if (StrEq(name, attributes->name))
 	{
 		sprintf(str, STR_ERR "Node_attributes '%s' node defined twice", name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 }
 
@@ -160,14 +160,14 @@ void ldfnodeattributes::ValidateFrames(ldfframe **frames, uint32_t frames_count,
 		// Look for frame definition
 		for (j = 0; (f == NULL) && (j < frames_count); j++)
 		{
-			f = (strcmp((char *)frames[j]->GetName(), (char *)configurable_frames[i]->GetName()) == 0) ? frames[j] : NULL;
+			f = StrEq(frames[j]->GetName(), configurable_frames[i]->GetName()) ? frames[j] : NULL;
 		}
 
 		// Check frame exists
 		if (f == NULL)
 		{
 			sprintf(str, STR_ERR "Node_attributes '%s' configurable frame '%s' not defined.", name, configurable_frames[i]->GetName());
-			validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+			validation_messages[*validation_messages_count++] = StrDup(str);
 			continue;
 		}
 
@@ -302,12 +302,7 @@ void ldfnodeattributes::SetN_Cr_timeout(uint16_t v)
 void ldfnodeattributes::SetResponseErrorSignalName(uint8_t *v)
 {
 	if (response_error_signal_name != NULL) delete response_error_signal_name;
-	response_error_signal_name = (v != NULL) ? (uint8_t *)strdup((const char *)v) : NULL;
-}
-
-bool ldfnodeattributes::NameIs(uint8_t *name)
-{
-	return strcmp((char *)name, (char *)this->name) == 0;
+	response_error_signal_name = (v != NULL) ? StrDup(v) : NULL;
 }
 
 void ldfnodeattributes::SortData()
@@ -328,7 +323,7 @@ void ldfnodeattributes::DeleteConfigurableFramesByName(const uint8_t *frame_name
 	for (int i = 0; i < configurable_frames_count; i++)
 	{
 		// Skip configurable frames with different name
-		if (strcmp((char *)configurable_frames[i]->GetName(), (char* )frame_name) != 0)
+		if (StrEq(configurable_frames[i]->GetName(), frame_name))
 		{
 			continue;
 		}

@@ -13,6 +13,7 @@
 #include "VentanaNodoEsclavo.h"
 #include "VentanaSenal.h"
 #include "VentanaFrame.h"
+#include "VentanaScheduleTable.h"
 
 
 using namespace managers;
@@ -209,7 +210,7 @@ void VentanaInicio::ReloadListSlaves()
 	// Add data to list store
 	for (ix = 0; ix < db->GetSlaveNodesCount(); ix++)
 	{
-		ldfnodeattributes *a = db->GetSlaveNodeAttributesByName(db->GetSlaveNode(ix)->GetName());
+		ldfnodeattributes *a = db->GetSlaveNodeAttributesByName(db->GetSlaveNodeByIndex(ix)->GetName());
 
 		// Slave name
 		gtk_list_store_append(s, &it);
@@ -390,7 +391,7 @@ void VentanaInicio::ReloadListScheduleTables()
 			ldfschedulecommand *cc = table->GetCommandByIndex(j);
 
 			if (j != 0) strcat(str, "\r\n");
-			strcat(str, GetStrPrintf("%s (%d ms)", cc->GetName(), cc->GetTimeoutMs()));
+			strcat(str, GetStrPrintf("%s (%d ms)", cc->GetFrameName(), cc->GetTimeoutMs()));
 		}
 		gtk_list_store_set(s, &it, 2, str, -1);
 	}
@@ -722,12 +723,40 @@ void VentanaInicio::OnPanelDatabaseScheduleTablesNew_clicked(GtkButton *button, 
 
 void VentanaInicio::OnPanelDatabaseScheduleTablesEdit_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *schedule_table_name;
 
+	// Get schedule table name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseScheduleTablesSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &schedule_table_name, -1);
+
+	// Ask user to update schedule table data
+	VentanaScheduleTable w(v->builder, v->db, schedule_table_name);
+	ldfscheduletable *t = w.ShowModal(v->handle);
+	if (t == NULL)
+		return;
+
+	// Update schedule table
+	v->db->UpdateScheduleTable((uint8_t *)schedule_table_name, t);
+	v->ReloadListScheduleTables();
 }
 
 void VentanaInicio::OnPanelDatabaseScheduleTablesDelete_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *schedule_table_name;
 
+	// Get schedule table name
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseScheduleTablesSelection), &model, &iter);
+	gtk_tree_model_get(model, &iter, 0, &schedule_table_name, -1);
+
+	// Delete schedule table
+	v->db->DeleteScheduleTable((uint8_t *)schedule_table_name);
+	v->ReloadListScheduleTables();
 }
 
 void VentanaInicio::OnPanelDatabaseScheduleTablesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
@@ -745,7 +774,6 @@ void VentanaInicio::OnPanelDatabaseScheduleTablesSelection_changed(GtkTreeSelect
 	WidgetEnable(v->g_PanelDatabaseScheduleTablesEdit, enable);
 	WidgetEnable(v->g_PanelDatabaseScheduleTablesDelete, enable);
 }
-
 
 
 } /* namespace lin */

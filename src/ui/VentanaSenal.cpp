@@ -40,7 +40,7 @@ VentanaSenal::VentanaSenal(GtkBuilder *builder, ldf *db, const char *signal_name
 	gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaSenalPublisher), (gchar *)db->GetMasterNode()->GetName(), (gchar *)db->GetMasterNode()->GetName());
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaSenalPublisher), (gchar *)db->GetMasterNode()->GetName());
 	for (uint32_t ix = 0; ix < db->GetSlaveNodesCount(); ix++)
-		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaSenalPublisher), (gchar *)db->GetSlaveNode(ix)->GetName(), (gchar *)db->GetSlaveNode(ix)->GetName());
+		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaSenalPublisher), (gchar *)db->GetSlaveNodeByIndex(ix)->GetName(), (gchar *)db->GetSlaveNodeByIndex(ix)->GetName());
 
 	// Prepare subscribers list
 	PrepareListSubscribers();
@@ -197,7 +197,7 @@ int VentanaSenal::GetAllFreeSubscriberNodes(const char **nodes)
 	count += 1;
 	for (uint32_t ix = 0; ix < db->GetSlaveNodesCount(); ix++)
 	{
-		nodes[count] = (char *)db->GetSlaveNode(ix)->GetName();
+		nodes[count] = (char *)db->GetSlaveNodeByIndex(ix)->GetName();
 		count += 1;
 	}
 

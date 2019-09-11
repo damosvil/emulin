@@ -13,7 +13,7 @@ namespace lin {
 
 ldfencodingtype::ldfencodingtype(uint8_t *name)
 {
-	this->name = (uint8_t *)strdup((char *)name);
+	this->name = StrDup(name);
 	treat_as_bcd = false;
 	treat_as_ascii = false;
 	physical_value = NULL;
@@ -33,23 +33,23 @@ void ldfencodingtype::UpdateFromLdfStatement(uint8_t *statement)
 	char *p = strtok((char *)statement, "," BLANK_CHARACTERS);
 
 	// Parse the rest
-	if (strcmp(p, "logical_value") == 0)
+	if (StrEq(p, "logical_value"))
 	{
 		logical_values[logical_values_count] = ldflogicalvalue::FromLdfStatement((uint8_t *) strtok(NULL, ""));
 		if (logical_values[logical_values_count]) logical_values_count++;
 	}
-	else if (strcmp(p, "physical_value") == 0)
+	else if (StrEq(p, "physical_value"))
 	{
 		if (physical_value == NULL)
 		{
 			physical_value = ldfphysicalvalue::FromLdfStatement((uint8_t *) strtok(NULL, ""));
 		}
 	}
-	else if (strcmp(p, "bcd_value") == 0)
+	else if (StrEq(p, "bcd_value"))
 	{
 		treat_as_bcd = true;
 	}
-	else if (strcmp(p, "ascii_value") == 0)
+	else if (StrEq(p, "ascii_value"))
 	{
 		treat_as_ascii = true;
 	}

@@ -16,9 +16,9 @@ namespace lin {
 
 ldfframe::ldfframe(uint8_t *name, uint8_t id, uint8_t *publisher, uint8_t size)
 {
-	this->name = (uint8_t *)strdup((char *) name);
+	this->name = StrDup(name);
 	this->id = id;
-	this->publisher = (uint8_t *)strdup((char *)publisher);
+	this->publisher = StrDup(publisher);
 	this->size = size;
 	this->signals_count = 0;
 }
@@ -44,7 +44,7 @@ ldfframe *ldfframe::FromLdfStatement(uint8_t *statement)
 
 	// ID
 	if (p) p = strtok(NULL, ":," BLANK_CHARACTERS);
-	if (p) id = (p[1] == 'x' || p[1] == 'X') ? strtol(p, NULL, 16) : atoi(p);
+	if (p) id = ParseInt(p);
 
 	// Publisher
 	if (p) p = strtok(NULL, ":," BLANK_CHARACTERS);
@@ -52,7 +52,7 @@ ldfframe *ldfframe::FromLdfStatement(uint8_t *statement)
 
 	// Frame size
 	if (p) p = strtok(NULL, ":," BLANK_CHARACTERS);
-	if (p) frame_size = atoi(p);
+	if (p) frame_size = ParseInt(p);
 
 	// Validate and return a new frame
 	if (name != NULL && publisher != NULL && id != 0xFF && frame_size != 0)
@@ -102,12 +102,12 @@ void ldfframe::AddSignal(ldfframesignal *signal)
 
 bool ldfframe::NameIs(const uint8_t *name)
 {
-	return strcmp((char*)name, (char*)this->name) == 0;
+	return StrEq(name, this->name);
 }
 
 bool ldfframe::PublisherIs(const uint8_t *publisher)
 {
-	return strcmp((char*)publisher, (char*)this->publisher) == 0;
+	return StrEq(publisher, this->publisher);
 }
 
 void ldfframe::DeleteSignalByIndex(uint32_t ix)
@@ -147,11 +147,11 @@ void ldfframe::UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *n
 
 void ldfframe::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
 {
-	if (strcmp((char*)old_name, (char*)publisher) != 0)
+	if (StrEq(old_name, publisher))
 		return;
 
 	delete publisher;
-	publisher = (uint8_t *)strdup((char *)new_name);
+	publisher = StrDup(new_name);
 }
 
 void ldfframe::ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count)
@@ -162,7 +162,7 @@ void ldfframe::ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t sla
 	if (!ldfnode::CheckNodeName(publisher, master, slaves, slaves_count))
 	{
 		sprintf(str, STR_ERR "Publisher node '%s' assigned to frame '%s' is not defined.", publisher, name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 }
 
@@ -170,16 +170,16 @@ void ldfframe::ValidateUnicity(ldfframe *frame, uint8_t **validation_messages, u
 {
 	char str[1000];
 
-	if (strcmp((char *)name, (char *)frame->name) == 0)
+	if (StrEq(name, frame->name))
 	{
 		sprintf(str, STR_ERR "Frame name '%s' used in two different frame definitions.", name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 
 	if (id == frame->id)
 	{
 		sprintf(str, STR_ERR "Frame ID 0x'%X' used in two different frames: '%s' and '%s'.", id, name, frame->name);
-		validation_messages[*validation_messages_count++] = (uint8_t *)strdup(str);
+		validation_messages[*validation_messages_count++] = StrDup(str);
 	}
 }
 
@@ -195,7 +195,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 	if (this->size > 8)
 	{
 		sprintf(str, STR_ERR "Frame '%s' size %d incorrect.", this->name, this->size);
-		validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
+		validation_messages[(*validation_messages_count)++] = StrDup(str);
 		return;
 	}
 
@@ -218,7 +218,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		if (s == NULL)
 		{
 			sprintf(str, STR_ERR "Signal '%s' used in frame '%s' not defined.", this->signals[i]->GetName(), name);
-			validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
+			validation_messages[(*validation_messages_count)++] = StrDup(str);
 			continue;
 		}
 
@@ -228,7 +228,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 			if (this->signals[i]->NameIs(this->signals[j]->GetName()))
 			{
 				sprintf(str, STR_ERR "Signal name '%s' used twice in frame '%s'.", this->signals[i]->GetName(), name);
-				validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
+				validation_messages[(*validation_messages_count)++] = StrDup(str);
 			}
 		}
 
@@ -236,7 +236,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		if (this->signals[i]->GetOffset() + s->GetBitSize() > frame_bit_length)
 		{
 			sprintf(str, STR_ERR "Signal '%s' used in frame '%s' outside of frame boundaries.", this->signals[i]->GetName(), name);
-			validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
+			validation_messages[(*validation_messages_count)++] = StrDup(str);
 			continue;
 		}
 
@@ -255,7 +255,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		if (overlapping)
 		{
 			sprintf(str, STR_ERR "Signal '%s' used in frame '%s' overlapping previous signal.", this->signals[i]->GetName(), name);
-			validation_messages[(*validation_messages_count)++] = (uint8_t *)strdup(str);
+			validation_messages[(*validation_messages_count)++] = StrDup(str);
 		}
 	}
 }
@@ -272,7 +272,7 @@ int32_t ldfframe::ComparePublisher(const ldfframe *a, const ldfframe *b)
 	return strcmp((char *)a->publisher, (char *)b->publisher);
 }
 
-int32_t ldfframe::SortData()
+void ldfframe::SortData()
 {
 	qsort(signals, signals_count, sizeof(signals[0]), ldfframesignal::SorterFrameSignals);
 }

@@ -38,7 +38,7 @@ VentanaFrame::VentanaFrame(GtkBuilder *builder, ldf *db, const char *frame_name)
 	gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaFramePublisher), (gchar *)db->GetMasterNode()->GetName(), (gchar *)db->GetMasterNode()->GetName());
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaFramePublisher), (gchar *)db->GetMasterNode()->GetName());
 	for (uint32_t ix = 0; ix < db->GetSlaveNodesCount(); ix++)
-		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaFramePublisher), (gchar *)db->GetSlaveNode(ix)->GetName(), (gchar *)db->GetSlaveNode(ix)->GetName());
+		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaFramePublisher), (gchar *)db->GetSlaveNodeByIndex(ix)->GetName(), (gchar *)db->GetSlaveNodeByIndex(ix)->GetName());
 
 	// Prepare signals list
 	PrepareListSignals();

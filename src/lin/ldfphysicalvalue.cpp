@@ -18,7 +18,7 @@ ldfphysicalvalue::ldfphysicalvalue(float min, float max, float scale, float offs
 	this->max = max;
 	this->scale = scale;
 	this->offset = offset;
-	this->description = (description != NULL) ? (uint8_t *)strdup((char *)description) : NULL;
+	this->description = (description != NULL) ? StrDup(description) : NULL;
 }
 
 ldfphysicalvalue::~ldfphysicalvalue()

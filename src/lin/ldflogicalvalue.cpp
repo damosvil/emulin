@@ -15,7 +15,7 @@ namespace lin {
 ldflogicalvalue::ldflogicalvalue(uint32_t value, uint8_t *description)
 {
 	this->value = value;
-	this->description = (uint8_t *)strdup((char *)description);
+	this->description = StrDup(description);
 }
 
 ldflogicalvalue::~ldflogicalvalue()
@@ -31,7 +31,7 @@ ldflogicalvalue *ldflogicalvalue::FromLdfStatement(uint8_t *statement)
 	// Read value
 	char *p = strtok((char *)statement, "," BLANK_CHARACTERS);
 	if (!p) return NULL;
-	value = (p[1] == 'x' || p[1] == 'X') ? strtol(p, NULL, 16) : atoi(p);
+	value = ParseInt(p);
 
 	// Read description
 	p = strtok(NULL, "\"");

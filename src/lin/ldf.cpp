@@ -103,27 +103,27 @@ bool ldf::Validate(void)
 	// Validate results
 	if (!is_lin_description_file)
 	{
-		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "Not a LIN definition file";
+		validation_messages[validation_messages_count++] = StrDup(STR_ERR "Not a LIN definition file");
 	}
 	if (lin_protocol_version == LIN_PROTOCOL_VERSION_NONE)
 	{
-		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "Protocol version not supported";
+		validation_messages[validation_messages_count++] = StrDup(STR_ERR "Protocol version not supported");
 	}
 	if (lin_language_version == LIN_LANGUAGE_VERSION_NONE)
 	{
-		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "Language version not supported";
+		validation_messages[validation_messages_count++] = StrDup(STR_ERR "Language version not supported");
 	}
 	if (lin_speed == 0)
 	{
-		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN speed no defined";
+		validation_messages[validation_messages_count++] = StrDup(STR_ERR "LIN speed no defined");
 	}
 	if (master == NULL)
 	{
-		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN master not found in database";
+		validation_messages[validation_messages_count++] = StrDup(STR_ERR "LIN master not found in database");
 	}
 	if (slaves_count == 0)
 	{
-		validation_messages[validation_messages_count++] = (uint8_t *)STR_ERR "LIN slaves not found in database";
+		validation_messages[validation_messages_count++] = StrDup(STR_ERR "LIN slaves not found in database");
 	}
 
 	// Validate publishers and subscribers of signals
@@ -335,7 +335,7 @@ void ldf::process_statement(uint8_t *statement)
 		// Isolate first token
 		p = strtok((char *)statement, ":" BLANK_CHARACTERS);
 
-		if (strcmp(p, "Master") == 0)
+		if (StrEq(p, "Master"))
 		{
 			// Go to the next string position
 			p += 6;
@@ -346,7 +346,7 @@ void ldf::process_statement(uint8_t *statement)
 			if (master == NULL && masternode)
 				master = masternode;
 		}
-		else if (strcmp(p, "Slaves") == 0)
+		else if (StrEq(p, "Slaves"))
 		{
 			while (p)
 			{
@@ -382,35 +382,35 @@ void ldf::process_statement(uint8_t *statement)
 		p = strtok((char *)statement, "=" BLANK_CHARACTERS);
 
 		// Check token
-		if (strcmp(p, "LIN_description_file") == 0)
+		if (StrEq(p, "LIN_description_file"))
 		{
 			is_lin_description_file = true;
 		}
-		else if (strcmp(p, "LIN_protocol_version") == 0)
+		else if (StrEq(p, "LIN_protocol_version"))
 		{
 			p = strtok(NULL, "=" BLANK_CHARACTERS);
-			if (p && strcmp(p, "\"2.1\"") == 0)
+			if (p && StrEq(p, "\"2.1\""))
 			{
 				lin_protocol_version = LIN_PROTOCOL_VERSION_2_1;
 			}
-			else if (p && strcmp(p, "\"2.0\"") == 0)
+			else if (p && StrEq(p, "\"2.0\""))
 			{
 				lin_protocol_version = LIN_PROTOCOL_VERSION_2_0;
 			}
 		}
-		else if (strcmp(p, "LIN_language_version") == 0)
+		else if (StrEq(p, "LIN_language_version"))
 		{
 			p = strtok(NULL, "=" BLANK_CHARACTERS);
-			if (p && strcmp(p, "\"2.1\"") == 0)
+			if (p && StrEq(p, "\"2.1\""))
 			{
 				lin_language_version = LIN_LANGUAGE_VERSION_2_1;
 			}
-			else if (p && strcmp(p, "\"2.0\"") == 0)
+			else if (p && StrEq(p, "\"2.0\""))
 			{
 				lin_language_version = LIN_LANGUAGE_VERSION_2_0;
 			}
 		}
-		else if (strcmp(p, "LIN_speed") == 0)
+		else if (StrEq(p, "LIN_speed"))
 		{
 			p = strtok(NULL, "=" BLANK_CHARACTERS);
 			if (p)
@@ -457,31 +457,31 @@ void ldf::process_group_start(uint8_t *start)
 		p = strtok((char *)start, BLANK_CHARACTERS);
 
 		// Analyze group
-		if (strcmp(p, "Nodes") == 0)
+		if (StrEq(p, "Nodes"))
 		{
 			parsing_state = LDF_PARSING_STATE_NODES;
 		}
-		else if (strcmp(p, "Signals") == 0)
+		else if (StrEq(p, "Signals"))
 		{
 			parsing_state = LDF_PARSING_STATE_SIGNALS;
 		}
-		else if (strcmp(p, "Frames") == 0)
+		else if (StrEq(p, "Frames"))
 		{
 			parsing_state = LDF_PARSING_STATE_FRAMES;
 		}
-		else if (strcmp(p, "Node_attributes") == 0)
+		else if (StrEq(p, "Node_attributes"))
 		{
 			parsing_state = LDF_PARSING_STATE_NODES_ATTRIBUTES;
 		}
-		else if (strcmp(p, "Schedule_tables") == 0)
+		else if (StrEq(p, "Schedule_tables"))
 		{
 			parsing_state = LDF_PARSING_STATE_SCHEDULE_TABLES;
 		}
-		else if (strcmp(p, "Signal_encoding_types") == 0)
+		else if (StrEq(p, "Signal_encoding_types"))
 		{
 			parsing_state = LDF_PARSING_STATE_ENCODING_TYPES;
 		}
-		else if (strcmp(p, "Signal_representation") == 0)
+		else if (StrEq(p, "Signal_representation"))
 		{
 			parsing_state = LDF_PARSING_STATE_ENCODING_SIGNALS;
 		}
@@ -548,6 +548,14 @@ void ldf::DeleteFrameByIndex(uint32_t ix)
 		frames[ix] = frames[ix + 1];
 }
 
+void ldf::DeleteScheduleTableByIndex(uint32_t ix)
+{
+	delete schedule_tables[ix];
+	schedule_tables_count--;
+	for (; ix < schedule_tables_count; ix++)
+		schedule_tables[ix] = schedule_tables[ix + 1];
+}
+
 lin_protocol_version_e ldf::GetLinProtocolVersion()
 {
 	return lin_protocol_version;
@@ -588,12 +596,9 @@ ldfmasternode *ldf::GetMasterNode()
 	return master;
 }
 
-ldfnode *ldf::GetSlaveNode(uint32_t ix)
+ldfnode *ldf::GetSlaveNodeByIndex(uint32_t ix)
 {
 	return slaves[ix];
-
-
-
 }
 
 uint32_t ldf::GetSlaveNodesCount()
@@ -613,7 +618,7 @@ ldfnodeattributes *ldf::GetSlaveNodeAttributesByName(uint8_t *slave_name)
 	// Look for node attributes
 	for (ix = 0; (ret == NULL) && (ix < node_attributes_count); ix++)
 	{
-		ret = node_attributes[ix]->NameIs(slave_name) ? node_attributes[ix] : NULL;
+		ret = StrEq(slave_name, node_attributes[ix]->GetName()) ? node_attributes[ix] : NULL;
 	}
 
 	return ret;
@@ -634,20 +639,14 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 	// Update slave name
 	for (uint32_t ix = 0; ix < slaves_count; ix++)
 	{
-		// Skip slaves
-		if (!slaves[ix]->NameIs(old_slave_name))
-			continue;
-
-		// Update slave name
-		slaves[ix]->SetName(n->GetName());
-		break;
+		slaves[ix]->UpdateName(old_slave_name, n->GetName());
 	}
 
 	// Update slave node attributes
 	for (uint32_t ix = 0; ix < node_attributes_count; ix++)
 	{
 		// Skip node attributes
-		if (!node_attributes[ix]->NameIs(old_slave_name))
+		if (!StrEq(old_slave_name, node_attributes[ix]->GetName()))
 			continue;
 
 		// Replace node attibutes
@@ -667,6 +666,8 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 	{
 		frames[ix]->UpdateNodeName(old_slave_name, n->GetName());
 	}
+
+	// TODO:: Update slave node name in schedule frames
 }
 
 void ldf::DeleteSlaveNode(uint8_t *slave_name)
@@ -675,7 +676,7 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 	for (uint32_t ix = 0; ix < slaves_count; ix++)
 	{
 		// Skip slaves
-		if (!slaves[ix]->NameIs(slave_name))
+		if (!StrEq(slave_name, slaves[ix]->GetName()))
 			continue;
 
 		// Delete slave and move all list one slot back
@@ -687,7 +688,7 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 	for (uint32_t ix = 0; ix < node_attributes_count; ix++)
 	{
 		// Skip node attributes
-		if (!node_attributes[ix]->NameIs(slave_name))
+		if (!StrEq(slave_name, node_attributes[ix]->GetName()))
 			continue;
 
 		// Delete node attributes and move all list one slot back
@@ -739,6 +740,8 @@ void ldf::DeleteSlaveNode(uint8_t *slave_name)
 			frames[ix]->DeleteSignalByIndex(jx);
 		}
 	}
+
+	// TODO:: Delete schedule tables that use the slave
 }
 
 ldfsignal *ldf::GetSignalByIndex(uint32_t ix)
@@ -832,7 +835,7 @@ void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
 	}
 
 	// Update master node name
-	master->SetName(new_name);
+	master->UpdateName(old_name, new_name);
 }
 
 ldfframe *ldf::GetFrameByIndex(uint32_t ix)
@@ -936,8 +939,8 @@ ldfscheduletable *ldf::GetScheduleTableByName(const uint8_t *name)
 	if (name == NULL)
 		return NULL;
 
-	for (int i = 0; i < schedule_tables_count; i++)
-		if (strcmp((char *)name, (char *)schedule_tables[i]->GetName()) == 0)
+	for (uint32_t i = 0; i < schedule_tables_count; i++)
+		if (StrEq(name, schedule_tables[i]->GetName()))
 			return schedule_tables[i];
 
 	return NULL;
@@ -946,6 +949,39 @@ ldfscheduletable *ldf::GetScheduleTableByName(const uint8_t *name)
 uint32_t ldf::GetScheduleTablesCount()
 {
 	return schedule_tables_count;
+}
+
+void ldf::UpdateScheduleTable(uint8_t *old_schedule_table_name, ldfscheduletable *t)
+{
+	for (uint32_t i = 0; i < schedule_tables_count; i++)
+	{
+		// Skip schedule tables with different names
+		if (!StrEq(schedule_tables[i]->GetName(), old_schedule_table_name))
+		{
+			continue;
+		}
+
+		// Replace schedule table
+		delete schedule_tables[i];
+		schedule_tables[i] = t;
+		break;
+	}
+}
+
+void ldf::DeleteScheduleTable(uint8_t *schedule_table_name)
+{
+	for (uint32_t i = 0; i < schedule_tables_count; i++)
+	{
+		// Skip schedule tables with different names
+		if (!StrEq(schedule_tables[i]->GetName(), schedule_table_name))
+		{
+			continue;
+		}
+
+		// Delete schedule table
+		DeleteScheduleTableByIndex(i);
+		break;
+	}
 }
 
 

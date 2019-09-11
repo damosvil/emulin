@@ -473,13 +473,13 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, g
 		ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use.", new_slave_name);
 		return;
 	}
-	else if (v->slave_name != NULL && !Same(new_slave_name, (char *)v->slave_name) && v->db->GetMasterNode()->NameIs((uint8_t *)new_slave_name))
+	else if (v->slave_name != NULL && !Same(new_slave_name, v->slave_name) && !Same(new_slave_name, v->db->GetMasterNode()->GetName()))
 	{
 		// Identifier in use
 		ShowErrorMessageBox(v->handle, "Slave name '%s' is already in use by master node.", new_slave_name);
 		return;
 	}
-	else if (v->slave_name != NULL && !Same(new_slave_name, (char *)v->slave_name) && attributes != NULL)
+	else if (v->slave_name != NULL && !Same(new_slave_name, v->slave_name) && attributes != NULL)
 	{
 		// Identifier in use
 		ShowErrorMessageBox(v->handle, "Slave name changed to another one that '%s' is already in use.", new_slave_name);

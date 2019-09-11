@@ -237,7 +237,7 @@ double EntryGetFloat(GObject *w)
 
 int32_t MultiParseInt(const char *p)
 {
-	return (p[1] == 'x' || p[1] == 'X') ? strtoul(p, NULL, 16) : atoi(p);
+	return (p[1] == 'x' || p[1] == 'X') ? strtol(p, NULL, 16) : atoi(p);
 }
 
 bool Same(const char *a, const char *b)
@@ -248,6 +248,21 @@ bool Same(const char *a, const char *b)
 		return false;
 
 	return strcmp(a, b) == 0;
+}
+
+bool Same(const uint8_t *a, const char *b)
+{
+	return Same((const char *)a, (const char *)b);
+}
+
+bool Same(const char *a, const uint8_t *b)
+{
+	return Same((const char *)a, (const char *)b);
+}
+
+bool Same(const uint8_t *a, const uint8_t *b)
+{
+	return Same((const char *)a, (const char *)b);
 }
 
 bool Same(int a, const char *b)

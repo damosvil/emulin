@@ -99,6 +99,7 @@ private:
 	void DeleteSlaveNodeAttributesByIndex(uint32_t ix);
 	void DeleteSignalByIndex(uint32_t ix);
 	void DeleteFrameByIndex(uint32_t ix);
+	void DeleteScheduleTableByIndex(uint32_t ix);
 
 public:
 	ldf(const uint8_t *filename);
@@ -117,7 +118,7 @@ public:
 	void SetLinSpeed(uint16_t s);
 
 	ldfmasternode *GetMasterNode();
-	ldfnode *GetSlaveNode(uint32_t ix);
+	ldfnode *GetSlaveNodeByIndex(uint32_t ix);
 	uint32_t GetSlaveNodesCount();
 
 	ldfnodeattributes *GetSlaveNodeAttributesByName(uint8_t *slave_name);
@@ -145,6 +146,8 @@ public:
 	ldfscheduletable *GetScheduleTableByIndex(uint32_t ix);
 	ldfscheduletable *GetScheduleTableByName(const uint8_t *name);
 	uint32_t GetScheduleTablesCount();
+	void UpdateScheduleTable(uint8_t *old_schedule_table_name, ldfscheduletable *t);
+	void DeleteScheduleTable(uint8_t *schedule_table_name);
 
 };
 

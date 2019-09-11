@@ -33,7 +33,40 @@ VentanaScheduleTable::VentanaScheduleTable(GtkBuilder *builder, ldf *db, const c
 	// Prepare lists
 	PrepareListCommands();
 
+	// Clear schedule commands list
+	GtkTreeIter it;
+	GtkTreeView *v = GTK_TREE_VIEW(g_VentanaScheduleTableList);
+	GtkListStore *s = GTK_LIST_STORE(gtk_tree_view_get_model(v));
+	gtk_list_store_clear(s);
+
 	// Load data
+	if (schedule_table_name != NULL)
+	{
+		ldfscheduletable *t = db->GetScheduleTableByName((uint8_t *)schedule_table_name);
+
+		// Table name
+		EntrySet(g_VentanaScheduleTableName, schedule_table_name);
+
+		// Load list store
+		for (uint32_t i = 0; i < t->GetCommandsCount(); i++)
+		{
+			ldfschedulecommand *c = t->GetCommandByIndex(i);
+
+			// Append a new list item
+			gtk_list_store_append(s, &it);
+
+			// Command
+			gtk_list_store_set(s, &it, 0, c->GetCommandText(db), -1);
+
+			// Timeout
+			gtk_list_store_set(s, &it, 1, GetStrPrintf("%d ms", c->GetTimeoutMs()), -1);
+		}
+	}
+	else
+	{
+		// Table name
+		EntrySet(g_VentanaScheduleTableName, "schedule");
+	}
 
 	// Connect signals
 	G_CONNECT_INSTXT(VentanaScheduleTableName, NAME_EXPR);
