@@ -6,6 +6,8 @@
  */
 
 #include <VentanaScheduleTable.h>
+#include <VentanaScheduleCommand.h>
+
 
 namespace ui
 {

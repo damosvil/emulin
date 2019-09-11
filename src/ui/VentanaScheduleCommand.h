@@ -24,9 +24,23 @@ private:
 	GtkBuilder *builder;
 	ldf *db;
 
+	// Widgets
+	G_VAR(VentanaScheduleCommandType);
+	G_VAR(VentanaScheduleCommandFrameName);
+	G_VAR(VentanaScheduleCommandSlave);
+	G_VAR(VentanaScheduleCommandTimeout);
+	G_VAR(VentanaScheduleCommandDataRaw);
+	G_VAR(VentanaScheduleCommandDataFrame);
+	G_VAR(VentanaScheduleCommandDataCount);
+	G_VAR(VentanaScheduleCommandAccept);
+	G_VAR(VentanaScheduleCommandCancel);
+
 public:
-	VentanaScheduleCommand(GtkBuilder *builder, ldf *db);
+	VentanaScheduleCommand(GtkBuilder *builder, ldf *db, const char *command, const char *timeout);
 	virtual ~VentanaScheduleCommand();
+
+	ldfschedulecommand *ShowModal(GObject *parent);
+
 
 };
 
