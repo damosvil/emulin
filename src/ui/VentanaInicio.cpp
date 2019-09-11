@@ -718,7 +718,17 @@ void VentanaInicio::OnPanelDatabaseFramesSelection_changed(GtkTreeSelection *wid
 
 void VentanaInicio::OnPanelDatabaseScheduleTablesNew_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaInicio *v = (VentanaInicio *)user_data;
 
+	// Ask user to create new schedule table
+	VentanaScheduleTable w(v->builder, v->db, NULL);
+	ldfscheduletable *t = w.ShowModal(v->handle);
+	if (t == NULL)
+		return;
+
+	// Update schedule table
+	v->db->AddScheduleTable(t);
+	v->ReloadListScheduleTables();
 }
 
 void VentanaInicio::OnPanelDatabaseScheduleTablesEdit_clicked(GtkButton *button, gpointer user_data)

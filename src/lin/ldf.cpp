@@ -951,6 +951,11 @@ uint32_t ldf::GetScheduleTablesCount()
 	return schedule_tables_count;
 }
 
+void ldf::AddScheduleTable(ldfscheduletable *t)
+{
+	schedule_tables[schedule_tables_count++] = t;
+}
+
 void ldf::UpdateScheduleTable(uint8_t *old_schedule_table_name, ldfscheduletable *t)
 {
 	for (uint32_t i = 0; i < schedule_tables_count; i++)

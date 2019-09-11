@@ -146,6 +146,7 @@ public:
 	ldfscheduletable *GetScheduleTableByIndex(uint32_t ix);
 	ldfscheduletable *GetScheduleTableByName(const uint8_t *name);
 	uint32_t GetScheduleTablesCount();
+	void AddScheduleTable(ldfscheduletable *t);
 	void UpdateScheduleTable(uint8_t *old_schedule_table_name, ldfscheduletable *t);
 	void DeleteScheduleTable(uint8_t *schedule_table_name);
 
