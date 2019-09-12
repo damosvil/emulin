@@ -50,7 +50,7 @@ public:
 	virtual ~ldfschedulecommand();
 
 	static ldfschedulecommand *FromLdfStatement(const uint8_t *statement);
-	static ldfschedulecommand *FromUiScheduleListItemData(ldf *db, const uint8_t *command, const uint8_t *timeout);
+	static ldfschedulecommand *FromStrCommand(ldf *db, const uint8_t *command, const uint8_t *timeout);
 
 	ldfschedulecommandtype_t GetType();
 	uint8_t *GetFrameName();
@@ -59,9 +59,12 @@ public:
 	uint8_t *GetData();
 	uint8_t *GetAssignFrameName();
 
+
 	void UpdateFrameName(const uint8_t *old_name, const uint8_t *new_name);
 	void ValidateUnicity(uint8_t *schedule_table, ldfschedulecommand *command, uint8_t **validation_messages, uint32_t *validation_messages_count);
-	const uint8_t *GetUiCommandText(ldf *db);
+
+	const uint8_t *GetStrType();
+	const uint8_t *GetStrCommand(ldf *db);
 
 
 };

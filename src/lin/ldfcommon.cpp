@@ -73,6 +73,7 @@ bool StrEq(const char *a, const char *b)
 
 uint8_t *StrDup(const char *a)
 {
+	if (a == NULL) return NULL;
 	return (uint8_t *)strdup(a);
 }
 

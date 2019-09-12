@@ -38,6 +38,7 @@ private:
 
 	// Signal callbacks
 	static void OnVentanaScheduleCommandType_changed(GtkComboBoxText *widget, gpointer user_data);
+	static void OnVentanaScheduleCommandSlave_changed(GtkComboBoxText *widget, gpointer user_data);
 	static void OnVentanaScheduleCommandAccept_clicked(GtkButton *button, gpointer user_data);
 	static void OnVentanaScheduleCommandCancel_clicked(GtkButton *button, gpointer user_data);
 

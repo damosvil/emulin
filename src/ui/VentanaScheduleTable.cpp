@@ -58,7 +58,7 @@ VentanaScheduleTable::VentanaScheduleTable(GtkBuilder *builder, ldf *db, const c
 			gtk_list_store_append(s, &it);
 
 			// Command
-			gtk_list_store_set(s, &it, 0, c->GetUiCommandText(db), -1);
+			gtk_list_store_set(s, &it, 0, c->GetStrCommand(db), -1);
 
 			// Timeout
 			gtk_list_store_set(s, &it, 1, GetStrPrintf("%d ms", c->GetTimeoutMs()), -1);

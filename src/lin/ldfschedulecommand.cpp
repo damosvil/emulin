@@ -20,9 +20,9 @@ ldfschedulecommand::ldfschedulecommand(ldfschedulecommandtype_t type, const uint
 	this->type = type;
 	this->frame_name = StrDup(frame_name);
 	this->timeout = timeout;
-	this->slave_name = (slave_name != NULL) ? StrDup(slave_name) : NULL;
+	this->slave_name = StrDup(slave_name);
 	for (uint32_t i = 0; i < 8 ; i++) this->data[i] = data[i];
-	this->assign_frame_name = (assign_frame_name != NULL) ? StrDup(assign_frame_name) : NULL;
+	this->assign_frame_name = StrDup(assign_frame_name);
 }
 
 ldfschedulecommand::~ldfschedulecommand()
@@ -165,7 +165,7 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(const uint8_t *statemen
 	return new ldfschedulecommand(type, Str(frame_name), timeout, Str(slave), Str(data), Str(assign_frame));
 }
 
-ldfschedulecommand *ldfschedulecommand::FromUiScheduleListItemData(ldf *db, const uint8_t *command, const uint8_t *timeout)
+ldfschedulecommand *ldfschedulecommand::FromStrCommand(ldf *db, const uint8_t *command, const uint8_t *timeout)
 {
 	ldfschedulecommand *c;
 	char str[10000];
@@ -244,7 +244,55 @@ void ldfschedulecommand::ValidateUnicity(uint8_t *schedule_table, ldfschedulecom
 	}
 }
 
-const uint8_t * ldfschedulecommand::GetUiCommandText(ldf *db)
+const uint8_t *ldfschedulecommand::GetStrType()
+{
+	const char *res = NULL;
+
+	switch (type)
+	{
+
+	case LDF_SCMD_TYPE_MasterReq:
+		res = "MasterReq";
+		break;
+
+	case LDF_SCMD_TYPE_SlaveResp:
+		res = "SlaveResp";
+		break;
+
+	case LDF_SCMD_TYPE_AssignNAD:
+		res = "AssignNAD";
+		break;
+
+	case LDF_SCMD_TYPE_DataDump:
+		res = "DataDump";
+		break;
+
+	case LDF_SCMD_TYPE_SaveConfiguration:
+		res = "SaveConfiguration";
+		break;
+
+	case LDF_SCMD_TYPE_FreeFormat:
+		res = "FreeFormat";
+		break;
+
+	case LDF_SCMD_TYPE_AssignFrameIdRange:
+		res = "AssignFrameIdRange";
+		break;
+
+	case LDF_SCMD_TYPE_AssignFrameId:
+		res = "AssignFrameId";
+		break;
+
+	default:
+		res = "UnconditionalFrame";
+		break;
+
+	}
+
+	return Str(res);
+}
+
+const uint8_t * ldfschedulecommand::GetStrCommand(ldf *db)
 {
 	static char res[1000];
 	ldfnodeattributes *a;

@@ -30,7 +30,13 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 	// Load data
 	if (command != NULL)
 	{
-		ldfschedulecommand *c = ldfschedulecommand::FromUiScheduleListItemData(db, Str(command), Str(timeout));
+		ldfschedulecommand *c = ldfschedulecommand::FromStrCommand(db, Str(command), Str(timeout));
+
+		// Type
+		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandType), (char *)c->GetStrType());
+
+		// Frame name
+		EntrySet(g_VentanaScheduleCommandFrameName, c->GetAssignFrameName());
 
 		delete c;
 	}
@@ -43,6 +49,7 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 	G_CONNECT_INSTXT(VentanaScheduleCommandTimeout, INT5_EXPR);
 	G_CONNECT_INSTXT(VentanaScheduleCommandDataCount, INT_1_4_EXPR);
 	G_CONNECT(VentanaScheduleCommandType, changed);
+	G_CONNECT(VentanaScheduleCommandSlave, changed);
 	G_CONNECT(VentanaScheduleCommandAccept, clicked);
 	G_CONNECT(VentanaScheduleCommandCancel, clicked);
 }
@@ -72,6 +79,11 @@ ldfschedulecommand *VentanaScheduleCommand::ShowModal(GObject *parent)
 }
 
 void VentanaScheduleCommand::OnVentanaScheduleCommandType_changed(GtkComboBoxText *widget, gpointer user_data)
+{
+
+}
+
+void VentanaScheduleCommand::OnVentanaScheduleCommandSlave_changed(GtkComboBoxText *widget, gpointer user_data)
 {
 
 }
