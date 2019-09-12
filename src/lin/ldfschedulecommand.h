@@ -38,12 +38,19 @@ private:
 	uint8_t data[8];
 	uint8_t *assign_frame_name;
 
+private:
+	static char *ParseSlaveInBrackets(char *p, char **p_slave);
+	static char *ParseDataDump(char *p, char **p_slave, char *data);
+	static char *ParseFreeFormat(char *p, char *data);
+	static char *ParseAssignFrameId(char *p, char **p_slave, char **p_assign_frame);
+	static char *ParseAssignFrameIdRange(char *p, char **p_slave, char **p_assign_frame, char *data);
+
 public:
 	ldfschedulecommand(ldfschedulecommandtype_t type, const uint8_t *frame_name, uint16_t timeout, const uint8_t *slave_name, const uint8_t *data, const uint8_t *assign_frame_name);
 	virtual ~ldfschedulecommand();
 
 	static ldfschedulecommand *FromLdfStatement(const uint8_t *statement);
-	static ldfschedulecommand *FromUiScheduleListItemData(const uint8_t *command, const uint8_t *timeout);
+	static ldfschedulecommand *FromUiScheduleListItemData(ldf *db, const uint8_t *command, const uint8_t *timeout);
 
 	ldfschedulecommandtype_t GetType();
 	uint8_t *GetFrameName();

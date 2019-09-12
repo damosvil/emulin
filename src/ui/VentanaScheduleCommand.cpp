@@ -30,7 +30,7 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 	// Load data
 	if (command != NULL)
 	{
-		ldfschedulecommand *c = ldfschedulecommand::FromUiScheduleListItemData(Str(command), Str(timeout));
+		ldfschedulecommand *c = ldfschedulecommand::FromUiScheduleListItemData(db, Str(command), Str(timeout));
 
 		delete c;
 	}

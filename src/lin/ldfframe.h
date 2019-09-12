@@ -35,6 +35,7 @@ public:
 
 	uint8_t *GetName();
 	uint8_t GetId();
+	uint8_t GetPid();
 	uint8_t *GetPublisher();
 	uint8_t GetSize();
 	ldfframesignal *GetSignal(uint32_t ix);

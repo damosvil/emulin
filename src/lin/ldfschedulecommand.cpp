@@ -32,6 +32,65 @@ ldfschedulecommand::~ldfschedulecommand()
 	if (assign_frame_name) delete assign_frame_name;
 }
 
+char *ldfschedulecommand::ParseSlaveInBrackets(char *p, char **p_slave)
+{
+	p = StrTokenParseNextAndCheck(p, "{", BLANK_CHARACTERS);
+	p = StrTokenParseNext(p, p_slave, BLANK_CHARACTERS);
+	return StrTokenParseNextAndCheck(p, "}", BLANK_CHARACTERS);
+}
+
+char *ldfschedulecommand::ParseDataDump(char *p, char **p_slave, char *data)
+{
+	p = StrTokenParseNextAndCheck(p, "{", BLANK_CHARACTERS);
+	p = StrTokenParseNext(p, p_slave, "," BLANK_CHARACTERS);	// Read slave
+	for (int i = 0; (p != NULL) && (i < 5); i++)									// Read data dump
+	{
+		p = StrTokenParseNext(p, NULL, "," BLANK_CHARACTERS);
+		if (p != NULL) data[i] = ParseInt(p);
+	}
+	return StrTokenParseNextAndCheck(p, "}", BLANK_CHARACTERS);
+}
+
+char *ldfschedulecommand::ParseFreeFormat(char *p, char *data)
+{
+	p = StrTokenParseNextAndCheck(p, "{", BLANK_CHARACTERS);
+	for (int i = 0; (p != NULL) && (i < 8); i++)									// Read free format data
+	{
+		p = StrTokenParseNext(p, NULL, "," BLANK_CHARACTERS);
+		data[i] = ParseInt(p);
+	}
+	return StrTokenParseNextAndCheck(p, "}", BLANK_CHARACTERS);
+}
+
+char *ldfschedulecommand::ParseAssignFrameId(char *p, char **p_slave, char **p_assign_frame)
+{
+	p = StrTokenParseNextAndCheck(p, "{", BLANK_CHARACTERS);
+	p = StrTokenParseNext(p, p_slave, "," BLANK_CHARACTERS);		// Read slave
+	p = StrTokenParseNext(p, p_assign_frame, "," BLANK_CHARACTERS);	// Read assign frame
+	return StrTokenParseNextAndCheck(p, "}", BLANK_CHARACTERS);
+}
+
+char *ldfschedulecommand::ParseAssignFrameIdRange(char *p, char **p_slave, char **p_assign_frame, char *data)
+{
+	p = StrTokenParseNextAndCheck(p, "{", BLANK_CHARACTERS);
+	p = StrTokenParseNext(p, p_slave, "," BLANK_CHARACTERS);	// Read slave
+
+	// data[0] contains frame index in configurable_frames slave node list
+	p = StrTokenParseNext(p, NULL, "," BLANK_CHARACTERS);
+	data[0] = ParseInt(p);
+
+	// Protected identifier cannot be 0, so return it as a string, and process it later
+	if (data[0] == 0) *p_assign_frame = p;
+
+	// data[1] contains frame count
+	for (data[1] = 0; (p != NULL) && (data[1] < 4); data[1]++)
+	{
+		p = StrTokenParseNext(p, NULL, "," BLANK_CHARACTERS);
+	}
+
+	return StrTokenParseNextAndCheck(p, "}", BLANK_CHARACTERS);
+}
+
 ldfschedulecommand *ldfschedulecommand::FromLdfStatement(const uint8_t *statement)
 {
 	char *p;
@@ -43,9 +102,7 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(const uint8_t *statemen
 	char data[8];
 
 	// Frame name
-	p = strtok((char *) statement, BLANK_CHARACTERS);
-	if (p == NULL) return NULL;
-	frame_name = p;
+	p = StrTokenParseFirst((char*)statement, &frame_name, BLANK_CHARACTERS);
 
 	if (StrEq(frame_name, "MasterReq"))
 	{
@@ -58,179 +115,83 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(const uint8_t *statemen
 	else if (StrEq(frame_name, "AssignNAD"))
 	{
 		type = LDF_SCMD_TYPE_AssignNAD;
-
-		// Read open bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "{")) return NULL;
-
-		// Read slave name
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		slave = p;
-
-		// Read close bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "}")) return NULL;
+		p = ParseSlaveInBrackets(p, &slave);
 	}
 	else if (StrEq(frame_name, "DataDump"))
 	{
 		type = LDF_SCMD_TYPE_DataDump;
-
-		// Read open bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "{")) return NULL;
-
-		// Read slave name
-		p = strtok(NULL, "," BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		slave = p;
-
-		// Read data
-		for (int i = 0; i < 5; i++)
-		{
-			p = strtok(NULL, "," BLANK_CHARACTERS);
-			if (p == NULL) return NULL;
-			data[i] = ParseInt(p);
-		}
-
-		// Read close bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "}")) return NULL;
+		p = ParseDataDump(p, &slave, data);
 	}
 	else if (StrEq(frame_name, "SaveConfiguration"))
 	{
 		type = LDF_SCMD_TYPE_SaveConfiguration;
-
-		// Read open bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "{")) return NULL;
-
-		// Read slave name
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		slave = p;
-
-		// Read close bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "}")) return NULL;
+		p = ParseSlaveInBrackets(p, &slave);
 	}
 	else if (StrEq(frame_name, "FreeFormat"))
 	{
 		type = LDF_SCMD_TYPE_FreeFormat;
-
-		// Read open bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "{")) return NULL;
-
-		// Read data
-		for (int i = 0; i < 8; i++)
-		{
-			p = strtok(NULL, "," BLANK_CHARACTERS);
-			if (p == NULL) return NULL;
-			data[i] = ParseInt(p);
-		}
-
-		// Read close bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "}")) return NULL;
+		p = ParseFreeFormat(p, data);
 	}
 	else if (StrEq(frame_name, "AssignFrameIdRange"))
 	{
 		type = LDF_SCMD_TYPE_AssignFrameIdRange;
-
-		// Read open bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "{")) return NULL;
-
-		// Read slave name
-		p = strtok(NULL, "," BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		slave = p;
-
-		// data[0] contains frame index in configurable_frames slave node list
-		// Read frame index on configurable_frames slave list
-		p = strtok(NULL, "," BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		data[0] = ParseInt(p);
-
-		// data[1] contains frame count
-		// Count frames
-		data[1] = 0;
-		for (int i = 0; i < 4; i++)
-		{
-			p = strtok(NULL, "," BLANK_CHARACTERS);
-			if (p == NULL) break;
-			data[1]++;
-		}
-
-		// Check there is at least one frame pid
-		if (data[1] == 0) return NULL;
-
-		// Read close bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "}")) return NULL;
+		p = ParseAssignFrameIdRange(p, &slave, &assign_frame, data);
 	}
 	else if (StrEq(frame_name, "AssignFrameId"))
 	{
 		type = LDF_SCMD_TYPE_AssignFrameId;
-
-		// Read open bracket
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "{")) return NULL;
-
-		// Read slave name
-		p = strtok(NULL, "," BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		slave = p;
-
-		// Read frame name
-		p = strtok(NULL, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		assign_frame = p;
-
-		// Read close bracket
-		p = strtok((char *) statement, BLANK_CHARACTERS);
-		if (p == NULL) return NULL;
-		if (!StrEq(p, "}")) return NULL;
+		p = ParseAssignFrameId(p, &slave, &assign_frame);
 	}
 	else
 	{
 		type = LDF_SCMD_TYPE_UnconditionalFrame;
 	}
+	if (p == NULL) return NULL;
 
 	// Check delay word
-	p = strtok(NULL, BLANK_CHARACTERS);
+	p = StrTokenParseNextAndCheck(p, "delay", BLANK_CHARACTERS);
 	if (p == NULL) return NULL;
-	if (!StrEq(p, "delay")) return NULL;
 
 	// Timeout
-	p = strtok(NULL, BLANK_CHARACTERS);
+	p = StrTokenParseNext(p, NULL, BLANK_CHARACTERS);
 	if (p == NULL) return NULL;
-	timeout = atof(p);
+	timeout = ParseInt(p);
 
 	// Check ms word
-	p = strtok(NULL, BLANK_CHARACTERS);
+	p = StrTokenParseNextAndCheck(p, "ms", BLANK_CHARACTERS);
 	if (p == NULL) return NULL;
-	if (!StrEq(p, "ms")) return NULL;
 
 	// Return command
 	return new ldfschedulecommand(type, Str(frame_name), timeout, Str(slave), Str(data), Str(assign_frame));
 }
 
-ldfschedulecommand *ldfschedulecommand::FromUiScheduleListItemData(const uint8_t *command, const uint8_t *timeout)
+ldfschedulecommand *ldfschedulecommand::FromUiScheduleListItemData(ldf *db, const uint8_t *command, const uint8_t *timeout)
 {
-	return NULL;
+	ldfschedulecommand *c;
+	char str[10000];
+
+	// Emulate input from database
+	sprintf(str, "%s delay %s ms", command, timeout);
+
+	// Parse input
+	c = FromLdfStatement(Str(str));
+	if (c == NULL) return NULL;
+
+	if (c->type == LDF_SCMD_TYPE_AssignFrameIdRange)
+	{
+		// Check that it couldn't parse the first frame as a PID, but as a frame name
+		if (c->assign_frame_name == NULL) return NULL;
+
+		// data[0] contains frame index in configurable_frames slave node list
+		c->data[0] = db->GetFrameByName(c->assign_frame_name)->GetPid();
+		delete c->assign_frame_name;
+		c->assign_frame_name = NULL;
+
+		// data[1] contains frame count, ie. it shall be bigger than 0 and smaller than 5
+		if (c->data[1] == 0 || c->data[1] > 4) return NULL;
+	}
+
+	return c;
 }
 
 ldfschedulecommand::ldfschedulecommandtype_t ldfschedulecommand::GetType()

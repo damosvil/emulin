@@ -28,16 +28,14 @@ int main(int argc, char *argv[])
 	gtk_builder_add_from_file(builder, "src/ui/Emulin.glade", &error);
 
 	// Change locale because GTK changes it to the system one
-	setlocale(LC_ALL, "en_US");
+	if (setlocale(LC_ALL, "en_US") != NULL)
+	{
+		// Instantiate VentanaInicio
+		VentanaInicio v(builder);
 
-	// Instantiate VentanaInicio
-	VentanaInicio *v = new VentanaInicio(builder);
-
-	// Run GTK's main loop
-	gtk_main();
-
-	// Resource erasing
-	delete v;
+		// Run GTK's main loop
+		gtk_main();
+	}
 
 	return 0;
 }

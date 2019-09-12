@@ -94,7 +94,7 @@ VentanaFrame::VentanaFrame(GtkBuilder *builder, ldf *db, const char *frame_name)
 
 	// Connect text fields
 	G_CONNECT_INSTXT(VentanaFrameName, NAME_EXPR);
-	G_CONNECT_INSTXT(VentanaFrameID, INT3_EXPR);
+	G_CONNECT_INSTXT(VentanaFrameID, INT_0_63_EXPR);
 	G_CONNECT_INSTXT(VentanaFrameSize, INT_1_8_EXPR);
 
 	// Connect lists

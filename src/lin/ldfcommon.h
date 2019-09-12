@@ -39,14 +39,18 @@ const char *GetLinLanguageVersionStringID(lin_language_version_e v);
 lin_protocol_version_e GetProtocolVersionByStringID(const char *id);
 lin_language_version_e GetLanguageVersionByStringID(const char *id);
 int32_t ParseInt(const char *p);
+int32_t ParseInt(const uint8_t *p);
 bool StrEq(const uint8_t *a, const uint8_t *b);
 bool StrEq(const uint8_t *a, const char *b);
 bool StrEq(const char *a, const uint8_t *b);
 bool StrEq(const char *a, const char *b);
 uint8_t *StrDup(const char *a);
 uint8_t *StrDup(const uint8_t *a);
+char *StrTokenParseFirst(char *p, char **p_token, const char *tokenizers);
+char *StrTokenParseNext(char *p, char **p_token, const char *tokenizers);
+char *StrTokenParseFirstAndCheck(char *p, const char *token, const char *tokenizers);
+char *StrTokenParseNextAndCheck(char *p, const char *token, const char *tokenizers);
 inline const uint8_t *Str(const char *c) { return (const uint8_t *)c; }
-
 
 }
 

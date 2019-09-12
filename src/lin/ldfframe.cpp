@@ -75,6 +75,13 @@ uint8_t ldfframe::GetId()
 	return id;
 }
 
+uint8_t ldfframe::GetPid()
+{
+	uint8_t p1 = 0x01 & (id ^ (id >> 1) ^ (id >> 2) ^ (id >> 4));
+	uint8_t p2 = 0x01 & ~((id >> 1) ^ (id >> 3) ^ (id >> 4) ^ (id >> 5));
+	return id | (p1 << 6) | (p2 << 7);
+}
+
 uint8_t *ldfframe::GetPublisher()
 {
 	return publisher;

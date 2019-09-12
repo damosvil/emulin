@@ -202,6 +202,7 @@ ldfscheduletable *VentanaScheduleTable::ShowModal(GObject *parent)
 		// Name
 		res = new ldfscheduletable(Str(EntryGetStr(g_VentanaScheduleTableName)));
 
+		// TODO:: Add commands
 	}
 	gtk_widget_hide(GTK_WIDGET(handle));
 
