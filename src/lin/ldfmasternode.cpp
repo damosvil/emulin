@@ -13,7 +13,7 @@
 
 namespace lin {
 
-ldfmasternode::ldfmasternode(uint8_t *name, uint16_t timebase, uint16_t jitter) : ldfnode(name)
+ldfmasternode::ldfmasternode(const uint8_t *name, uint16_t timebase, uint16_t jitter) : ldfnode(name)
 {
 	this->timebase = timebase;
 	this->jitter = jitter;
@@ -22,7 +22,7 @@ ldfmasternode::ldfmasternode(uint8_t *name, uint16_t timebase, uint16_t jitter) 
 ldfmasternode::~ldfmasternode() {
 }
 
-ldfmasternode *ldfmasternode::FromLdfStatement(uint8_t *statement)
+ldfmasternode *ldfmasternode::FromLdfStatement(const uint8_t *statement)
 {
 	char *p = NULL;
 	char *name = NULL;
@@ -45,7 +45,7 @@ ldfmasternode *ldfmasternode::FromLdfStatement(uint8_t *statement)
 	// Add master
 	if (name != NULL)
 	{
-		return new ldfmasternode((uint8_t *)name, timebase, jitter);
+		return new ldfmasternode(Str(name), timebase, jitter);
 	}
 	else
 	{

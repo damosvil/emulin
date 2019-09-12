@@ -45,6 +45,7 @@ bool StrEq(const char *a, const uint8_t *b);
 bool StrEq(const char *a, const char *b);
 uint8_t *StrDup(const char *a);
 uint8_t *StrDup(const uint8_t *a);
+inline const uint8_t *Str(const char *c) { return (const uint8_t *)c; }
 
 
 }

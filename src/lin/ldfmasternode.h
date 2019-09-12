@@ -20,10 +20,10 @@ private:
 	uint16_t jitter;
 
 public:
-	ldfmasternode(uint8_t *name, uint16_t timebase, uint16_t jitter);
+	ldfmasternode(const uint8_t *name, uint16_t timebase, uint16_t jitter);
 	virtual ~ldfmasternode();
 
-	static ldfmasternode *FromLdfStatement(uint8_t *statement);
+	static ldfmasternode *FromLdfStatement(const uint8_t *statement);
 
 	uint16_t GetTimebase();
 	void SetTimebase(uint16_t timebase);

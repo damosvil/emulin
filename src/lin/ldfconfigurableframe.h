@@ -19,7 +19,7 @@ private:
 	uint8_t id;
 
 public:
-	ldfconfigurableframe(uint8_t *name, uint8_t id);
+	ldfconfigurableframe(const uint8_t *name, uint8_t id);
 	virtual ~ldfconfigurableframe();
 
 	static ldfconfigurableframe *FromLdfStatement(uint8_t *statement);

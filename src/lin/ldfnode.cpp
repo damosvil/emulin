@@ -11,7 +11,7 @@
 
 namespace lin {
 
-ldfnode::ldfnode(uint8_t *name) {
+ldfnode::ldfnode(const uint8_t *name) {
 	// Copy the name
 	this->name = name != NULL ? StrDup(name) : NULL;
 }

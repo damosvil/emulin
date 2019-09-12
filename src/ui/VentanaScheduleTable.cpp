@@ -44,7 +44,7 @@ VentanaScheduleTable::VentanaScheduleTable(GtkBuilder *builder, ldf *db, const c
 	// Load data
 	if (schedule_table_name != NULL)
 	{
-		ldfscheduletable *t = db->GetScheduleTableByName((uint8_t *)schedule_table_name);
+		ldfscheduletable *t = db->GetScheduleTableByName(Str(schedule_table_name));
 
 		// Table name
 		EntrySet(g_VentanaScheduleTableName, schedule_table_name);
@@ -58,7 +58,7 @@ VentanaScheduleTable::VentanaScheduleTable(GtkBuilder *builder, ldf *db, const c
 			gtk_list_store_append(s, &it);
 
 			// Command
-			gtk_list_store_set(s, &it, 0, c->GetCommandText(db), -1);
+			gtk_list_store_set(s, &it, 0, c->GetUiCommandText(db), -1);
 
 			// Timeout
 			gtk_list_store_set(s, &it, 1, GetStrPrintf("%d ms", c->GetTimeoutMs()), -1);
@@ -153,13 +153,13 @@ void VentanaScheduleTable::OnVentanaScheduleTableAccept_clicked(GtkButton *butto
 	const char *new_schedule_table_name = EntryGetStr(v->g_VentanaScheduleTableName);
 
 	// Validate name
-	if (v->schedule_table_name == NULL && v->db->GetScheduleTableByName((uint8_t *)new_schedule_table_name) != NULL)
+	if (v->schedule_table_name == NULL && v->db->GetScheduleTableByName(Str(new_schedule_table_name)) != NULL)
 	{
 		// Schedule table name in use
 		ShowErrorMessageBox(v->handle, "Schedule table name identifier '%s' already in use.", new_schedule_table_name);;
 		return;
 	}
-	else if (v->schedule_table_name != NULL && !Same(v->schedule_table_name, new_schedule_table_name) && v->db->GetScheduleTableByName((uint8_t *)new_schedule_table_name) != NULL)
+	else if (v->schedule_table_name != NULL && !Same(v->schedule_table_name, new_schedule_table_name) && v->db->GetScheduleTableByName(Str(new_schedule_table_name)) != NULL)
 	{
 		// Schedule table name in use
 		ShowErrorMessageBox(v->handle, "Schedule table name identifier '%s' already in use.", new_schedule_table_name);;
@@ -200,7 +200,7 @@ ldfscheduletable *VentanaScheduleTable::ShowModal(GObject *parent)
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
 		// Name
-		res = new ldfscheduletable((uint8_t *)EntryGetStr(g_VentanaScheduleTableName));
+		res = new ldfscheduletable(Str(EntryGetStr(g_VentanaScheduleTableName)));
 
 	}
 	gtk_widget_hide(GTK_WIDGET(handle));

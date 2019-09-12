@@ -11,7 +11,7 @@
 
 namespace lin {
 
-ldfencodingtype::ldfencodingtype(uint8_t *name)
+ldfencodingtype::ldfencodingtype(const uint8_t *name)
 {
 	this->name = StrDup(name);
 	treat_as_bcd = false;
@@ -35,14 +35,14 @@ void ldfencodingtype::UpdateFromLdfStatement(uint8_t *statement)
 	// Parse the rest
 	if (StrEq(p, "logical_value"))
 	{
-		logical_values[logical_values_count] = ldflogicalvalue::FromLdfStatement((uint8_t *) strtok(NULL, ""));
+		logical_values[logical_values_count] = ldflogicalvalue::FromLdfStatement(Str(strtok(NULL, "")));
 		if (logical_values[logical_values_count]) logical_values_count++;
 	}
 	else if (StrEq(p, "physical_value"))
 	{
 		if (physical_value == NULL)
 		{
-			physical_value = ldfphysicalvalue::FromLdfStatement((uint8_t *) strtok(NULL, ""));
+			physical_value = ldfphysicalvalue::FromLdfStatement(Str(strtok(NULL, "")));
 		}
 	}
 	else if (StrEq(p, "bcd_value"))

@@ -12,7 +12,7 @@
 
 namespace lin {
 
-ldflogicalvalue::ldflogicalvalue(uint32_t value, uint8_t *description)
+ldflogicalvalue::ldflogicalvalue(uint32_t value, const uint8_t *description)
 {
 	this->value = value;
 	this->description = StrDup(description);
@@ -24,7 +24,7 @@ ldflogicalvalue::~ldflogicalvalue()
 }
 
 
-ldflogicalvalue *ldflogicalvalue::FromLdfStatement(uint8_t *statement)
+ldflogicalvalue *ldflogicalvalue::FromLdfStatement(const uint8_t *statement)
 {
 	uint32_t value;
 
@@ -37,7 +37,7 @@ ldflogicalvalue *ldflogicalvalue::FromLdfStatement(uint8_t *statement)
 	p = strtok(NULL, "\"");
 
 	// Return a new logical value
-	return new ldflogicalvalue(value, (uint8_t *)p);
+	return new ldflogicalvalue(value, Str(p));
 }
 
 

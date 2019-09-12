@@ -13,7 +13,7 @@
 
 namespace lin {
 
-ldfnodeattributes::ldfnodeattributes(uint8_t *name)
+ldfnodeattributes::ldfnodeattributes(const uint8_t *name)
 {
 	this->name = StrDup(name);
 	this->protocol = LIN_PROTOCOL_VERSION_NONE;
@@ -299,7 +299,7 @@ void ldfnodeattributes::SetN_Cr_timeout(uint16_t v)
 	N_Cr_timeout = v;
 }
 
-void ldfnodeattributes::SetResponseErrorSignalName(uint8_t *v)
+void ldfnodeattributes::SetResponseErrorSignalName(const uint8_t *v)
 {
 	if (response_error_signal_name != NULL) delete response_error_signal_name;
 	response_error_signal_name = (v != NULL) ? StrDup(v) : NULL;

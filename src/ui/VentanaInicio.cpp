@@ -401,7 +401,7 @@ void VentanaInicio::OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	ManagerConfig::GetManager()->SetDatabasePath((uint8_t *)gtk_file_chooser_get_filename((GtkFileChooser *)widget));
+	ManagerConfig::GetManager()->SetDatabasePath(Str(gtk_file_chooser_get_filename((GtkFileChooser *)widget)));
 	ManagerConfig::GetManager()->Store();
 
 	// Load new database in application
@@ -435,7 +435,7 @@ void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, g
 	const char *new_master_name = EntryGetStr(G_OBJECT(widget));
 
 	// Check that the identifier is not being used by a slave
-	if (v->db->GetSlaveNodeAttributesByName((uint8_t *)new_master_name) != NULL)
+	if (v->db->GetSlaveNodeAttributesByName(Str(new_master_name)) != NULL)
 	{
 		ShowErrorMessageBox(v->handle, "Master name won't be updated because identifier is in use by a slave");
 
@@ -449,7 +449,7 @@ void VentanaInicio::OnPanelDatabaseMasterName_changed(GtkCellEditable *widget, g
 	}
 
 	// Update node name and reload all lists
-	v->db->UpdateMasterNodeName(v->db->GetMasterNode()->GetName(), (uint8_t *)new_master_name);
+	v->db->UpdateMasterNodeName(v->db->GetMasterNode()->GetName(), Str(new_master_name));
 	v->db->SortData();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
@@ -506,7 +506,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 
 	// Update slave node
 	if (na == NULL) return;
-	v->db->UpdateSlaveNode((uint8_t *)slave_name, na);
+	v->db->UpdateSlaveNode(Str(slave_name), na);
 
 	// Reload slaves list
 	v->db->SortData();
@@ -531,7 +531,7 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 		return;
 
 	// Delete slave node
-	v->db->DeleteSlaveNode((uint8_t *)slave_name);
+	v->db->DeleteSlaveNode(Str(slave_name));
 
 	// Reload slaves list
 	v->db->SortData();
@@ -588,7 +588,7 @@ void VentanaInicio::OnPanelDatabaseSignalsEdit_clicked(GtkButton *button, gpoint
 	if (s == NULL) return;
 
 	// Update signal
-	v->db->UpdateSignal((uint8_t *)signal_name, s);
+	v->db->UpdateSignal(Str(signal_name), s);
 	v->db->SortData();
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
@@ -611,7 +611,7 @@ void VentanaInicio::OnPanelDatabaseSignalsDelete_clicked(GtkButton *button, gpoi
 		return;
 
 	// Delete the signal
-	v->db->DeleteSignal((uint8_t *)signal_name);
+	v->db->DeleteSignal(Str(signal_name));
 	v->db->SortData();
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
@@ -668,7 +668,7 @@ void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointe
 	if (f == NULL) return;
 
 	// Update frame
-	v->db->UpdateFrame((uint8_t *)frame_name, f);
+	v->db->UpdateFrame(Str(frame_name), f);
 	v->db->SortData();
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
@@ -692,7 +692,7 @@ void VentanaInicio::OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpoin
 		return;
 
 	// Delete the frame
-	v->db->DeleteFrame((uint8_t *)frame_name);
+	v->db->DeleteFrame(Str(frame_name));
 	v->db->SortData();
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
@@ -749,7 +749,7 @@ void VentanaInicio::OnPanelDatabaseScheduleTablesEdit_clicked(GtkButton *button,
 		return;
 
 	// Update schedule table
-	v->db->UpdateScheduleTable((uint8_t *)schedule_table_name, t);
+	v->db->UpdateScheduleTable(Str(schedule_table_name), t);
 	v->ReloadListScheduleTables();
 }
 
@@ -765,7 +765,7 @@ void VentanaInicio::OnPanelDatabaseScheduleTablesDelete_clicked(GtkButton *butto
 	gtk_tree_model_get(model, &iter, 0, &schedule_table_name, -1);
 
 	// Delete schedule table
-	v->db->DeleteScheduleTable((uint8_t *)schedule_table_name);
+	v->db->DeleteScheduleTable(Str(schedule_table_name));
 	v->ReloadListScheduleTables();
 }
 

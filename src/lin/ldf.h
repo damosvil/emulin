@@ -121,34 +121,34 @@ public:
 	ldfnode *GetSlaveNodeByIndex(uint32_t ix);
 	uint32_t GetSlaveNodesCount();
 
-	ldfnodeattributes *GetSlaveNodeAttributesByName(uint8_t *slave_name);
+	ldfnodeattributes *GetSlaveNodeAttributesByName(const uint8_t *slave_name);
 	void AddSlaveNode(ldfnodeattributes *n);
-	void UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n);
-	void DeleteSlaveNode(uint8_t *slave_name);
+	void UpdateSlaveNode(const uint8_t *old_slave_name, ldfnodeattributes *n);
+	void DeleteSlaveNode(const uint8_t *slave_name);
 
 	ldfsignal *GetSignalByIndex(uint32_t ix);
-	ldfsignal *GetSignalByName(uint8_t *signal_name);
+	ldfsignal *GetSignalByName(const uint8_t *signal_name);
 	uint32_t GetSignalsCount();
 	void AddSignal(ldfsignal *s);
-	void UpdateSignal(uint8_t *old_signal_name, ldfsignal *s);
-	void DeleteSignal(uint8_t *signal_name);
+	void UpdateSignal(const uint8_t *old_signal_name, ldfsignal *s);
+	void DeleteSignal(const uint8_t *signal_name);
 
-	void UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name);
+	void UpdateMasterNodeName(const uint8_t *old_name, const uint8_t *new_name);
 
 	ldfframe *GetFrameByIndex(uint32_t ix);
-	ldfframe *GetFrameByName(uint8_t *frame_name);
+	ldfframe *GetFrameByName(const uint8_t *frame_name);
 	ldfframe *GetFrameById(uint8_t frame_id);
 	uint32_t GetFramesCount();
 	void AddFrame(ldfframe *f);
-	void UpdateFrame(uint8_t *old_frame_name, ldfframe *f);
-	void DeleteFrame(uint8_t *frame_name);
+	void UpdateFrame(const uint8_t *old_frame_name, ldfframe *f);
+	void DeleteFrame(const uint8_t *frame_name);
 
 	ldfscheduletable *GetScheduleTableByIndex(uint32_t ix);
 	ldfscheduletable *GetScheduleTableByName(const uint8_t *name);
 	uint32_t GetScheduleTablesCount();
 	void AddScheduleTable(ldfscheduletable *t);
-	void UpdateScheduleTable(uint8_t *old_schedule_table_name, ldfscheduletable *t);
-	void DeleteScheduleTable(uint8_t *schedule_table_name);
+	void UpdateScheduleTable(const uint8_t *old_schedule_table_name, ldfscheduletable *t);
+	void DeleteScheduleTable(const uint8_t *schedule_table_name);
 
 };
 

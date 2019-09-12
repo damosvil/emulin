@@ -41,7 +41,7 @@ VentanaConfigurableFrame::VentanaConfigurableFrame(GtkBuilder *builder, ldf *db,
 	}
 	else
 	{
-		EntrySet(g_VentanaConfigurableFrameID, "0x%02X", db->GetFrameByName((uint8_t *)frame_names[0])->GetId());
+		EntrySet(g_VentanaConfigurableFrameID, "0x%02X", db->GetFrameByName(Str(frame_names[0]))->GetId());
 	}
 
 	// Connect text fields
@@ -79,7 +79,7 @@ ldfconfigurableframe *VentanaConfigurableFrame::ShowModal(GObject *parent)
 		const gchar *name = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaConfigurableFrameName));
 
 		// Compose the signal
-		res = new ldfconfigurableframe((uint8_t *)name, id);
+		res = new ldfconfigurableframe(Str(name), id);
 	}
 	gtk_widget_hide(GTK_WIDGET(handle));
 

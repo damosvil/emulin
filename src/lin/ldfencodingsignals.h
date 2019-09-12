@@ -22,12 +22,12 @@ private:
 	uint32_t signals_count;
 
 public:
-	ldfencodingsignals(uint8_t *encoding_name);
+	ldfencodingsignals(const uint8_t *encoding_name);
 	virtual ~ldfencodingsignals();
 
-	void AddSignal(uint8_t *signal);
+	void AddSignal(const uint8_t *signal);
 
-	static ldfencodingsignals *FromLdfStatement(uint8_t *statement);
+	static ldfencodingsignals *FromLdfStatement(const uint8_t *statement);
 
 	void ValidateUnicity(ldfencodingsignals *encoding, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint8_t **validation_messages, uint32_t *validation_messages_count);

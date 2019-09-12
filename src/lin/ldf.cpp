@@ -277,7 +277,7 @@ void ldf::process_statement(uint8_t *statement)
 		if (group_level == 1)
 		{
 			p = strtok((char *)statement, BLANK_CHARACTERS);
-			if (p) schedule_tables[schedule_tables_count++] = new ldfscheduletable((uint8_t *)p);
+			if (p) schedule_tables[schedule_tables_count++] = new ldfscheduletable(Str(p));
 		}
 		else if (group_level == 2)
 		{
@@ -301,7 +301,7 @@ void ldf::process_statement(uint8_t *statement)
 			p = strtok((char *)statement, BLANK_CHARACTERS);
 
 			// Add new node attributes
-			node_attributes[node_attributes_count++] = new ldfnodeattributes((uint8_t *)p);
+			node_attributes[node_attributes_count++] = new ldfnodeattributes(Str(p));
 		}
 		else if (group_level == 2)
 		{
@@ -342,7 +342,7 @@ void ldf::process_statement(uint8_t *statement)
 			while (!(*p)) p++;
 
 			// Parse master node
-			masternode = ldfmasternode::FromLdfStatement((uint8_t *)p);
+			masternode = ldfmasternode::FromLdfStatement(Str(p));
 			if (master == NULL && masternode)
 				master = masternode;
 		}
@@ -351,7 +351,7 @@ void ldf::process_statement(uint8_t *statement)
 			while (p)
 			{
 				p = strtok(NULL, "," BLANK_CHARACTERS);
-				if (p) slaves[slaves_count++] = new ldfnode((uint8_t *)p);
+				if (p) slaves[slaves_count++] = new ldfnode(Str(p));
 			}
 		}
 		break;
@@ -360,7 +360,7 @@ void ldf::process_statement(uint8_t *statement)
 		if (group_level == 1)
 		{
 			p = strtok((char *)statement, BLANK_CHARACTERS);
-			if (p) encoding_types[encoding_types_count++] = new ldfencodingtype((uint8_t *)p);
+			if (p) encoding_types[encoding_types_count++] = new ldfencodingtype(Str(p));
 		}
 		else if (group_level == 2)
 		{
@@ -590,7 +590,7 @@ ldfmasternode *ldf::GetMasterNode()
 {
 	if (master == NULL)
 	{
-		master = new ldfmasternode((uint8_t *)"", 0, 0);
+		master = new ldfmasternode(Str(""), 0, 0);
 	}
 
 	return master;
@@ -606,7 +606,7 @@ uint32_t ldf::GetSlaveNodesCount()
 	return slaves_count;
 }
 
-ldfnodeattributes *ldf::GetSlaveNodeAttributesByName(uint8_t *slave_name)
+ldfnodeattributes *ldf::GetSlaveNodeAttributesByName(const uint8_t *slave_name)
 {
 	uint32_t ix;
 	ldfnodeattributes *ret = NULL;
@@ -634,7 +634,7 @@ void ldf::AddSlaveNode(ldfnodeattributes *n)
 	}
 }
 
-void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
+void ldf::UpdateSlaveNode(const uint8_t *old_slave_name, ldfnodeattributes *n)
 {
 	// Update slave name
 	for (uint32_t ix = 0; ix < slaves_count; ix++)
@@ -670,7 +670,7 @@ void ldf::UpdateSlaveNode(uint8_t *old_slave_name, ldfnodeattributes *n)
 	// TODO:: Update slave node name in schedule frames
 }
 
-void ldf::DeleteSlaveNode(uint8_t *slave_name)
+void ldf::DeleteSlaveNode(const uint8_t *slave_name)
 {
 	// Delete slave name
 	for (uint32_t ix = 0; ix < slaves_count; ix++)
@@ -749,7 +749,7 @@ ldfsignal *ldf::GetSignalByIndex(uint32_t ix)
 	return signals[ix];
 }
 
-ldfsignal *ldf::GetSignalByName(uint8_t *signal_name)
+ldfsignal *ldf::GetSignalByName(const uint8_t *signal_name)
 {
 	if (signal_name == NULL)
 		return NULL;
@@ -771,7 +771,7 @@ void ldf::AddSignal(ldfsignal *s)
 	signals[signals_count++] = s;
 }
 
-void ldf::UpdateSignal(uint8_t *old_signal_name, ldfsignal *s)
+void ldf::UpdateSignal(const uint8_t *old_signal_name, ldfsignal *s)
 {
 	if (old_signal_name == NULL)
 		return;
@@ -796,7 +796,7 @@ void ldf::UpdateSignal(uint8_t *old_signal_name, ldfsignal *s)
 	}
 }
 
-void ldf::DeleteSignal(uint8_t *signal_name)
+void ldf::DeleteSignal(const uint8_t *signal_name)
 {
 	if (signal_name == NULL)
 		return;
@@ -820,7 +820,7 @@ void ldf::DeleteSignal(uint8_t *signal_name)
 	}
 }
 
-void ldf::UpdateMasterNodeName(uint8_t *old_name, uint8_t *new_name)
+void ldf::UpdateMasterNodeName(const uint8_t *old_name, const uint8_t *new_name)
 {
 	// Update master node name in signals
 	for (uint32_t ix = 0; ix < signals_count; ix++)
@@ -843,7 +843,7 @@ ldfframe *ldf::GetFrameByIndex(uint32_t ix)
 	return frames[ix];
 }
 
-ldfframe *ldf::GetFrameByName(uint8_t *frame_name)
+ldfframe *ldf::GetFrameByName(const uint8_t *frame_name)
 {
 	if (frame_name == NULL)
 		return NULL;
@@ -874,7 +874,7 @@ void ldf::AddFrame(ldfframe *f)
 	frames[frames_count++] = f;
 }
 
-void ldf::UpdateFrame(uint8_t *old_frame_name, ldfframe *f)
+void ldf::UpdateFrame(const uint8_t *old_frame_name, ldfframe *f)
 {
 	// Update frame in configurable frames
 	for (uint32_t i = 0; i < node_attributes_count; i++)
@@ -902,7 +902,7 @@ void ldf::UpdateFrame(uint8_t *old_frame_name, ldfframe *f)
 	}
 }
 
-void ldf::DeleteFrame(uint8_t *frame_name)
+void ldf::DeleteFrame(const uint8_t *frame_name)
 {
 	// Update frame in configurable frames
 	for (uint32_t i = 0; i < node_attributes_count; i++)
@@ -956,7 +956,7 @@ void ldf::AddScheduleTable(ldfscheduletable *t)
 	schedule_tables[schedule_tables_count++] = t;
 }
 
-void ldf::UpdateScheduleTable(uint8_t *old_schedule_table_name, ldfscheduletable *t)
+void ldf::UpdateScheduleTable(const uint8_t *old_schedule_table_name, ldfscheduletable *t)
 {
 	for (uint32_t i = 0; i < schedule_tables_count; i++)
 	{
@@ -973,7 +973,7 @@ void ldf::UpdateScheduleTable(uint8_t *old_schedule_table_name, ldfscheduletable
 	}
 }
 
-void ldf::DeleteScheduleTable(uint8_t *schedule_table_name)
+void ldf::DeleteScheduleTable(const uint8_t *schedule_table_name)
 {
 	for (uint32_t i = 0; i < schedule_tables_count; i++)
 	{

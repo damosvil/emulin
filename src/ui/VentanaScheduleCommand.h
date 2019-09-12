@@ -23,6 +23,7 @@ class VentanaScheduleCommand
 private:
 	GtkBuilder *builder;
 	ldf *db;
+	GObject *handle;
 
 	// Widgets
 	G_VAR(VentanaScheduleCommandType);
@@ -34,6 +35,11 @@ private:
 	G_VAR(VentanaScheduleCommandDataCount);
 	G_VAR(VentanaScheduleCommandAccept);
 	G_VAR(VentanaScheduleCommandCancel);
+
+	// Signal callbacks
+	static void OnVentanaScheduleCommandType_changed(GtkComboBoxText *widget, gpointer user_data);
+	static void OnVentanaScheduleCommandAccept_clicked(GtkButton *button, gpointer user_data);
+	static void OnVentanaScheduleCommandCancel_clicked(GtkButton *button, gpointer user_data);
 
 public:
 	VentanaScheduleCommand(GtkBuilder *builder, ldf *db, const char *command, const char *timeout);

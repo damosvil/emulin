@@ -1657,7 +1657,7 @@
                   <item id="SlaveResp" translatable="yes">SlaveResp</item>
                   <item id="AssignNAD" translatable="yes">AssignNAD</item>
                   <item id="DataDump" translatable="yes">DataDump</item>
-                  <item id="SaveConfig" translatable="yes">SaveConfig</item>
+                  <item id="SaveConfiguration" translatable="yes">SaveConfiguration</item>
                   <item id="FreeFormat" translatable="yes">FreeFormat</item>
                   <item id="AssignFrameIdRange" translatable="yes">AssignFrameIdRange</item>
                   <item translatable="yes">AssignFrameId</item>

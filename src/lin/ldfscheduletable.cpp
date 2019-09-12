@@ -14,7 +14,7 @@
 namespace lin
 {
 
-ldfscheduletable::ldfscheduletable(uint8_t *name)
+ldfscheduletable::ldfscheduletable(const uint8_t *name)
 {
 	this->name = StrDup(name);
 	this->commands_number = 0;

@@ -22,10 +22,10 @@ private:
 	uint8_t *description;
 
 public:
-	ldfphysicalvalue(float min, float max, float scale, float offset, uint8_t *description);
+	ldfphysicalvalue(float min, float max, float scale, float offset, const uint8_t *description);
 	virtual ~ldfphysicalvalue();
 
-	static ldfphysicalvalue *FromLdfStatement(uint8_t *statement);
+	static ldfphysicalvalue *FromLdfStatement(const uint8_t *statement);
 
 };
 

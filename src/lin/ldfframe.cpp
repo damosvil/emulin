@@ -14,7 +14,7 @@
 
 namespace lin {
 
-ldfframe::ldfframe(uint8_t *name, uint8_t id, uint8_t *publisher, uint8_t size)
+ldfframe::ldfframe(const uint8_t *name, uint8_t id, const uint8_t *publisher, uint8_t size)
 {
 	this->name = StrDup(name);
 	this->id = id;
@@ -57,7 +57,7 @@ ldfframe *ldfframe::FromLdfStatement(uint8_t *statement)
 	// Validate and return a new frame
 	if (name != NULL && publisher != NULL && id != 0xFF && frame_size != 0)
 	{
-		return new ldfframe((uint8_t *)name, id, (uint8_t *)publisher, frame_size);
+		return new ldfframe(Str(name), id, Str(publisher), frame_size);
 	}
 	else
 	{
@@ -117,7 +117,7 @@ void ldfframe::DeleteSignalByIndex(uint32_t ix)
 	for (; ix < signals_count; ix++) signals[ix] = signals[ix + 1];
 }
 
-void ldfframe::DeleteSignalByName(uint8_t *signal_name)
+void ldfframe::DeleteSignalByName(const uint8_t *signal_name)
 {
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
@@ -145,7 +145,7 @@ void ldfframe::UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *n
 	}
 }
 
-void ldfframe::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
+void ldfframe::UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name)
 {
 	if (StrEq(old_name, publisher))
 		return;

@@ -28,7 +28,7 @@ private:
 	uint8_t signals_count;
 
 public:
-	ldfframe(uint8_t *name, uint8_t id, uint8_t *publisher, uint8_t size);
+	ldfframe(const uint8_t *name, uint8_t id, const uint8_t *publisher, uint8_t size);
 	virtual ~ldfframe();
 
 	static ldfframe *FromLdfStatement(uint8_t *statement);
@@ -44,9 +44,9 @@ public:
 	bool PublisherIs(const uint8_t *publisher);
 	void AddSignal(ldfframesignal *signal);
 	void DeleteSignalByIndex(uint32_t ix);
-	void DeleteSignalByName(uint8_t *signal_name);
+	void DeleteSignalByName(const uint8_t *signal_name);
 	void UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *new_signal_name);
-	void UpdateNodeName(uint8_t *old_name, uint8_t *new_name);
+	void UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name);
 
 	void ValidatePublisher(ldfnode *master, ldfnode **slaves, uint32_t slaves_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateUnicity(ldfframe *frame, uint8_t **validation_messages, uint32_t *validation_messages_count);

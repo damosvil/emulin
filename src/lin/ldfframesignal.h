@@ -19,7 +19,7 @@ private:
 	uint16_t offset;
 
 public:
-	ldfframesignal(uint8_t *name, uint16_t offset);
+	ldfframesignal(const uint8_t *name, uint16_t offset);
 	virtual ~ldfframesignal();
 
 	static ldfframesignal *FromLdfStatement(uint8_t *statement);

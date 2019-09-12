@@ -14,7 +14,7 @@
 
 namespace lin {
 
-ldfframesignal::ldfframesignal(uint8_t *name, uint16_t offset)
+ldfframesignal::ldfframesignal(const uint8_t *name, uint16_t offset)
 {
 	this->name = StrDup(name);
 	this->offset = offset;
@@ -41,7 +41,7 @@ ldfframesignal *ldfframesignal::FromLdfStatement(uint8_t *statement)
 
 	if (name)
 	{
-		return new ldfframesignal((uint8_t *)name, offset);
+		return new ldfframesignal(Str(name), offset);
 	}
 	else
 	{

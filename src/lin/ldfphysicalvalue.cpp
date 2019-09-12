@@ -12,7 +12,7 @@
 
 namespace lin {
 
-ldfphysicalvalue::ldfphysicalvalue(float min, float max, float scale, float offset, uint8_t *description)
+ldfphysicalvalue::ldfphysicalvalue(float min, float max, float scale, float offset, const uint8_t *description)
 {
 	this->min = min;
 	this->max = max;
@@ -26,7 +26,7 @@ ldfphysicalvalue::~ldfphysicalvalue()
 	if (description) delete description;
 }
 
-ldfphysicalvalue *ldfphysicalvalue::FromLdfStatement(uint8_t *statement)
+ldfphysicalvalue *ldfphysicalvalue::FromLdfStatement(const uint8_t *statement)
 {
 	float min;
 	float max;
@@ -57,7 +57,7 @@ ldfphysicalvalue *ldfphysicalvalue::FromLdfStatement(uint8_t *statement)
 	p = strtok(NULL, "\"");
 
 	// Return a new physical value
-	return new ldfphysicalvalue(min, max, scale, offset, (uint8_t *) p);
+	return new ldfphysicalvalue(min, max, scale, offset, Str(p));
 }
 
 } /* namespace lin */

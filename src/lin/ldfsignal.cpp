@@ -15,7 +15,7 @@
 
 namespace lin {
 
-ldfsignal::ldfsignal(uint8_t *name, uint8_t bit_size, uint32_t default_value, uint8_t *publisher, uint8_t **subscribers, uint8_t subscribers_count)
+ldfsignal::ldfsignal(const uint8_t *name, uint8_t bit_size, uint32_t default_value, const uint8_t *publisher, const uint8_t **subscribers, uint8_t subscribers_count)
 {
 	// Copy name
 	this->name = StrDup(name);
@@ -78,9 +78,9 @@ ldfsignal *ldfsignal::FromLdfStatement(uint8_t *statement)
 	if (name != NULL && publisher != NULL && subscribers_count != 0)
 	{
 		return new ldfsignal(
-				(uint8_t *)name, bit_size, default_value,
-				(uint8_t *)publisher,
-				(uint8_t **)subscribers, subscribers_count);
+				Str(name), bit_size, default_value,
+				Str(publisher),
+				(const uint8_t **)subscribers, subscribers_count);
 	}
 	else
 	{
@@ -150,17 +150,17 @@ uint8_t *ldfsignal::GetSubscriber(uint32_t ix)
 	return subscribers[ix];
 }
 
-bool ldfsignal::NameIs(uint8_t *name)
+bool ldfsignal::NameIs(const uint8_t *name)
 {
 	return StrEq(name, this->name);
 }
 
-bool ldfsignal::PublisherIs(uint8_t *publisher)
+bool ldfsignal::PublisherIs(const uint8_t *publisher)
 {
 	return StrEq(publisher, this->publisher);
 }
 
-bool ldfsignal::UsesSlave(uint8_t *slave_name)
+bool ldfsignal::UsesSlave(const uint8_t *slave_name)
 {
 	bool in_use = StrEq(slave_name, publisher);
 	for (uint32_t jx = 0; !in_use && jx < subscribers_count; jx++)
@@ -169,7 +169,7 @@ bool ldfsignal::UsesSlave(uint8_t *slave_name)
 	return in_use;
 }
 
-void ldfsignal::UpdateNodeName(uint8_t *old_name, uint8_t *new_name)
+void ldfsignal::UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name)
 {
 	// Update publisher, otherwise update subscribers
 	if (StrEq(old_name, publisher))

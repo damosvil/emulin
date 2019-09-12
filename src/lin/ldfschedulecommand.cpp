@@ -15,7 +15,7 @@
 namespace lin {
 
 
-ldfschedulecommand::ldfschedulecommand(ldfschedulecommandtype_t type, uint8_t *frame_name, uint16_t timeout, uint8_t *slave_name, uint8_t *data, uint8_t *assign_frame_name)
+ldfschedulecommand::ldfschedulecommand(ldfschedulecommandtype_t type, const uint8_t *frame_name, uint16_t timeout, const uint8_t *slave_name, const uint8_t *data, const uint8_t *assign_frame_name)
 {
 	this->type = type;
 	this->frame_name = StrDup(frame_name);
@@ -32,15 +32,15 @@ ldfschedulecommand::~ldfschedulecommand()
 	if (assign_frame_name) delete assign_frame_name;
 }
 
-ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
+ldfschedulecommand *ldfschedulecommand::FromLdfStatement(const uint8_t *statement)
 {
 	char *p;
 	ldfschedulecommandtype_t type;
 	char *frame_name = NULL;
 	uint16_t timeout = 0;
-	uint8_t *slave = NULL;
-	uint8_t *assign_frame = NULL;
-	uint8_t data[8];
+	char *slave = NULL;
+	char *assign_frame = NULL;
+	char data[8];
 
 	// Frame name
 	p = strtok((char *) statement, BLANK_CHARACTERS);
@@ -67,7 +67,7 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 		// Read slave name
 		p = strtok(NULL, BLANK_CHARACTERS);
 		if (p == NULL) return NULL;
-		slave = (uint8_t *)p;
+		slave = p;
 
 		// Read close bracket
 		p = strtok(NULL, BLANK_CHARACTERS);
@@ -86,7 +86,7 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 		// Read slave name
 		p = strtok(NULL, "," BLANK_CHARACTERS);
 		if (p == NULL) return NULL;
-		slave = (uint8_t *)p;
+		slave = p;
 
 		// Read data
 		for (int i = 0; i < 5; i++)
@@ -113,7 +113,7 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 		// Read slave name
 		p = strtok(NULL, BLANK_CHARACTERS);
 		if (p == NULL) return NULL;
-		slave = (uint8_t *)p;
+		slave = p;
 
 		// Read close bracket
 		p = strtok(NULL, BLANK_CHARACTERS);
@@ -154,7 +154,7 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 		// Read slave name
 		p = strtok(NULL, "," BLANK_CHARACTERS);
 		if (p == NULL) return NULL;
-		slave = (uint8_t *)p;
+		slave = p;
 
 		// data[0] contains frame index in configurable_frames slave node list
 		// Read frame index on configurable_frames slave list
@@ -192,12 +192,12 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 		// Read slave name
 		p = strtok(NULL, "," BLANK_CHARACTERS);
 		if (p == NULL) return NULL;
-		slave = (uint8_t *)p;
+		slave = p;
 
 		// Read frame name
 		p = strtok(NULL, BLANK_CHARACTERS);
 		if (p == NULL) return NULL;
-		assign_frame = (uint8_t *)p;
+		assign_frame = p;
 
 		// Read close bracket
 		p = strtok((char *) statement, BLANK_CHARACTERS);
@@ -225,7 +225,12 @@ ldfschedulecommand *ldfschedulecommand::FromLdfStatement(uint8_t *statement)
 	if (!StrEq(p, "ms")) return NULL;
 
 	// Return command
-	return new ldfschedulecommand(type, (uint8_t *)frame_name, timeout, slave, data, assign_frame);
+	return new ldfschedulecommand(type, Str(frame_name), timeout, Str(slave), Str(data), Str(assign_frame));
+}
+
+ldfschedulecommand *ldfschedulecommand::FromUiScheduleListItemData(const uint8_t *command, const uint8_t *timeout)
+{
+	return NULL;
 }
 
 ldfschedulecommand::ldfschedulecommandtype_t ldfschedulecommand::GetType()
@@ -278,7 +283,7 @@ void ldfschedulecommand::ValidateUnicity(uint8_t *schedule_table, ldfschedulecom
 	}
 }
 
-uint8_t * ldfschedulecommand::GetCommandText(ldf *db)
+const uint8_t * ldfschedulecommand::GetUiCommandText(ldf *db)
 {
 	static char res[1000];
 	ldfnodeattributes *a;
@@ -332,7 +337,7 @@ uint8_t * ldfschedulecommand::GetCommandText(ldf *db)
 
 	}
 
-	return (uint8_t *)res;
+	return Str(res);
 }
 
 

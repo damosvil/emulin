@@ -20,10 +20,10 @@ private:
 	uint8_t *description;
 
 public:
-	ldflogicalvalue(uint32_t value, uint8_t *description);
+	ldflogicalvalue(uint32_t value, const uint8_t *description);
 	virtual ~ldflogicalvalue();
 
-	static ldflogicalvalue *FromLdfStatement(uint8_t *statement);
+	static ldflogicalvalue *FromLdfStatement(const uint8_t *statement);
 
 };
 

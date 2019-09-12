@@ -24,7 +24,7 @@ private:
 	uint8_t subscribers_count;
 
 public:
-	ldfsignal(uint8_t *name, uint8_t bit_size, uint32_t default_value, uint8_t *publisher, uint8_t **subscribers, uint8_t subscribers_count);
+	ldfsignal(const uint8_t *name, uint8_t bit_size, uint32_t default_value, const uint8_t *publisher, const uint8_t **subscribers, uint8_t subscribers_count);
 	virtual ~ldfsignal();
 
 	static ldfsignal *FromLdfStatement(uint8_t *statement);
@@ -38,10 +38,10 @@ public:
 	uint32_t GetSubscribersCount();
 	uint8_t *GetSubscriber(uint32_t ix);
 
-	bool NameIs(uint8_t *name);
-	bool PublisherIs(uint8_t *publisher);
-	bool UsesSlave(uint8_t *slave_name);
-	void UpdateNodeName(uint8_t *old_name, uint8_t *new_name);
+	bool NameIs(const uint8_t *name);
+	bool PublisherIs(const uint8_t *publisher);
+	bool UsesSlave(const uint8_t *slave_name);
+	void UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name);
 
 	static int32_t Compare(const ldfsignal *a, const ldfsignal *b);
 	static int32_t ComparePublisher(const ldfsignal *a, const ldfsignal *b);

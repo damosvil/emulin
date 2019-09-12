@@ -26,7 +26,7 @@ private:
 	uint16_t commands_number;
 
 public:
-	ldfscheduletable(uint8_t *name);
+	ldfscheduletable(const uint8_t *name);
 	virtual ~ldfscheduletable();
 
 	uint8_t *GetName();

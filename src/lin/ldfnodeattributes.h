@@ -46,7 +46,7 @@ private:
 	static int32_t SorterConfigurableFrames(const void *a, const void *b);
 
 public:
-	ldfnodeattributes(uint8_t *name);
+	ldfnodeattributes(const uint8_t *name);
 	virtual ~ldfnodeattributes();
 
 	void UpdateFromLdfStatement(uint8_t *statement);
@@ -80,7 +80,7 @@ public:
 	void SetST_min(uint16_t v);
 	void SetN_As_timeout(uint16_t v);
 	void SetN_Cr_timeout(uint16_t v);
-	void SetResponseErrorSignalName(uint8_t *v);
+	void SetResponseErrorSignalName(const uint8_t *v);
 
 	void SortData();
 

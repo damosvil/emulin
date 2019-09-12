@@ -18,7 +18,7 @@ private:
 	uint8_t *name;
 
 public:
-	ldfnode(uint8_t *name);
+	ldfnode(const uint8_t *name);
 	virtual ~ldfnode();
 
 	static bool CheckNodeName(uint8_t *name, ldfnode *master, ldfnode **slaves, uint32_t slaves_count);

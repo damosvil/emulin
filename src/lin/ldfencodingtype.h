@@ -26,7 +26,7 @@ private:
 
 
 public:
-	ldfencodingtype(uint8_t *name);
+	ldfencodingtype(const uint8_t *name);
 	virtual ~ldfencodingtype();
 
 	void UpdateFromLdfStatement(uint8_t *statement);

@@ -44,7 +44,7 @@ VentanaFrame::VentanaFrame(GtkBuilder *builder, ldf *db, const char *frame_name)
 	PrepareListSignals();
 
 	// Fill fields with data
-	ldfframe *f = db->GetFrameByName((uint8_t *)frame_name);
+	ldfframe *f = db->GetFrameByName(Str(frame_name));
 	if (f != NULL)
 	{
 		// Name
@@ -153,7 +153,7 @@ ldfframe *VentanaFrame::ShowModal(GObject *parent)
 		const gchar *publisher = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaFramePublisher));
 
 		// Compose the signal
-		res = new ldfframe((uint8_t *)name, id, (uint8_t *)publisher, size);
+		res = new ldfframe(Str(name), id, Str(publisher), size);
 
 		// Signals
 		char *strOffset;
@@ -166,7 +166,7 @@ ldfframe *VentanaFrame::ShowModal(GObject *parent)
 			{
 				gtk_tree_model_get(model, &iter, 0, &strOffset, -1);
 				gtk_tree_model_get(model, &iter, 1, &signal, -1);
-				res->AddSignal(new ldfframesignal((uint8_t *)signal, MultiParseInt(strOffset)));
+				res->AddSignal(new ldfframesignal(Str(signal), MultiParseInt(strOffset)));
 			}
 			while (gtk_tree_model_iter_next(model, &iter));
 		}
@@ -250,7 +250,7 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 	{
 		// Skip signals
 		ldfsignal *s = v->db->GetSignalByIndex(i);
-		if (!s->PublisherIs((uint8_t *)publisher))
+		if (!s->PublisherIs(Str(publisher)))
 			continue;
 
 		signal_names[signal_names_count++] = (char *)s->GetName();
@@ -378,8 +378,8 @@ void VentanaFrame::OnVentanaFrameAccept_clicked(GtkButton *button, gpointer user
 	const uint8_t new_frame_id = EntryGetInt(v->g_VentanaFrameID);
 	const char *reserved_identifiers[] = { "MasterReq", "SlaveResp", "AssignNAD", "ConditionalChangeNAD", "DataDump", "SaveConfiguration", "AssignFrameIdRange", "FreeFormat", "AssignFrameId", NULL };
 
-	ldfframe *frame_by_new_name = v->db->GetFrameByName((uint8_t *)new_frame_name);
-	ldfframe *frame_by_old_name = v->db->GetFrameByName((uint8_t *)v->frame_name);
+	ldfframe *frame_by_new_name = v->db->GetFrameByName(Str(new_frame_name));
+	ldfframe *frame_by_old_name = v->db->GetFrameByName(Str(v->frame_name));
 	ldfframe *frame_by_new_id = v->db->GetFrameById(new_frame_id);
 
 	// Store maximum frame position depending on the frame size

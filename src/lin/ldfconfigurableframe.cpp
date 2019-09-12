@@ -13,7 +13,7 @@
 
 namespace lin {
 
-ldfconfigurableframe::ldfconfigurableframe(uint8_t *name, uint8_t id)
+ldfconfigurableframe::ldfconfigurableframe(const uint8_t *name, uint8_t id)
 {
 	this->name = StrDup(name);
 	this->id = id;
@@ -38,7 +38,7 @@ ldfconfigurableframe *ldfconfigurableframe::FromLdfStatement(uint8_t *statement)
 
 	if (name)
 	{
-		return new ldfconfigurableframe((uint8_t *)name, id);
+		return new ldfconfigurableframe(Str(name), id);
 	}
 	else
 	{

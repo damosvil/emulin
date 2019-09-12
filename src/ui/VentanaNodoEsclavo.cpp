@@ -47,7 +47,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 	PrepareListConfigurableFrames();
 
 	// Fill dialog fields with data
-	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNodeAttributesByName((uint8_t *)slave_name) : NULL;
+	ldfnodeattributes *a = (slave_name != NULL) ? db->GetSlaveNodeAttributesByName(Str(slave_name)) : NULL;
 	if (a != NULL)
 	{
 		// Name
@@ -82,7 +82,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 		{
 			// Skip signals not published by this node or size different to 1
 			ldfsignal *s = db->GetSignalByIndex(i);
-			if (s->GetBitSize() != 1 || !s->PublisherIs((uint8_t *)slave_name))
+			if (s->GetBitSize() != 1 || !s->PublisherIs(Str(slave_name)))
 				continue;
 
 			// Add signal to list
@@ -125,7 +125,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 		// Function ID
 		EntrySet(g_VentanaNodoEsclavoFunctionID, "0x0000");
 
-		// Variant(uint8_t *)
+		// Variant
 		EntrySet(g_VentanaNodoEsclavoVariant, "0x00");
 
 		// Response error signal
@@ -205,7 +205,7 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
 		// Name
-		res = new ldfnodeattributes((uint8_t *)EntryGetStr(g_VentanaNodoEsclavoName));
+		res = new ldfnodeattributes(Str(EntryGetStr(g_VentanaNodoEsclavoName)));
 
 		// Protocol version
 		res->SetProtocolVersion(GetProtocolVersionByStringID(gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoProtocolVersion))));
@@ -228,7 +228,7 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 		// Response error signal name
 		const char *resn = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaNodoEsclavoResponseErrorSignal));
 		if (resn != NULL)
-			res->SetResponseErrorSignalName((uint8_t *)resn);
+			res->SetResponseErrorSignalName(Str(resn));
 
 		// P2 min
 		res->SetP2_min(EntryGetInt(g_VentanaNodoEsclavoP2_min));
@@ -253,7 +253,7 @@ ldfnodeattributes *VentanaNodoEsclavo::ShowModal(GObject *parent)
 			{
 				gtk_tree_model_get(model, &iter, 0, &frame_id, -1);
 				gtk_tree_model_get(model, &iter, 1, &frame_name, -1);
-				res->AddConfigurableFrame(new ldfconfigurableframe((uint8_t *)frame_name, MultiParseInt(frame_id)));
+				res->AddConfigurableFrame(new ldfconfigurableframe(Str(frame_name), MultiParseInt(frame_id)));
 			}
 			while (gtk_tree_model_iter_next(model, &iter));
 		}
@@ -285,7 +285,7 @@ void VentanaNodoEsclavo::ReloadListConfigurableFrames()
 	gtk_list_store_clear(s);
 
 	// Skip if no slave
-	ldfnodeattributes *a = db->GetSlaveNodeAttributesByName((uint8_t *)slave_name);
+	ldfnodeattributes *a = db->GetSlaveNodeAttributesByName(Str(slave_name));
 	if (a == NULL)
 		return;
 
@@ -458,7 +458,7 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoAccept_clicked(GtkButton *button, g
 {
 	VentanaNodoEsclavo *v = (VentanaNodoEsclavo *)user_data;
 	const char *new_slave_name = EntryGetStr(v->g_VentanaNodoEsclavoName);
-	ldfnodeattributes *attributes = v->db->GetSlaveNodeAttributesByName((uint8_t *)new_slave_name);
+	ldfnodeattributes *attributes = v->db->GetSlaveNodeAttributesByName(Str(new_slave_name));
 
 	// Validate slave name
 	if (strlen(new_slave_name) == 0)

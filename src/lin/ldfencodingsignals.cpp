@@ -14,7 +14,7 @@
 
 namespace lin {
 
-ldfencodingsignals::ldfencodingsignals(uint8_t *encoding_name)
+ldfencodingsignals::ldfencodingsignals(const uint8_t *encoding_name)
 {
 	this->encoding_name = StrDup(encoding_name);
 	this->signals_count = 0;
@@ -26,12 +26,12 @@ ldfencodingsignals::~ldfencodingsignals()
 	while (signals_count > 0) delete signals[--signals_count];
 }
 
-void ldfencodingsignals::AddSignal(uint8_t *signal)
+void ldfencodingsignals::AddSignal(const uint8_t *signal)
 {
 	signals[signals_count++] = StrDup(signal);
 }
 
-ldfencodingsignals *ldfencodingsignals::FromLdfStatement(uint8_t *statement)
+ldfencodingsignals *ldfencodingsignals::FromLdfStatement(const uint8_t *statement)
 {
 	char *encoding_name;
 	ldfencodingsignals *s;
@@ -46,12 +46,12 @@ ldfencodingsignals *ldfencodingsignals::FromLdfStatement(uint8_t *statement)
 	if (!p) return NULL;
 
 	// Create relationship between encoding and signal
-	s = new ldfencodingsignals((uint8_t *)encoding_name);
+	s = new ldfencodingsignals(Str(encoding_name));
 
 	// If any add more signals
 	while (p)
 	{
-		s->AddSignal((uint8_t *) p);
+		s->AddSignal(Str(p));
 		p = strtok(NULL, "," BLANK_CHARACTERS);
 	}
 
