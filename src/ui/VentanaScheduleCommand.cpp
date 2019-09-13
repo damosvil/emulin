@@ -152,6 +152,7 @@ VentanaScheduleCommand::~VentanaScheduleCommand()
 
 ldfschedulecommand *VentanaScheduleCommand::ShowModal(GObject *parent)
 {
+	uint8_t data[8];
 	ldfschedulecommand *res = NULL;
 
 	// Put this window always on top of parent
@@ -160,8 +161,66 @@ ldfschedulecommand *VentanaScheduleCommand::ShowModal(GObject *parent)
 	// Show dialog
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
-		// Create new command
-		//res = new ldfschedulecommand();
+		const char *str_type = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandType));
+		const char *str_slave = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave));
+		const char *str_frame = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandFrameName));
+		const char *str_assign_frame = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandDataFrame));
+		const char *str_data = EntryGetStr(g_VentanaScheduleCommandDataRaw);
+		uint32_t timeout = EntryGetInt(g_VentanaScheduleCommandTimeout);
+		uint32_t data_count = EntryGetInt(g_VentanaScheduleCommandDataCount);
+
+		if (StrEq(str_type, "MasterReq"))
+		{
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_MasterReq, Str(str_type), timeout, NULL, NULL, NULL);
+		}
+		else if (StrEq(str_type, "SlaveResp"))
+		{
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_SlaveResp, Str(str_type), timeout, NULL, NULL, NULL);
+		}
+		if (StrEq(str_type, "AssignNAD"))
+		{
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_AssignNAD, Str(str_type), timeout, Str(str_slave), NULL, NULL);
+		}
+		else if (StrEq(str_type, "DataDump"))
+		{
+			char *p = StrTokenParseFirst((char *)str_data, NULL, " ");
+			data[0] = ParseInt(p);
+			for (uint32_t i = 0; i < 4; i++)
+			{
+				p = StrTokenParseNext(p, NULL, " ");
+				data[i + 1] = ParseInt(p);
+			}
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_DataDump, Str(str_type), timeout, Str(str_slave), data, NULL);
+		}
+		else if (StrEq(str_type, "SaveConfiguration"))
+		{
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_SaveConfiguration, Str(str_type), timeout, Str(str_slave), NULL, NULL);
+		}
+		else if (StrEq(str_type, "FreeFormat"))
+		{
+			char *p = StrTokenParseFirst((char *)str_data, NULL, " ");
+			data[0] = ParseInt(p);
+			for (uint32_t i = 0; i < 7; i++)
+			{
+				p = StrTokenParseNext(p, NULL, " ");
+				data[i + 1] = ParseInt(p);
+			}
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_FreeFormat, Str(str_type), timeout, NULL, data, NULL);
+		}
+		else if (StrEq(str_type, "AssignFrameIdRange"))
+		{
+			data[0] = db->GetFrameByName(Str(str_assign_frame))->GetPid();
+			data[1] = data_count;
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_AssignFrameIdRange, Str(str_type), timeout, Str(str_slave), data, NULL);
+		}
+		else if (StrEq(str_type, "AssignFrameId"))
+		{
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_AssignFrameId, Str(str_type), timeout, Str(str_slave), NULL, Str(str_assign_frame));
+		}
+		else
+		{
+			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_UnconditionalFrame, Str(str_frame), timeout, NULL, NULL, NULL);
+		}
 	}
 	gtk_widget_hide(GTK_WIDGET(handle));
 

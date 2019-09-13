@@ -21,7 +21,7 @@ ldfschedulecommand::ldfschedulecommand(ldfschedulecommandtype_t type, const uint
 	this->frame_name = StrDup(frame_name);
 	this->timeout = timeout;
 	this->slave_name = StrDup(slave_name);
-	for (uint32_t i = 0; i < 8 ; i++) this->data[i] = data[i];
+	for (uint32_t i = 0; i < 8 ; i++) this->data[i] = (data != NULL) ? data[i] : 0;
 	this->assign_frame_name = StrDup(assign_frame_name);
 }
 
