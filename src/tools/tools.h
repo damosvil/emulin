@@ -50,6 +50,7 @@ const char *GetStrPrintf(const char *format, ...);
 void ShowErrorMessageBox(GObject *parent, const char *format, ...);
 bool ShowChooseMessageBox(GObject *parent, const char *format, ...);
 void WidgetEnable(GObject *w, bool enable);
+void WidgetShow(GObject *w, bool show);
 void EntrySet(GObject *w, const uint8_t *v);
 void EntrySet(GObject *w, const char *format, ...);
 const char * EntryGetStr(GObject *w);

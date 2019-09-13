@@ -219,9 +219,19 @@ uint8_t *ldfschedulecommand::GetData()
 	return data;
 }
 
-uint8_t *ldfschedulecommand::GetAssignFrameName()
+uint8_t *ldfschedulecommand::GetAssignFrameIdName()
 {
 	return assign_frame_name;
+}
+
+uint8_t ldfschedulecommand::GetAssignFrameIdRangePid()
+{
+	return data[0];
+}
+
+uint8_t ldfschedulecommand::GetAssignFrameIdRangeCount()
+{
+	return data[1];
 }
 
 void ldfschedulecommand::UpdateFrameName(const uint8_t *old_name, const uint8_t *new_name)
@@ -348,6 +358,31 @@ const uint8_t * ldfschedulecommand::GetStrCommand(ldf *db)
 
 	return Str(res);
 }
+
+const uint8_t *ldfschedulecommand::GetStrRawData()
+{
+	static char res[1000];
+
+	switch (type)
+	{
+
+	case LDF_SCMD_TYPE_DataDump:
+		sprintf(res, "%02X, %02X, %02X, %02X, %02X", data[0], data[1], data[2], data[3], data[4]);
+		break;
+
+	case LDF_SCMD_TYPE_FreeFormat:
+		sprintf(res, "%02X, %02X, %02X, %02X, %02X, %02X, %02X, %02X", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+		break;
+
+	default:
+		strcpy(res, "");
+		break;
+
+	}
+
+	return Str(res);
+}
+
 
 
 } /* namespace lin */

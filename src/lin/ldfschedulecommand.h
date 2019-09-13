@@ -57,14 +57,16 @@ public:
 	uint16_t GetTimeoutMs();
 	uint8_t *GetSlaveName();
 	uint8_t *GetData();
-	uint8_t *GetAssignFrameName();
-
+	uint8_t *GetAssignFrameIdName();
+	uint8_t GetAssignFrameIdRangePid();
+	uint8_t GetAssignFrameIdRangeCount();
 
 	void UpdateFrameName(const uint8_t *old_name, const uint8_t *new_name);
 	void ValidateUnicity(uint8_t *schedule_table, ldfschedulecommand *command, uint8_t **validation_messages, uint32_t *validation_messages_count);
 
 	const uint8_t *GetStrType();
 	const uint8_t *GetStrCommand(ldf *db);
+	const uint8_t *GetStrRawData();
 
 
 };

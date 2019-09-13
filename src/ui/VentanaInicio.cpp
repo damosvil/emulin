@@ -473,7 +473,12 @@ void VentanaInicio::OnPanelDatabaseSlavesNew_clicked(GtkButton *button, gpointer
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
-	GetLinProtocolVersionStringID(LIN_PROTOCOL_VERSION_2_1);
+	// Check master node name is valid
+	if (v->db->GetMasterNode()->GetName()[0] == 0)
+	{
+		ShowErrorMessageBox(v->handle, "Master node name shall be valid before adding slaves");
+		return;
+	}
 
 	// Create slave window
 	VentanaNodoEsclavo w(v->builder, v->db, NULL);
@@ -560,6 +565,18 @@ void VentanaInicio::OnPanelDatabaseSignalsNew_clicked(GtkButton *button, gpointe
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 
+	// Check minimal data is valid
+	if (v->db->GetMasterNode()->GetName()[0] == 0)
+	{
+		ShowErrorMessageBox(v->handle, "Master node name shall be valid before adding signals");
+		return;
+	}
+	else if (v->db->GetSlaveNodesCount() == 0)
+	{
+		ShowErrorMessageBox(v->handle, "At least one slave node shall be defined before adding signals.");
+		return;
+	}
+
 	// Read signal from the user
 	VentanaSenal w(v->builder, v->db, NULL);
 	ldfsignal *s = w.ShowModal(v->handle);
@@ -637,6 +654,23 @@ void VentanaInicio::OnPanelDatabaseSignalsSelection_changed(GtkTreeSelection *wi
 void VentanaInicio::OnPanelDatabaseFramesNew_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	// Check minimal data is valid
+	if (v->db->GetMasterNode()->GetName()[0] == 0)
+	{
+		ShowErrorMessageBox(v->handle, "Master node name shall be valid before adding frames");
+		return;
+	}
+	else if (v->db->GetSlaveNodesCount() == 0)
+	{
+		ShowErrorMessageBox(v->handle, "At least one slave node shall be defined before adding frames.");
+		return;
+	}
+	else if (v->db->GetSignalsCount() == 0)
+	{
+		ShowErrorMessageBox(v->handle, "At least one signal shall be defined before adding frames.");
+		return;
+	}
 
 	// Read signal from the user
 	VentanaFrame w(v->builder, v->db, NULL);
@@ -719,6 +753,28 @@ void VentanaInicio::OnPanelDatabaseFramesSelection_changed(GtkTreeSelection *wid
 void VentanaInicio::OnPanelDatabaseScheduleTablesNew_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
+
+	// Check minimal data is valid
+	if (v->db->GetMasterNode()->GetName()[0] == 0)
+	{
+		ShowErrorMessageBox(v->handle, "Master node name shall be valid before adding schedule tables");
+		return;
+	}
+	else if (v->db->GetSlaveNodesCount() == 0)
+	{
+		ShowErrorMessageBox(v->handle, "At least one slave node shall be defined before adding schedule tables.");
+		return;
+	}
+	else if (v->db->GetSignalsCount() == 0)
+	{
+		ShowErrorMessageBox(v->handle, "At least one signal shall be defined before adding schedule tables.");
+		return;
+	}
+	else if (v->db->GetFramesCount() == 0)
+	{
+		ShowErrorMessageBox(v->handle, "At least one frame shall be defined before adding schedule tables.");
+		return;
+	}
 
 	// Ask user to create new schedule table
 	VentanaScheduleTable w(v->builder, v->db, NULL);

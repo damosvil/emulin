@@ -35,6 +35,15 @@ private:
 	G_VAR(VentanaScheduleCommandDataCount);
 	G_VAR(VentanaScheduleCommandAccept);
 	G_VAR(VentanaScheduleCommandCancel);
+	G_VAR(VentanaScheduleCommandTypeLabel);
+	G_VAR(VentanaScheduleCommandFrameNameLabel);
+	G_VAR(VentanaScheduleCommandSlaveLabel);
+	G_VAR(VentanaScheduleCommandTimeoutLabel);
+	G_VAR(VentanaScheduleCommandDataRawLabel);
+	G_VAR(VentanaScheduleCommandDataFrameLabel);
+	G_VAR(VentanaScheduleCommandDataCountLabel);
+
+	void UpdateLayout();
 
 	// Signal callbacks
 	static void OnVentanaScheduleCommandType_changed(GtkComboBoxText *widget, gpointer user_data);

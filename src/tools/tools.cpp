@@ -203,6 +203,14 @@ void WidgetEnable(GObject *w, bool enable)
 	gtk_widget_set_sensitive(GTK_WIDGET(w), enable);
 }
 
+void WidgetShow(GObject *w, bool show)
+{
+	if (show)
+		gtk_widget_show(GTK_WIDGET(w));
+	else
+		gtk_widget_hide(GTK_WIDGET(w));
+}
+
 void EntrySet(GObject *w, const uint8_t *v)
 {
 	gtk_entry_set_text(GTK_ENTRY(w), (gchar *)v);

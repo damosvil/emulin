@@ -864,6 +864,15 @@ ldfframe *ldf::GetFrameById(uint8_t frame_id)
 	return NULL;
 }
 
+ldfframe *ldf::GetFrameByPid(uint8_t frame_pid)
+{
+	for (uint32_t ix = 0; ix < frames_count; ix++)
+		if (frames[ix]->GetPid() == frame_pid)
+			return frames[ix];
+
+	return NULL;
+}
+
 uint32_t ldf::GetFramesCount()
 {
 	return frames_count;

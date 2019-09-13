@@ -138,6 +138,7 @@ public:
 	ldfframe *GetFrameByIndex(uint32_t ix);
 	ldfframe *GetFrameByName(const uint8_t *frame_name);
 	ldfframe *GetFrameById(uint8_t frame_id);
+	ldfframe *GetFrameByPid(uint8_t frame_id);
 	uint32_t GetFramesCount();
 	void AddFrame(ldfframe *f);
 	void UpdateFrame(const uint8_t *old_frame_name, ldfframe *f);
