@@ -8,6 +8,7 @@
 #include <string.h>
 #include <VentanaSelectNode.h>
 #include <VentanaSenal.h>
+#include <ui.h>
 
 
 namespace ui {

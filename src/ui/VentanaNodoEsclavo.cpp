@@ -9,6 +9,7 @@
 #include <VentanaNodoEsclavo.h>
 #include <VentanaConfigurableFrame.h>
 #include "tools.h"
+#include <ui.h>
 
 using namespace tools;
 

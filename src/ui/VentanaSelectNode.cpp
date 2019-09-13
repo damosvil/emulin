@@ -6,6 +6,7 @@
  */
 
 #include <VentanaSelectNode.h>
+#include <ui.h>
 
 namespace ui {
 

@@ -14,6 +14,7 @@
 #include "VentanaSenal.h"
 #include "VentanaFrame.h"
 #include "VentanaScheduleTable.h"
+#include <ui.h>
 
 
 using namespace managers;

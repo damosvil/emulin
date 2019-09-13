@@ -6,6 +6,7 @@
  */
 
 #include <VentanaConfigurableFrame.h>
+#include <ui.h>
 
 namespace ui {
 

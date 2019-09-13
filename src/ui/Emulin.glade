@@ -1680,11 +1680,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="VentanaScheduleCommandFrameName">
+              <object class="GtkComboBoxText" id="VentanaScheduleCommandFrameName">
                 <property name="width_request">305</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="truncate_multiline">True</property>
+                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="x">100</property>

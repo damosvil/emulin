@@ -7,6 +7,7 @@
 
 #include <VentanaFrame.h>
 #include <VentanaFrameSignal.h>
+#include <ui.h>
 
 namespace ui {
 
