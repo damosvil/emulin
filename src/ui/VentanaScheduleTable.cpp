@@ -125,27 +125,94 @@ void VentanaScheduleTable::OnVentanaScheduleTableSelection_changed(GtkTreeSelect
 
 void VentanaScheduleTable::OnVentanaScheduleTableMoveUp_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaScheduleTable *v = (VentanaScheduleTable *)user_data;
 
+	// Add schedule command to tree view
+	GtkTreeIter it;
+	GtkTreeView *tv = GTK_TREE_VIEW(v->g_VentanaScheduleTableList);
+	GtkTreeModel *tm = gtk_tree_view_get_model(tv);
+	GtkListStore *ls = GTK_LIST_STORE(tm);
+
+	// Append a new list item
+	if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaScheduleTableSelection), &tm, &it))
+	{
+		GtkTreeIter *it_aux = gtk_tree_iter_copy(&it);
+
+		if (gtk_tree_model_iter_previous(tm, &it))
+		{
+			gtk_list_store_move_before(ls, it_aux, &it);
+		}
+	}
 }
 
 void VentanaScheduleTable::OnVentanaScheduleTableMoveDown_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaScheduleTable *v = (VentanaScheduleTable *)user_data;
 
+	// Add schedule command to tree view
+	GtkTreeIter it;
+	GtkTreeView *tv = GTK_TREE_VIEW(v->g_VentanaScheduleTableList);
+	GtkTreeModel *tm = gtk_tree_view_get_model(tv);
+	GtkListStore *ls = GTK_LIST_STORE(tm);
+
+	// Append a new list item
+	if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaScheduleTableSelection), &tm, &it))
+	{
+		GtkTreeIter *it_aux = gtk_tree_iter_copy(&it);
+
+		if (gtk_tree_model_iter_next(tm, &it))
+		{
+			gtk_list_store_move_after(ls, it_aux, &it);
+		}
+	}
 }
 
 void VentanaScheduleTable::OnVentanaScheduleTableNew_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaScheduleTable *v = (VentanaScheduleTable *)user_data;
 
+	// Request schedule command from user
+	VentanaScheduleCommand w(v->builder, v->db, NULL, NULL);
+	ldfschedulecommand *c = w.ShowModal(v->handle);
+	if (c == NULL)
+		return;
+
+	// Add schedule command to tree view
+	GtkTreeIter sel_it, new_it;
+	GtkTreeView *tv = GTK_TREE_VIEW(v->g_VentanaScheduleTableList);
+	GtkTreeModel *tm = gtk_tree_view_get_model(tv);
+	GtkListStore *ls = GTK_LIST_STORE(tm);
+
+	// Append a new list item
+	if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaScheduleTableSelection), &tm, &sel_it))
+	{
+		gtk_list_store_insert_after(ls, &new_it, &sel_it);
+	}
+	else
+	{
+		gtk_list_store_append(ls, &new_it);
+	}
+	gtk_list_store_set(ls, &new_it, 0, c->GetStrCommand(v->db), -1);
+	gtk_list_store_set(ls, &new_it, 1, GetStrPrintf("%d ms", c->GetTimeoutMs()), -1);
 }
 
 void VentanaScheduleTable::OnVentanaScheduleTableEdit_clicked(GtkButton *button, gpointer user_data)
 {
-
 }
 
 void VentanaScheduleTable::OnVentanaScheduleTableDelete_clicked(GtkButton *button, gpointer user_data)
 {
+	VentanaScheduleTable *v = (VentanaScheduleTable *)user_data;
 
+	// Add schedule command to tree view
+	GtkTreeIter it;
+	GtkTreeView *tv = GTK_TREE_VIEW(v->g_VentanaScheduleTableList);
+	GtkTreeModel *tm = gtk_tree_view_get_model(tv);
+	GtkListStore *ls = GTK_LIST_STORE(tm);
+
+	// Append a new list item
+	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaScheduleTableSelection), &tm, &it);
+	gtk_list_store_remove(ls, &it);
 }
 
 void VentanaScheduleTable::OnVentanaScheduleTableAccept_clicked(GtkButton *button, gpointer user_data)

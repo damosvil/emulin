@@ -42,6 +42,12 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), (char *)db->GetSlaveNodeByIndex(i)->GetName(), (char *)db->GetSlaveNodeByIndex(i)->GetName());
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave), (char *)db->GetSlaveNodeByIndex(0)->GetName());
 
+	// Frame names
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandFrameName));
+	for (uint32_t i = 0; i < db->GetFramesCount(); i++)
+		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandFrameName), (char *)db->GetFrameByIndex(i)->GetName(), (char *)db->GetFrameByIndex(i)->GetName());
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandFrameName), (char *)db->GetFrameByIndex(0)->GetName());
+
 	// Load data
 	if (command != NULL)
 	{
@@ -51,19 +57,8 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandType), (char *)c->GetStrType());
 
 		// Frame name
-		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave));
 		if (c->GetType() == ldfschedulecommand::LDF_SCMD_TYPE_UnconditionalFrame)
-		{
-			for (uint32_t i = 0; i < db->GetFramesCount(); i++)
-				gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), (char *)db->GetFrameByIndex(i)->GetName(), (char *)db->GetFrameByIndex(i)->GetName());
-			gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave), (char *)db->GetFrameByIndex(0)->GetName());
-			gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave), (char *)c->GetFrameName());
-		}
-		else
-		{
-			gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), (char *)c->GetStrType(), (char *)c->GetStrType());
-			gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave), (char *)c->GetStrType());
-		}
+			gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandFrameName), (char *)c->GetFrameName());
 
 		// Slave
 		if (c->GetSlaveName() != NULL)
@@ -109,13 +104,10 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 		// Type
 		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandType), "UnconditionalFrame");
 
-		// Frame name
-		for (uint32_t i = 0; i < db->GetFramesCount(); i++)
-			gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), (char *)db->GetFrameByIndex(i)->GetName(), (char *)db->GetFrameByIndex(i)->GetName());
-		gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave), (char *)db->GetFrameByIndex(0)->GetName());
+		// Frame name by default
 
 		// Timeout
-		EntrySet(g_VentanaScheduleCommandTimeout, "10");
+		EntrySet(g_VentanaScheduleCommandTimeout, GetStrPrintf("%d", 10 * 19200 / db->GetLinSpeed()));
 
 		// Raw data
 		EntrySet(g_VentanaScheduleCommandDataRaw, "");
@@ -127,8 +119,9 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 		EntrySet(g_VentanaScheduleCommandDataCount, "1");
 	}
 
-	// React as if type changed
+	// React as if any combo box changed
 	this->OnVentanaScheduleCommandType_changed(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandType), this);
+	this->OnVentanaScheduleCommandSlave_changed(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), this);
 
 	// Connect signals
 	G_CONNECT_INSTXT(VentanaScheduleCommandTimeout, INT5_EXPR);
@@ -232,6 +225,7 @@ void VentanaScheduleCommand::UpdateLayout()
 	const char *type = gtk_combo_box_get_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandType));
 
 	bool b_ShowSlave = false;
+	bool b_ShowFrameName = false;
 	bool b_ShowDataRaw = false;
 	bool b_ShowDataFrame = false;
 	bool b_ShowDataCount = false;
@@ -264,15 +258,22 @@ void VentanaScheduleCommand::UpdateLayout()
 		b_ShowSlave = true;
 		b_ShowDataFrame = true;
 	}
+	else if (StrEq(type, "UnconditionalFrame"))
+	{
+		b_ShowFrameName = true;
+	}
 
-	WidgetShow(g_VentanaScheduleCommandSlave 	, b_ShowSlave);
-	WidgetShow(g_VentanaScheduleCommandSlave 	, b_ShowSlave);
-	WidgetShow(g_VentanaScheduleCommandDataRaw 	, b_ShowDataRaw);
-	WidgetShow(g_VentanaScheduleCommandDataRaw 	, b_ShowDataRaw);
-	WidgetShow(g_VentanaScheduleCommandDataFrame, b_ShowDataFrame);
-	WidgetShow(g_VentanaScheduleCommandDataFrame, b_ShowDataFrame);
-	WidgetShow(g_VentanaScheduleCommandDataCount, b_ShowDataCount);
-	WidgetShow(g_VentanaScheduleCommandDataCount, b_ShowDataCount);
+	// Modify widgets visibility
+	WidgetShow(g_VentanaScheduleCommandSlave 			, b_ShowSlave);
+	WidgetShow(g_VentanaScheduleCommandSlaveLabel 		, b_ShowSlave);
+	WidgetShow(g_VentanaScheduleCommandFrameName 		, b_ShowFrameName);
+	WidgetShow(g_VentanaScheduleCommandFrameNameLabel 	, b_ShowFrameName);
+	WidgetShow(g_VentanaScheduleCommandDataRaw 			, b_ShowDataRaw);
+	WidgetShow(g_VentanaScheduleCommandDataRawLabel 	, b_ShowDataRaw);
+	WidgetShow(g_VentanaScheduleCommandDataFrame		, b_ShowDataFrame);
+	WidgetShow(g_VentanaScheduleCommandDataFrameLabel	, b_ShowDataFrame);
+	WidgetShow(g_VentanaScheduleCommandDataCount		, b_ShowDataCount);
+	WidgetShow(g_VentanaScheduleCommandDataCountLabel	, b_ShowDataCount);
 }
 
 void VentanaScheduleCommand::OnVentanaScheduleCommandType_changed(GtkComboBoxText *widget, gpointer user_data)
@@ -300,7 +301,7 @@ void VentanaScheduleCommand::OnVentanaScheduleCommandSlave_changed(GtkComboBoxTe
 	VentanaScheduleCommand *v = (VentanaScheduleCommand *)user_data;
 	const char *slave = gtk_combo_box_get_active_id(GTK_COMBO_BOX(v->g_VentanaScheduleCommandSlave));
 
-	// Reload slave frame list with all slave configurable_frames and select the fist one
+	// Reload slave frame list with all slave configurable_frames of the slave and select the fist one
 	ldfnodeattributes *aa = v->db->GetSlaveNodeAttributesByName(Str(slave));
 	if (aa != NULL && aa->GetConfigurableFramesCount() > 0)
 	{
@@ -329,7 +330,7 @@ void VentanaScheduleCommand::OnVentanaScheduleCommandAccept_clicked(GtkButton *b
 	if (timeout < min_timeout)
 	{
 		// Schedule table name in use
-		ShowErrorMessageBox(v->handle, "Timeout shall be longer than %d ms", min_timeout);
+		ShowErrorMessageBox(v->handle, "Timeout shall be at least %d ms", min_timeout);
 		return;
 	}
 
@@ -360,7 +361,7 @@ void VentanaScheduleCommand::OnVentanaScheduleCommandAccept_clicked(GtkButton *b
 		ldfnodeattributes *a = v->db->GetSlaveNodeAttributesByName(Str(str_slave));
 		for (uint32_t i = 0; i < a->GetConfigurableFramesCount(); i++)
 		{
-			if (StrEq(str_assign_frame, a->GetName()))
+			if (StrEq(str_assign_frame, a->GetConfigurableFrame(i)->GetName()))
 			{
 				if ((a->GetConfigurableFramesCount() - i) < data_count)
 				{

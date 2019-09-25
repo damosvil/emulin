@@ -75,7 +75,7 @@ char *ldfschedulecommand::ParseAssignFrameIdRange(char *p, char **p_slave, char 
 	p = StrTokenParseNextAndCheck(p, "{", BLANK_CHARACTERS);
 	p = StrTokenParseNext(p, p_slave, "," BLANK_CHARACTERS);	// Read slave
 
-	// data[0] contains frame index in configurable_frames slave node list
+	// data[0] contains frame protected id in configurable_frames slave node list
 	p = StrTokenParseNext(p, NULL, "," BLANK_CHARACTERS);
 	data[0] = ParseInt(p);
 
@@ -182,7 +182,7 @@ ldfschedulecommand *ldfschedulecommand::FromStrCommand(ldf *db, const uint8_t *c
 		// Check that it couldn't parse the first frame as a PID, but as a frame name
 		if (c->assign_frame_name == NULL) return NULL;
 
-		// data[0] contains frame index in configurable_frames slave node list
+		// data[0] contains frame protected id in configurable_frames slave node list
 		c->data[0] = db->GetFrameByName(c->assign_frame_name)->GetPid();
 		delete c->assign_frame_name;
 		c->assign_frame_name = NULL;
@@ -338,10 +338,23 @@ const uint8_t * ldfschedulecommand::GetStrCommand(ldf *db)
 		a = db->GetSlaveNodeAttributesByName(slave_name);
 		sprintf(res, "AssignFrameIdRange { %s", slave_name);
 
-		// data[0] is index, data[1] is count in configurable_frames
-		for (int i = data[0]; i < data[1] && i < a->GetConfigurableFramesCount(); i++)
+		// data[0] is first frame pid, data[1] is count in configurable_frames
 		{
-			sprintf(res + strlen(res), ", %s", a->GetConfigurableFrame(i)->GetName());
+			ldfframe *ff = db->GetFrameByPid(data[0]);
+			int cc = data[1];
+
+			// Add frame names to command
+			for (int i = 0; ff != NULL && i < a->GetConfigurableFramesCount(); i++)
+			{
+				if (StrEq(a->GetConfigurableFrame(i)->GetName(), ff->GetName()))
+				{
+					for (; i < a->GetConfigurableFramesCount() && cc > 0; i++)
+					{
+						sprintf(res + strlen(res), ", %s", a->GetConfigurableFrame(i)->GetName());
+						cc--;
+					}
+				}
+			}
 		}
 		strcat(res, " }");
 		break;
