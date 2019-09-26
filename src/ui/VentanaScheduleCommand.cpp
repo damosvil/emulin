@@ -170,7 +170,7 @@ ldfschedulecommand *VentanaScheduleCommand::ShowModal(GObject *parent)
 		{
 			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_SlaveResp, Str(str_type), timeout, NULL, NULL, NULL);
 		}
-		if (StrEq(str_type, "AssignNAD"))
+		else if (StrEq(str_type, "AssignNAD"))
 		{
 			res = new ldfschedulecommand(ldfschedulecommand::LDF_SCMD_TYPE_AssignNAD, Str(str_type), timeout, Str(str_slave), NULL, NULL);
 		}

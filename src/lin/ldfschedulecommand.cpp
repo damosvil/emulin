@@ -305,7 +305,6 @@ const uint8_t *ldfschedulecommand::GetStrType()
 const uint8_t * ldfschedulecommand::GetStrCommand(ldf *db)
 {
 	static char res[1000];
-	ldfnodeattributes *a;
 
 	switch (type)
 	{
@@ -323,7 +322,8 @@ const uint8_t * ldfschedulecommand::GetStrCommand(ldf *db)
 		break;
 
 	case LDF_SCMD_TYPE_DataDump:
-		sprintf(res, "DataDump { %s, %02X, %02X, %02X, %02X, %02X }", slave_name, data[0], data[1], data[2], data[3], data[4]);
+		sprintf(res, "DataDump { %s, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X }",
+				slave_name, data[0], data[1], data[2], data[3], data[4]);
 		break;
 
 	case LDF_SCMD_TYPE_SaveConfiguration:
@@ -331,32 +331,52 @@ const uint8_t * ldfschedulecommand::GetStrCommand(ldf *db)
 		break;
 
 	case LDF_SCMD_TYPE_FreeFormat:
-		sprintf(res, "FreeFormat { %02X, %02X, %02X, %02X, %02X, %02X, %02X, %02X }", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+		sprintf(res, "FreeFormat { 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X }",
+				data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 		break;
 
 	case LDF_SCMD_TYPE_AssignFrameIdRange:
-		a = db->GetSlaveNodeAttributesByName(slave_name);
-		sprintf(res, "AssignFrameIdRange { %s", slave_name);
-
-		// data[0] is first frame pid, data[1] is count in configurable_frames
 		{
+			// data[0] is first frame pid, data[1] is count in configurable_frames
 			ldfframe *ff = db->GetFrameByPid(data[0]);
-			int cc = data[1];
+			int count = data[1];
+			int added = 0;
+
+			// Get slave node attributes to read configurable frames
+			ldfnodeattributes *aa = db->GetSlaveNodeAttributesByName(slave_name);
+
+			// Check frame exists
+			if (!ff)
+				return NULL;
+
+			// Check node attributes exists
+			if (!aa)
+				return NULL;
+
+			// Initialize command string
+			sprintf(res, "AssignFrameIdRange { %s", slave_name);
 
 			// Add frame names to command
-			for (int i = 0; ff != NULL && i < a->GetConfigurableFramesCount(); i++)
+			for (int i = 0; ff != NULL && i < aa->GetConfigurableFramesCount(); i++)
 			{
-				if (StrEq(a->GetConfigurableFrame(i)->GetName(), ff->GetName()))
+				// Skip
+				if (!StrEq(aa->GetConfigurableFrame(i)->GetName(), ff->GetName()))
+					continue;
+
+				// Add frames to command string
+				for (; (i < aa->GetConfigurableFramesCount()) && (added < count); i++)
 				{
-					for (; i < a->GetConfigurableFramesCount() && cc > 0; i++)
-					{
-						sprintf(res + strlen(res), ", %s", a->GetConfigurableFrame(i)->GetName());
-						cc--;
-					}
+					sprintf(res + strlen(res), ", %s", aa->GetConfigurableFrame(i)->GetName());
+					added++;
 				}
+
+				// Frames were added
+				break;
 			}
+
+			// End command string
+			strcat(res, " }");
 		}
-		strcat(res, " }");
 		break;
 
 	case LDF_SCMD_TYPE_AssignFrameId:
@@ -380,11 +400,13 @@ const uint8_t *ldfschedulecommand::GetStrRawData()
 	{
 
 	case LDF_SCMD_TYPE_DataDump:
-		sprintf(res, "%02X, %02X, %02X, %02X, %02X", data[0], data[1], data[2], data[3], data[4]);
+		sprintf(res, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X",
+				data[0], data[1], data[2], data[3], data[4]);
 		break;
 
 	case LDF_SCMD_TYPE_FreeFormat:
-		sprintf(res, "%02X, %02X, %02X, %02X, %02X, %02X, %02X, %02X", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+		sprintf(res, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X",
+				data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 		break;
 
 	default:

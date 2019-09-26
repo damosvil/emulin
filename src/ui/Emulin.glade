@@ -1660,7 +1660,7 @@
                   <item id="SaveConfiguration" translatable="yes">SaveConfiguration</item>
                   <item id="FreeFormat" translatable="yes">FreeFormat</item>
                   <item id="AssignFrameIdRange" translatable="yes">AssignFrameIdRange</item>
-                  <item translatable="yes">AssignFrameId</item>
+                  <item id="AssignFrameId" translatable="yes">AssignFrameId</item>
                 </items>
               </object>
               <packing>
