@@ -545,6 +545,7 @@ void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpoin
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
+	v->ReloadListSlaves();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)

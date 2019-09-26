@@ -23,7 +23,7 @@ private:
 
 	// Schedule commands
 	ldfschedulecommand *commands[1000];
-	uint16_t commands_number;
+	uint16_t commands_count;
 
 public:
 	ldfscheduletable(const uint8_t *name);
@@ -34,7 +34,9 @@ public:
 	uint16_t GetCommandsCount();
 	void UpdateCommandsFrameName(const uint8_t *old_name, const uint8_t *new_name);
 	void UpdateCommandsSlaveName(const uint8_t *old_name, const uint8_t *new_name);
-	void DeleteCommandsByName(const uint8_t *name);
+	void DeleteCommandsByFrameName(const uint8_t *name);
+	void DeleteCommandsBySlaveName(const uint8_t *name);
+	void DeleteCommandByIndex(uint32_t ix);
 
 	void AddCommand(ldfschedulecommand *command);
 	void ValidateUnicity(ldfscheduletable *table, uint8_t **validation_messages, uint32_t *validation_messages_count);

@@ -336,7 +336,7 @@ void VentanaNodoEsclavo::OnVentanaNodoEsclavoConfigFrameNew_clicked(GtkButton *b
 		ldfframe *f = v->db->GetFrameByIndex(i);
 
 		// Skip other publishers' frames
-		if (!f->PublisherIs((uint8_t*)v->slave_name))
+		if (!StrEq(f->GetPublisher(), Str(v->slave_name)))
 			continue;
 
 		frame_names[frame_names_count++] = (char *)f->GetName();

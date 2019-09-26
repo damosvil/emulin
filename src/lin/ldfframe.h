@@ -41,8 +41,6 @@ public:
 	ldfframesignal *GetSignal(uint32_t ix);
 	uint32_t GetSignalsCount();
 
-	bool NameIs(const uint8_t *name);
-	bool PublisherIs(const uint8_t *publisher);
 	void AddSignal(ldfframesignal *signal);
 	void DeleteSignalByIndex(uint32_t ix);
 	void DeleteSignalByName(const uint8_t *signal_name);

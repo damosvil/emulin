@@ -17,13 +17,13 @@ namespace lin
 ldfscheduletable::ldfscheduletable(const uint8_t *name)
 {
 	this->name = StrDup(name);
-	this->commands_number = 0;
+	this->commands_count = 0;
 }
 
 ldfscheduletable::~ldfscheduletable()
 {
 	if (name) delete name;
-	while (commands_number > 0) delete commands[--commands_number];
+	while (commands_count > 0) delete commands[--commands_count];
 }
 
 uint8_t *ldfscheduletable::GetName()
@@ -38,12 +38,12 @@ ldfschedulecommand *ldfscheduletable::GetCommandByIndex(uint32_t ix)
 
 uint16_t ldfscheduletable::GetCommandsCount()
 {
-	return commands_number;
+	return commands_count;
 }
 
 void ldfscheduletable::UpdateCommandsFrameName(const uint8_t *old_name, const uint8_t *new_name)
 {
-	for (int i = 0; i < commands_number; i++)
+	for (int i = 0; i < commands_count; i++)
 	{
 		commands[i]->UpdateFrameName(old_name, new_name);
 	}
@@ -51,35 +51,37 @@ void ldfscheduletable::UpdateCommandsFrameName(const uint8_t *old_name, const ui
 
 void ldfscheduletable::UpdateCommandsSlaveName(const uint8_t *old_name, const uint8_t *new_name)
 {
-	for (int i = 0; i < commands_number; i++)
+	for (int i = 0; i < commands_count; i++)
 	{
 		commands[i]->UpdateSlaveName(old_name, new_name);
 	}
 }
 
-void ldfscheduletable::DeleteCommandsByName(const uint8_t *name)
+void ldfscheduletable::DeleteCommandsByFrameName(const uint8_t *name)
 {
-	for (int i = 0; i < commands_number; )
-	{
-		// Skip commands with different name
-		if (!StrEq(name, commands[i]->GetFrameName()))
-		{
-			i++;
-			continue;
-		}
-
-		// Delete command and move back the rest ones
-		delete commands[i];
-		commands_number--;
-		for (int j = i; j < commands_number; j++)
-			commands[j] = commands[j + 1];
-	}
+	for (int i = 0; i < commands_count; i++)
+		if (StrEq(name, commands[i]->GetFrameName()))
+			DeleteCommandByIndex(i);
 }
 
+void ldfscheduletable::DeleteCommandsBySlaveName(const uint8_t *name)
+{
+	for (int i = 0; i < commands_count; i++)
+		if (StrEq(name, commands[i]->GetSlaveName()))
+			DeleteCommandByIndex(i);
+}
+
+void ldfscheduletable::DeleteCommandByIndex(uint32_t ix)
+{
+	delete commands[ix];
+	commands_count--;
+	for (; ix < commands_count; ix++)
+		commands[ix] = commands[ix + 1];
+}
 
 void ldfscheduletable::AddCommand(ldfschedulecommand *command)
 {
-	commands[commands_number++] = command;
+	commands[commands_count++] = command;
 }
 
 void ldfscheduletable::ValidateUnicity(ldfscheduletable *table, uint8_t **validation_messages, uint32_t *validation_messages_count)
@@ -98,7 +100,7 @@ void ldfscheduletable::ValidateFrames(ldfframe **frames, uint32_t frames_count, 
 	char str[1000];
 	uint32_t i, j;
 
-	for (i = 0; i < commands_number; i++)
+	for (i = 0; i < commands_count; i++)
 	{
 		ldfframe *f = NULL;
 
@@ -117,7 +119,7 @@ void ldfscheduletable::ValidateFrames(ldfframe **frames, uint32_t frames_count, 
 		}
 
 		// Check configurable frame repeated
-		for (j = i + 1; j < commands_number; j++)
+		for (j = i + 1; j < commands_count; j++)
 		{
 			commands[i]->ValidateUnicity(name, commands[j], validation_messages, validation_messages_count);
 		}

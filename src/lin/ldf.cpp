@@ -718,7 +718,7 @@ void ldf::DeleteSlaveNode(const uint8_t *slave_name)
 	for (uint32_t ix = 0; ix < frames_count; )
 	{
 		// Skip frame
-		if (!frames[ix]->PublisherIs(slave_name))
+		if (!StrEq(frames[ix]->GetPublisher(), slave_name))
 		{
 			ix++;
 			continue;
@@ -726,6 +726,12 @@ void ldf::DeleteSlaveNode(const uint8_t *slave_name)
 
 		// Delete frame and drag all others back
 		DeleteFrameByIndex(ix);
+	}
+
+	// Delete schedule tables that use the slave
+	for (uint32_t ix = 0; ix < schedule_tables_count; ix++)
+	{
+		schedule_tables[ix]->DeleteCommandsBySlaveName(slave_name);
 	}
 
 	// Remove deleted signals from frames
@@ -744,8 +750,6 @@ void ldf::DeleteSlaveNode(const uint8_t *slave_name)
 			frames[ix]->DeleteSignalByIndex(jx);
 		}
 	}
-
-	// TODO:: Delete schedule tables that use the slave
 }
 
 ldfsignal *ldf::GetSignalByIndex(uint32_t ix)
@@ -853,7 +857,7 @@ ldfframe *ldf::GetFrameByName(const uint8_t *frame_name)
 		return NULL;
 
 	for (uint32_t ix = 0; ix < frames_count; ix++)
-		if (frames[ix]->NameIs(frame_name))
+		if (StrEq(frames[ix]->GetName(), frame_name))
 			return frames[ix];
 
 	return NULL;
@@ -905,7 +909,7 @@ void ldf::UpdateFrame(const uint8_t *old_frame_name, ldfframe *f)
 	for (uint32_t ix = 0; ix < frames_count; ix++)
 	{
 		// Skip frames
-		if (!frames[ix]->NameIs(old_frame_name))
+		if (!StrEq(frames[ix]->GetName(), old_frame_name))
 			continue;
 
 		// Replace frame in index
@@ -926,14 +930,14 @@ void ldf::DeleteFrame(const uint8_t *frame_name)
 	// Update frame in schedule tables
 	for (uint32_t i = 0; i < schedule_tables_count; i++)
 	{
-		schedule_tables[i]->DeleteCommandsByName(frame_name);
+		schedule_tables[i]->DeleteCommandsByFrameName(frame_name);
 	}
 
 	// Delete frame
 	for (uint32_t ix = 0; ix < frames_count; ix++)
 	{
 		// Skip frames
-		if (!frames[ix]->NameIs(frame_name))
+		if (!StrEq(frames[ix]->GetName(), frame_name))
 			continue;
 
 		// Delete frame and shuffle the rest ones

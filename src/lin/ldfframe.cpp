@@ -107,16 +107,6 @@ void ldfframe::AddSignal(ldfframesignal *signal)
 	signals[signals_count++] = signal;
 }
 
-bool ldfframe::NameIs(const uint8_t *name)
-{
-	return StrEq(name, this->name);
-}
-
-bool ldfframe::PublisherIs(const uint8_t *publisher)
-{
-	return StrEq(publisher, this->publisher);
-}
-
 void ldfframe::DeleteSignalByIndex(uint32_t ix)
 {
 	delete signals[ix];
