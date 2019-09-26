@@ -36,17 +36,17 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 	G_PIN(VentanaScheduleCommandAccept);
 	G_PIN(VentanaScheduleCommandCancel);
 
-	// Load slave list and select first one by default
-	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave));
-	for (uint32_t i = 0; i < db->GetSlaveNodesCount(); i++)
-		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), (char *)db->GetSlaveNodeByIndex(i)->GetName(), (char *)db->GetSlaveNodeByIndex(i)->GetName());
-	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave), (char *)db->GetSlaveNodeByIndex(0)->GetName());
-
 	// Frame names
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandFrameName));
 	for (uint32_t i = 0; i < db->GetFramesCount(); i++)
 		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandFrameName), (char *)db->GetFrameByIndex(i)->GetName(), (char *)db->GetFrameByIndex(i)->GetName());
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandFrameName), (char *)db->GetFrameByIndex(0)->GetName());
+
+	// Load slave list and select first one by default
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave));
+	for (uint32_t i = 0; i < db->GetSlaveNodesCount(); i++)
+		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), (char *)db->GetSlaveNodeByIndex(i)->GetName(), (char *)db->GetSlaveNodeByIndex(i)->GetName());
+	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandSlave), (char *)db->GetSlaveNodeByIndex(0)->GetName());
 
 	// Load data
 	if (command != NULL)
@@ -80,10 +80,6 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 				gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandDataFrame), (char*)aa->GetConfigurableFrame(i)->GetName(), (char*)aa->GetConfigurableFrame(i)->GetName());
 			gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandDataFrame), (char*)aa->GetConfigurableFrame(0)->GetName());
 
-			// Set default AssignFrameId and frame count
-			gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandDataFrame), (char*)c->GetAssignFrameIdName());
-			EntrySet(g_VentanaScheduleCommandDataCount, "1");
-
 			// Select the frame index and data count depends on the frame
 			if (c->GetType() == ldfschedulecommand::LDF_SCMD_TYPE_AssignFrameIdRange)
 			{
@@ -94,10 +90,18 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 					EntrySet(g_VentanaScheduleCommandDataCount, GetStrPrintf("%d", c->GetAssignFrameIdRangeCount()));
 				}
 			}
+			else
+			{
+				gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_VentanaScheduleCommandDataFrame), (char*)c->GetAssignFrameIdName());
+				EntrySet(g_VentanaScheduleCommandDataCount, "1");
+			}
 		}
 
 		// Delete schedule command
 		delete c;
+
+		// React as command type changed
+		this->OnVentanaScheduleCommandType_changed(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandType), this);
 	}
 	else
 	{
@@ -112,16 +116,10 @@ VentanaScheduleCommand::VentanaScheduleCommand(GtkBuilder *builder, ldf *db, con
 		// Raw data
 		EntrySet(g_VentanaScheduleCommandDataRaw, "");
 
-		// Clear data frame list
-		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandDataFrame));
-
-		// Data count
-		EntrySet(g_VentanaScheduleCommandDataCount, "1");
+		// React as command type and slave changed
+		this->OnVentanaScheduleCommandType_changed(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandType), this);
+		this->OnVentanaScheduleCommandSlave_changed(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), this);
 	}
-
-	// React as if any combo box changed
-	this->OnVentanaScheduleCommandType_changed(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandType), this);
-	this->OnVentanaScheduleCommandSlave_changed(GTK_COMBO_BOX_TEXT(g_VentanaScheduleCommandSlave), this);
 
 	// Connect signals
 	G_CONNECT_INSTXT(VentanaScheduleCommandTimeout, INT5_EXPR);

@@ -83,12 +83,18 @@ char *ldfschedulecommand::ParseAssignFrameIdRange(char *p, char **p_slave, char 
 	if (data[0] == 0) *p_assign_frame = p;
 
 	// data[1] contains frame count
-	for (data[1] = 0; (p != NULL) && (data[1] < 4); data[1]++)
+	for (data[1] = 1; (p != NULL) && (data[1] < 4); data[1]++)
 	{
 		p = StrTokenParseNext(p, NULL, "," BLANK_CHARACTERS);
+		if (p == NULL)
+			return NULL;
+
+		// Check close bracket
+		if (StrEq(p, "}"))
+			break;
 	}
 
-	return StrTokenParseNextAndCheck(p, "}", BLANK_CHARACTERS);
+	return p;
 }
 
 ldfschedulecommand *ldfschedulecommand::FromLdfStatement(const uint8_t *statement)
@@ -171,7 +177,7 @@ ldfschedulecommand *ldfschedulecommand::FromStrCommand(ldf *db, const uint8_t *c
 	char str[10000];
 
 	// Emulate input from database
-	sprintf(str, "%s delay %s ms", command, timeout);
+	sprintf(str, "%s delay %s", command, timeout);
 
 	// Parse input
 	c = FromLdfStatement(Str(str));
@@ -400,12 +406,12 @@ const uint8_t *ldfschedulecommand::GetStrRawData()
 	{
 
 	case LDF_SCMD_TYPE_DataDump:
-		sprintf(res, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X",
+		sprintf(res, "0x%02X 0x%02X 0x%02X 0x%02X 0x%02X",
 				data[0], data[1], data[2], data[3], data[4]);
 		break;
 
 	case LDF_SCMD_TYPE_FreeFormat:
-		sprintf(res, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X",
+		sprintf(res, "0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X 0x%02X",
 				data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 		break;
 

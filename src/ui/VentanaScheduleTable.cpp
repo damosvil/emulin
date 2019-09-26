@@ -198,6 +198,33 @@ void VentanaScheduleTable::OnVentanaScheduleTableNew_clicked(GtkButton *button, 
 
 void VentanaScheduleTable::OnVentanaScheduleTableEdit_clicked(GtkButton *button, gpointer user_data)
 {
+	char *command;
+	char *timeout;
+	VentanaScheduleTable *v = (VentanaScheduleTable *)user_data;
+
+	// Add schedule command to tree view
+	GtkTreeIter it;
+	GtkTreeView *tv = GTK_TREE_VIEW(v->g_VentanaScheduleTableList);
+	GtkTreeModel *tm = gtk_tree_view_get_model(tv);
+	GtkListStore *ls = GTK_LIST_STORE(tm);
+
+	// Append a new list item
+	if (!gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_VentanaScheduleTableSelection), &tm, &it))
+		return;
+
+	// Get command and timeout
+	gtk_tree_model_get(tm, &it, 0, &command, -1);
+	gtk_tree_model_get(tm, &it, 1, &timeout, -1);
+
+	// Request schedule command from user
+	VentanaScheduleCommand w(v->builder, v->db, command, timeout);
+	ldfschedulecommand *c = w.ShowModal(v->handle);
+	if (c == NULL)
+		return;
+
+	// Update list store values
+	gtk_list_store_set(ls, &it, 0, c->GetStrCommand(v->db), -1);
+	gtk_list_store_set(ls, &it, 1, GetStrPrintf("%d ms", c->GetTimeoutMs()), -1);
 }
 
 void VentanaScheduleTable::OnVentanaScheduleTableDelete_clicked(GtkButton *button, gpointer user_data)
