@@ -33,6 +33,7 @@ public:
 	ldfschedulecommand *GetCommandByIndex(uint32_t ix);
 	uint16_t GetCommandsCount();
 	void UpdateCommandsFrameName(const uint8_t *old_name, const uint8_t *new_name);
+	void UpdateCommandsSlaveName(const uint8_t *old_name, const uint8_t *new_name);
 	void DeleteCommandsByName(const uint8_t *name);
 
 	void AddCommand(ldfschedulecommand *command);

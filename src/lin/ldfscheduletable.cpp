@@ -49,6 +49,14 @@ void ldfscheduletable::UpdateCommandsFrameName(const uint8_t *old_name, const ui
 	}
 }
 
+void ldfscheduletable::UpdateCommandsSlaveName(const uint8_t *old_name, const uint8_t *new_name)
+{
+	for (int i = 0; i < commands_number; i++)
+	{
+		commands[i]->UpdateSlaveName(old_name, new_name);
+	}
+}
+
 void ldfscheduletable::DeleteCommandsByName(const uint8_t *name)
 {
 	for (int i = 0; i < commands_number; )

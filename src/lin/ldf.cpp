@@ -667,7 +667,11 @@ void ldf::UpdateSlaveNode(const uint8_t *old_slave_name, ldfnodeattributes *n)
 		frames[ix]->UpdateNodeName(old_slave_name, n->GetName());
 	}
 
-	// TODO:: Update slave node name in schedule frames
+	// Update slave node name in schedule tables
+	for (uint32_t ix = 0; ix < schedule_tables_count; ix++)
+	{
+		schedule_tables[ix]->UpdateCommandsSlaveName(old_slave_name, n->GetName());
+	}
 }
 
 void ldf::DeleteSlaveNode(const uint8_t *slave_name)

@@ -294,10 +294,22 @@ ldfscheduletable *VentanaScheduleTable::ShowModal(GObject *parent)
 	// Show dialog
 	if (gtk_dialog_run(GTK_DIALOG(handle)))
 	{
-		// Name
+		// Reference list
+		GtkTreeIter it;
+		GtkTreeView *tv = GTK_TREE_VIEW(g_VentanaScheduleTableList);
+		GtkTreeModel *tm = gtk_tree_view_get_model(tv);
+
+		// Create schedule table
 		res = new ldfscheduletable(Str(EntryGetStr(g_VentanaScheduleTableName)));
 
-		// TODO:: Add commands
+		// Add commands to schedule table
+		char *command;
+		char *timeout;
+		gtk_tree_model_get_iter_first(tm, &it);
+		do {
+			gtk_tree_model_get(tm, &it, 0, &command, 1, &timeout, -1);
+			res->AddCommand(ldfschedulecommand::FromStrCommand(db, Str(command), Str(timeout)));
+		} while (gtk_tree_model_iter_next(tm, &it));
 	}
 	gtk_widget_hide(GTK_WIDGET(handle));
 

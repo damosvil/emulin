@@ -249,6 +249,15 @@ void ldfschedulecommand::UpdateFrameName(const uint8_t *old_name, const uint8_t 
 	}
 }
 
+void ldfschedulecommand::UpdateSlaveName(const uint8_t *old_name, const uint8_t *new_name)
+{
+	if (StrEq(slave_name, old_name))
+	{
+		delete slave_name;
+		slave_name = StrDup(new_name);
+	}
+}
+
 void ldfschedulecommand::ValidateUnicity(uint8_t *schedule_table, ldfschedulecommand *command, uint8_t **validation_messages, uint32_t *validation_messages_count)
 {
 	char str[1000];

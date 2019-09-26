@@ -392,7 +392,7 @@ void VentanaInicio::ReloadListScheduleTables()
 			ldfschedulecommand *cc = table->GetCommandByIndex(j);
 
 			if (j != 0) strcat(str, "\r\n");
-			strcat(str, GetStrPrintf("%s (%d ms)", cc->GetFrameName(), cc->GetTimeoutMs()));
+			strcat(str, GetStrPrintf("(%d ms) %s", cc->GetTimeoutMs(), cc->GetStrCommand(db)));
 		}
 		gtk_list_store_set(s, &it, 2, str, -1);
 	}
@@ -519,6 +519,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
+	v->ReloadListSlaves();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data)
