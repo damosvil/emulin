@@ -8,7 +8,7 @@
 #ifndef UI_UI_H_
 #define UI_UI_H_
 
-#define INT_0_63_EXPR			(gpointer)"^[0-5][0-9]$|^6[0-3]$"
+#define INT_0_63_EXPR			(gpointer)"^[0-9]$|^[0-5][0-9]$|^6[0-3]$"
 #define INT_1_8_EXPR			(gpointer)"^[1-8]$"
 #define INT_1_4_EXPR			(gpointer)"^[1-4]$"
 #define INT3_EXPR				(gpointer)"^[0-9]{1,2}$|^[0-1][0-9]{2}$|^2[0-4][0-9]$|^25[0-5]$|^0x[0-9A-Fa-f]{0,2}$"
