@@ -822,6 +822,10 @@ void VentanaInicio::OnPanelDatabaseScheduleTablesDelete_clicked(GtkButton *butto
 	gtk_tree_selection_get_selected(GTK_TREE_SELECTION(v->g_PanelDatabaseScheduleTablesSelection), &model, &iter);
 	gtk_tree_model_get(model, &iter, 0, &schedule_table_name, -1);
 
+	// Ask before deleting
+	if (!ShowChooseMessageBox(v->handle, "Delete schedule table '%s'?", schedule_table_name))
+		return;
+
 	// Delete schedule table
 	v->db->DeleteScheduleTable(Str(schedule_table_name));
 	v->ReloadListScheduleTables();
