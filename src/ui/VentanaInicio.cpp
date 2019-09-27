@@ -519,7 +519,7 @@ void VentanaInicio::OnPanelDatabaseSlavesEdit_clicked(GtkButton *button, gpointe
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
-	v->ReloadListSlaves();
+	v->ReloadListScheduleTables();
 }
 
 void VentanaInicio::OnPanelDatabaseSlavesDelete_clicked(GtkButton *button, gpointer user_data)

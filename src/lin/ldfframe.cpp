@@ -144,7 +144,7 @@ void ldfframe::UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *n
 
 void ldfframe::UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name)
 {
-	if (StrEq(old_name, publisher))
+	if (!StrEq(old_name, publisher))
 		return;
 
 	delete publisher;
