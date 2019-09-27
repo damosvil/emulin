@@ -499,7 +499,7 @@
             </child>
             <child>
               <object class="GtkFileChooserButton" id="PanelConfiguracionDatabase">
-                <property name="width_request">580</property>
+                <property name="width_request">500</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="action">save</property>
@@ -508,6 +508,62 @@
               <packing>
                 <property name="x">100</property>
                 <property name="y">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="PanelConfiguracionSave">
+                <property name="label" translatable="yes">Save</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="x">605</property>
+                <property name="y">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="PanelConfiguracionSaveAs">
+                <property name="label" translatable="yes">Save as</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="x">650</property>
+                <property name="y">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="width_request">690</property>
+                <property name="height_request">520</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkTextView" id="PanelConfiguracionLog">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="accepts_tab">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="x">10</property>
+                <property name="y">70</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">System log</property>
+              </object>
+              <packing>
+                <property name="x">10</property>
+                <property name="y">50</property>
               </packing>
             </child>
           </object>
