@@ -685,7 +685,6 @@ void VentanaInicio::OnPanelDatabaseFramesNew_clicked(GtkButton *button, gpointer
 	v->db->SortData();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
-	// TODO: Reload schedule list
 }
 
 void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointer user_data)
@@ -710,7 +709,7 @@ void VentanaInicio::OnPanelDatabaseFramesEdit_clicked(GtkButton *button, gpointe
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
-	// TODO: Reload schedule list
+	v->ReloadListScheduleTables();
 }
 
 void VentanaInicio::OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpointer user_data)
@@ -734,7 +733,7 @@ void VentanaInicio::OnPanelDatabaseFramesDelete_clicked(GtkButton *button, gpoin
 	v->ReloadListSlaves();
 	v->ReloadListSignals();
 	v->ReloadListFrames();
-	// TODO: Reload schedule list
+	v->ReloadListScheduleTables();
 }
 
 void VentanaInicio::OnPanelDatabaseFramesList_row_activated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)

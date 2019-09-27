@@ -323,7 +323,7 @@ void ldfnodeattributes::DeleteConfigurableFramesByName(const uint8_t *frame_name
 	for (int i = 0; i < configurable_frames_count; i++)
 	{
 		// Skip configurable frames with different name
-		if (StrEq(configurable_frames[i]->GetName(), frame_name))
+		if (!StrEq(configurable_frames[i]->GetName(), frame_name))
 		{
 			continue;
 		}
