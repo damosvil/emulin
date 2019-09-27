@@ -86,6 +86,8 @@ public:
 
 	void UpdateConfigurableFrameNames(const uint8_t *old_frame_name, const uint8_t *new_frame_name);
 	void DeleteConfigurableFramesByName(const uint8_t *frame_name);
+	void UpdateResponseErrorSignalName(const uint8_t *old_signal_name, const uint8_t *new_signal_name);
+
 
 };
 

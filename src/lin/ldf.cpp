@@ -802,6 +802,12 @@ void ldf::UpdateSignal(const uint8_t *old_signal_name, ldfsignal *s)
 	{
 		frames[ix]->UpdateSignalName(old_signal_name, s->GetName());
 	}
+
+	// Update signal name in slave's response error signal
+	for (uint32_t ix = 0; ix < node_attributes_count; ix++)
+	{
+		node_attributes[ix]->UpdateResponseErrorSignalName(old_signal_name, s->GetName());
+	}
 }
 
 void ldf::DeleteSignal(const uint8_t *signal_name)

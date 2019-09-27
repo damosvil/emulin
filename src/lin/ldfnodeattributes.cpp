@@ -337,5 +337,14 @@ void ldfnodeattributes::DeleteConfigurableFramesByName(const uint8_t *frame_name
 	}
 }
 
+void ldfnodeattributes::UpdateResponseErrorSignalName(const uint8_t *old_signal_name, const uint8_t *new_signal_name)
+{
+	if (StrEq(response_error_signal_name, old_signal_name))
+	{
+		delete response_error_signal_name;
+		response_error_signal_name = StrDup(new_signal_name);
+	}
+}
+
 
 } /* namespace lin */
