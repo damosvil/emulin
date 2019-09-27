@@ -150,16 +150,6 @@ uint8_t *ldfsignal::GetSubscriber(uint32_t ix)
 	return subscribers[ix];
 }
 
-bool ldfsignal::NameIs(const uint8_t *name)
-{
-	return StrEq(name, this->name);
-}
-
-bool ldfsignal::PublisherIs(const uint8_t *publisher)
-{
-	return StrEq(publisher, this->publisher);
-}
-
 bool ldfsignal::UsesSlave(const uint8_t *slave_name)
 {
 	bool in_use = StrEq(slave_name, publisher);

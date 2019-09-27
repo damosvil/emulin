@@ -251,7 +251,7 @@ void VentanaFrame::OnVentanaFrameSignalsNew_clicked(GtkButton *button, gpointer 
 	{
 		// Skip signals
 		ldfsignal *s = v->db->GetSignalByIndex(i);
-		if (!s->PublisherIs(Str(publisher)))
+		if (!StrEq(s->GetPublisher(), Str(publisher)))
 			continue;
 
 		signal_names[signal_names_count++] = (char *)s->GetName();

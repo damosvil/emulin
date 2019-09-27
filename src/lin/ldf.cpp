@@ -763,7 +763,7 @@ ldfsignal *ldf::GetSignalByName(const uint8_t *signal_name)
 		return NULL;
 
 	for (uint32_t ix = 0; ix < signals_count; ix++)
-		if (signals[ix]->NameIs(signal_name))
+		if (StrEq(signals[ix]->GetName(), signal_name))
 			return signals[ix];
 
 	return NULL;
@@ -788,7 +788,7 @@ void ldf::UpdateSignal(const uint8_t *old_signal_name, ldfsignal *s)
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		// Look for signal by ID
-		if (!signals[ix]->NameIs(old_signal_name))
+		if (!StrEq(signals[ix]->GetName(), old_signal_name))
 			continue;
 
 		// Delete signal
@@ -813,7 +813,7 @@ void ldf::DeleteSignal(const uint8_t *signal_name)
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		// Look for signal by ID
-		if (!signals[ix]->NameIs(signal_name))
+		if (!StrEq(signals[ix]->GetName(), signal_name))
 			continue;
 
 		// Delete signal

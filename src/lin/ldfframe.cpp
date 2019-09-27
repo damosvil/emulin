@@ -119,7 +119,7 @@ void ldfframe::DeleteSignalByName(const uint8_t *signal_name)
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		// Search signal
-		if (!signals[ix]->NameIs(signal_name))
+		if (!StrEq(signals[ix]->GetName(), signal_name))
 			continue;
 
 		// Move back all signals one place
@@ -133,7 +133,7 @@ void ldfframe::UpdateSignalName(const uint8_t *old_signal_name, const uint8_t *n
 	for (uint32_t ix = 0; ix < signals_count; ix++)
 	{
 		// Search signal
-		if (!signals[ix]->NameIs(old_signal_name))
+		if (!StrEq(signals[ix]->GetName(), old_signal_name))
 			continue;
 
 		// Move back all signals one place
@@ -205,7 +205,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		// Look for signal definition
 		for (j = 0; (s == NULL) && (j < signals_count); j++)
 		{
-			if (this->signals[i]->NameIs(signals[j]->GetName()))
+			if (StrEq(this->signals[i]->GetName(), signals[j]->GetName()))
 			{
 				s = signals[j];
 			}
@@ -222,7 +222,7 @@ void ldfframe::ValidateSignals(ldfsignal **signals, uint32_t signals_count, uint
 		// Check signal name for repetition
 		for (j = i + 1; j < this->signals_count; j++)
 		{
-			if (this->signals[i]->NameIs(this->signals[j]->GetName()))
+			if (StrEq(this->signals[i]->GetName(), this->signals[j]->GetName()))
 			{
 				sprintf(str, STR_ERR "Signal name '%s' used twice in frame '%s'.", this->signals[i]->GetName(), name);
 				validation_messages[(*validation_messages_count)++] = StrDup(str);

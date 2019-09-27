@@ -38,8 +38,6 @@ public:
 	uint32_t GetSubscribersCount();
 	uint8_t *GetSubscriber(uint32_t ix);
 
-	bool NameIs(const uint8_t *name);
-	bool PublisherIs(const uint8_t *publisher);
 	bool UsesSlave(const uint8_t *slave_name);
 	void UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name);
 

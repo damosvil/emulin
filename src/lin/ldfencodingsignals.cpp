@@ -81,7 +81,7 @@ void ldfencodingsignals::ValidateSignals(ldfsignal **signals, uint32_t signals_c
 		// Look for signal
 		for (j = 0; (s == NULL) && (j < signals_count); j++)
 		{
-			s = signals[j]->NameIs(this->signals[i]) ? signals[j] : NULL;
+			s = StrEq(signals[j]->GetName(), this->signals[i]) ? signals[j] : NULL;
 		}
 
 		// Check signal is defined

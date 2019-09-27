@@ -83,7 +83,7 @@ VentanaNodoEsclavo::VentanaNodoEsclavo(GtkBuilder *builder, ldf *db, char *slave
 		{
 			// Skip signals not published by this node or size different to 1
 			ldfsignal *s = db->GetSignalByIndex(i);
-			if (s->GetBitSize() != 1 || !s->PublisherIs(Str(slave_name)))
+			if (s->GetBitSize() != 1 || !StrEq(s->GetPublisher(), Str(slave_name)))
 				continue;
 
 			// Add signal to list

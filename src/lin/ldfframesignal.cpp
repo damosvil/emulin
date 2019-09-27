@@ -84,10 +84,5 @@ void ldfframesignal::SetOffset(uint16_t offset)
 	this->offset = offset;
 }
 
-bool ldfframesignal::NameIs(const uint8_t *name)
-{
-	return StrEq(name, this->name);
-}
-
 
 } /* namespace lin */
