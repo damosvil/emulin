@@ -11,6 +11,7 @@
 #include <regex.h>
 #include <gtk/gtk.h>
 #include <stdarg.h>
+#include <time.h>
 #include "tools.h"
 
 namespace tools
@@ -288,6 +289,8 @@ void TextViewAddLine(GObject *o, const char *line)
 	static GObject *oo = NULL;
 	static GtkTextBuffer *b = NULL;
 	GtkTextIter it;
+	time_t t = time(NULL);
+	struct tm tt = *localtime(&t);
 
 	// Cached text buffer
 	if (oo != o)
@@ -297,7 +300,12 @@ void TextViewAddLine(GObject *o, const char *line)
 	}
 
 	gtk_text_buffer_get_end_iter(b, &it);
-	gtk_text_buffer_insert(b, &it, line, -1);
+	gtk_text_buffer_insert(b, &it,
+			GetStrPrintf("%04d-%02d-%02d %02d:%02d:%02d: %s",
+					tt.tm_year + 1900, tt.tm_mon + 1, tt.tm_mday,
+					tt.tm_hour, tt.tm_min, tt.tm_sec,
+					line),
+			-1);
 }
 
 
