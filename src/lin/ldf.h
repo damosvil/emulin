@@ -151,6 +151,9 @@ public:
 	void UpdateScheduleTable(const uint8_t *old_schedule_table_name, ldfscheduletable *t);
 	void DeleteScheduleTable(const uint8_t *schedule_table_name);
 
+	uint32_t GetValidationMessagesCount();
+	const uint8_t *GetValidationMessageByIndex(uint32_t ix);
+
 };
 
 } /* namespace lin */

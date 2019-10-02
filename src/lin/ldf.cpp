@@ -1012,5 +1012,15 @@ void ldf::DeleteScheduleTable(const uint8_t *schedule_table_name)
 	}
 }
 
+uint32_t ldf::GetValidationMessagesCount()
+{
+	return validation_messages_count;
+}
+
+const uint8_t *ldf::GetValidationMessageByIndex(uint32_t ix)
+{
+	return validation_messages[ix];
+}
+
 
 } /* namespace ldf */

@@ -60,6 +60,7 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseScheduleTablesNew);
 	G_PIN(PanelDatabaseScheduleTablesEdit);
 	G_PIN(PanelDatabaseScheduleTablesDelete);
+	G_PIN(PanelConfiguracionLog);
 
 	// Connect Window signals
 	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -144,6 +145,17 @@ void VentanaInicio::ReloadDatabase()
 
 	// Set database path in file chooser
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(g_PanelConfiguracionDatabase), (char *)database_path);
+
+	// Fill log
+	if (db->GetValidationMessagesCount() == 0)
+	{
+		TextViewAddLine(g_PanelConfiguracionLog, "LIN database loaded without issues.\r\n");
+	}
+	else
+	{
+		for (uint32_t i = 0; i < db->GetValidationMessagesCount(); i++)
+			TextViewAddLine(g_PanelConfiguracionLog, (const gchar *)db->GetValidationMessageByIndex(i));
+	}
 
 	// Database LIN protocol version
 	gtk_combo_box_set_active_id(GTK_COMBO_BOX(g_PanelDatabaseLinProtocolVersion), GetLinProtocolVersionStringID(db->GetLinProtocolVersion()));

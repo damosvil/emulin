@@ -283,5 +283,22 @@ bool Same(const char *a, int b)
 	return MultiParseInt(a) == b;
 }
 
+void TextViewAddLine(GObject *o, const char *line)
+{
+	static GObject *oo = NULL;
+	static GtkTextBuffer *b = NULL;
+	GtkTextIter it;
+
+	// Cached text buffer
+	if (oo != o)
+	{
+		oo = o;
+		b = gtk_text_view_get_buffer(GTK_TEXT_VIEW(o));
+	}
+
+	gtk_text_buffer_get_end_iter(b, &it);
+	gtk_text_buffer_insert(b, &it, line, -1);
+}
+
 
 }

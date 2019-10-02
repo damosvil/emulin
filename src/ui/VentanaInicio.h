@@ -51,6 +51,7 @@ private:
 	G_VAR(PanelDatabaseScheduleTablesNew);
 	G_VAR(PanelDatabaseScheduleTablesEdit);
 	G_VAR(PanelDatabaseScheduleTablesDelete);
+	G_VAR(PanelConfiguracionLog);
 
 	// Processes
 	void ReloadDatabase();

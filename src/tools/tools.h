@@ -55,6 +55,7 @@ bool Same(const char *a, const uint8_t *b);
 bool Same(const uint8_t *a, const uint8_t *b);
 bool Same(int a, const char *b);
 bool Same(const char *a, int b);
+void TextViewAddLine(GObject *o, const char *line);
 
 
 }
