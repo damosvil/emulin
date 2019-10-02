@@ -34,6 +34,9 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 
 	// Pin widgets
 	G_PIN(PanelConfiguracionDatabase);
+	G_PIN(PanelConfiguracionLog);
+	G_PIN(PanelConfiguracionSave);
+	G_PIN(PanelConfiguracionSaveAs);
 	G_PIN(PanelDatabaseLinProtocolVersion);
 	G_PIN(PanelDatabaseLinLanguageVersion);
 	G_PIN(PanelDatabaseLinSpeed);
@@ -60,7 +63,6 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_PIN(PanelDatabaseScheduleTablesNew);
 	G_PIN(PanelDatabaseScheduleTablesEdit);
 	G_PIN(PanelDatabaseScheduleTablesDelete);
-	G_PIN(PanelConfiguracionLog);
 
 	// Connect Window signals
 	g_signal_connect(handle, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -79,6 +81,8 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 
 	// Connect widget signals
 	G_CONNECT(PanelConfiguracionDatabase, file_set);
+	G_CONNECT(PanelConfiguracionSave, clicked);
+	G_CONNECT(PanelConfiguracionSaveAs, clicked);
 	G_CONNECT(PanelDatabaseLinProtocolVersion, changed);
 	G_CONNECT(PanelDatabaseLinLanguageVersion, changed);
 	G_CONNECT(PanelDatabaseLinSpeed, changed);
@@ -109,6 +113,7 @@ VentanaInicio::VentanaInicio(GtkBuilder *builder)
 	G_CONNECT(PanelDatabaseScheduleTablesDelete, clicked);
 	G_CONNECT(PanelDatabaseScheduleTablesList, row_activated);
 	G_CONNECT(PanelDatabaseScheduleTablesSelection, changed);
+
 
 	// Load database
 	ReloadDatabase();
@@ -419,6 +424,24 @@ void VentanaInicio::OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *
 
 	// Load new database in application
 	v->ReloadDatabase();
+}
+
+void VentanaInicio::OnPanelConfiguracionSave_clicked(GtkButton *button, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	char *database_filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(v->g_PanelConfiguracionDatabase));
+
+	if (!ShowChooseMessageBox(v->handle, "Overwrite existing LIN ldf database file '%s'?", database_filename))
+		return;
+
+}
+
+void VentanaInicio::OnPanelConfiguracionSaveAs_clicked(GtkButton *button, gpointer user_data)
+{
+	VentanaInicio *v = (VentanaInicio *)user_data;
+	const char *filename = ShowFileChooserSaveLdfDialog(v->handle);
+
+	return;
 }
 
 void VentanaInicio::OnPanelDatabaseLinProtocolVersion_changed(GtkComboBox *widget, gpointer user_data)

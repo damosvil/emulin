@@ -52,6 +52,8 @@ private:
 	G_VAR(PanelDatabaseScheduleTablesEdit);
 	G_VAR(PanelDatabaseScheduleTablesDelete);
 	G_VAR(PanelConfiguracionLog);
+	G_VAR(PanelConfiguracionSave);
+	G_VAR(PanelConfiguracionSaveAs);
 
 	// Processes
 	void ReloadDatabase();
@@ -66,6 +68,8 @@ private:
 
 	// Signal events
 	static void OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *widget, gpointer user_data);
+	static void OnPanelConfiguracionSave_clicked(GtkButton *button, gpointer user_data);
+	static void OnPanelConfiguracionSaveAs_clicked(GtkButton *button, gpointer user_data);
 
 	static void OnPanelDatabaseLinProtocolVersion_changed(GtkComboBox *widget, gpointer user_data);
 	static void OnPanelDatabaseLinLanguageVersion_changed(GtkComboBox *widget, gpointer user_data);

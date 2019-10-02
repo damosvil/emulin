@@ -41,6 +41,7 @@ void TreeViewPrepare(GObject *v, const char **columns);
 const char *GetStrPrintf(const char *format, ...);
 void ShowErrorMessageBox(GObject *parent, const char *format, ...);
 bool ShowChooseMessageBox(GObject *parent, const char *format, ...);
+const char *ShowFileChooserSaveLdfDialog(GObject *parent);
 void WidgetEnable(GObject *w, bool enable);
 void WidgetShow(GObject *w, bool show);
 void EntrySet(GObject *w, const uint8_t *v);

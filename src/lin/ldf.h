@@ -154,6 +154,8 @@ public:
 	uint32_t GetValidationMessagesCount();
 	const uint8_t *GetValidationMessageByIndex(uint32_t ix);
 
+	void Save(const uint8_t *filename);
+
 };
 
 } /* namespace lin */

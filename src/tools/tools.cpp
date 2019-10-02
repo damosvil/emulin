@@ -187,16 +187,54 @@ bool ShowChooseMessageBox(GObject *parent, const char *format, ...)
 	GtkWidget *d = gtk_message_dialog_new(
 			GTK_WINDOW(parent),
 			GTK_DIALOG_DESTROY_WITH_PARENT,
-			GTK_MESSAGE_WARNING,
+			GTK_MESSAGE_QUESTION,
 			GTK_BUTTONS_YES_NO,
 			str
 			);
 
-	gtk_window_set_title(GTK_WINDOW(d), "Error");
+	gtk_window_set_title(GTK_WINDOW(d), "Question");
 	res = gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_YES;
 	gtk_widget_destroy(d);
 
 	return res;
+}
+
+const char *ShowFileChooserSaveLdfDialog(GObject *parent)
+{
+	bool res;
+	static char str[10000];
+
+	// Create file chooser dialog
+	GtkWidget *d = gtk_file_chooser_dialog_new("Save As LIN definition file", GTK_WINDOW(parent), GTK_FILE_CHOOSER_ACTION_SAVE, "Cancel", GTK_RESPONSE_CANCEL, "Save", GTK_RESPONSE_ACCEPT, NULL);
+
+	// Set file filter pattern to file chooser button (setting it in glade didn't work for me)
+	GtkFileFilter *f = gtk_file_filter_new();
+	gtk_file_filter_set_name(f, "LIN definition file");
+	gtk_file_filter_add_pattern(f, "*.ldf");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(d), f);
+
+	// Run dialog
+	res = gtk_dialog_run(GTK_DIALOG(d)) == GTK_RESPONSE_ACCEPT;
+	if (res)
+	{
+		// Copy filename
+		strcpy(str, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(d)));
+
+		// Append ldf extension
+		if (strlen(str) < 4)
+		{
+			strcat(str, ".ldf");
+		}
+		else if (strcmp(str + strlen(str) - 4, ".ldf") != 0)
+		{
+			strcat(str, ".ldf");
+		}
+	}
+
+	// Destroy dialog
+	gtk_widget_destroy(d);
+
+	return res ? str : NULL;
 }
 
 void WidgetEnable(GObject *w, bool enable)

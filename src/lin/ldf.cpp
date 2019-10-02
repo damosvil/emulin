@@ -1022,5 +1022,10 @@ const uint8_t *ldf::GetValidationMessageByIndex(uint32_t ix)
 	return validation_messages[ix];
 }
 
+void ldf::Save(const uint8_t *filename)
+{
+	// TODO: Save database in file
+}
+
 
 } /* namespace ldf */
