@@ -439,7 +439,7 @@ void VentanaInicio::OnPanelConfiguracionSave_clicked(GtkButton *button, gpointer
 void VentanaInicio::OnPanelConfiguracionSaveAs_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
-	const char *filename = ShowFileChooserSaveLdfDialog(v->handle);
+	const char *filename = ShowFileChooserSaveLdfDialog(v->handle, "Save ldf as", "LIN definition file", "*.ldf");
 
 	return;
 }

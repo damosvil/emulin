@@ -199,18 +199,19 @@ bool ShowChooseMessageBox(GObject *parent, const char *format, ...)
 	return res;
 }
 
-const char *ShowFileChooserSaveLdfDialog(GObject *parent)
+const char *ShowFileChooserSaveLdfDialog(GObject *parent, const char *title, const char *filter_name, const char *filter)
 {
 	bool res;
 	static char str[10000];
+	const char *extension = filter + 1;
 
 	// Create file chooser dialog
-	GtkWidget *d = gtk_file_chooser_dialog_new("Save As LIN definition file", GTK_WINDOW(parent), GTK_FILE_CHOOSER_ACTION_SAVE, "Cancel", GTK_RESPONSE_CANCEL, "Save", GTK_RESPONSE_ACCEPT, NULL);
+	GtkWidget *d = gtk_file_chooser_dialog_new(title, GTK_WINDOW(parent), GTK_FILE_CHOOSER_ACTION_SAVE, "Cancel", GTK_RESPONSE_CANCEL, "Save", GTK_RESPONSE_ACCEPT, NULL);
 
 	// Set file filter pattern to file chooser button (setting it in glade didn't work for me)
 	GtkFileFilter *f = gtk_file_filter_new();
-	gtk_file_filter_set_name(f, "LIN definition file");
-	gtk_file_filter_add_pattern(f, "*.ldf");
+	gtk_file_filter_set_name(f, filter_name);
+	gtk_file_filter_add_pattern(f, filter);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(d), f);
 
 	// Run dialog
@@ -223,11 +224,11 @@ const char *ShowFileChooserSaveLdfDialog(GObject *parent)
 		// Append ldf extension
 		if (strlen(str) < 4)
 		{
-			strcat(str, ".ldf");
+			strcat(str, extension);
 		}
-		else if (strcmp(str + strlen(str) - 4, ".ldf") != 0)
+		else if (strcmp(str + strlen(str) - 4, extension) != 0)
 		{
-			strcat(str, ".ldf");
+			strcat(str, extension);
 		}
 	}
 
