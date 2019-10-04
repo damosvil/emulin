@@ -19,7 +19,6 @@ Prerequisites:
          * 'pkg-config --libs gtk+-3.0'
 * Glade - To design the user interfaces
     * Install 'sudo apt install glade'
-* en_US locale
-    * Install it: "sudo locale-gen en_US"
+
 
 The aproach to meet the goals is to start with a basic emulator (only to emulate a LIN 2.1 compliant slave node), and little by little adding more features.
