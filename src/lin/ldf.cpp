@@ -1038,15 +1038,24 @@ bool ldf::Save(const uint8_t *filename)
 
 	// Print ldf nodes configuration
 	fprintf(ldf_file, "Nodes {\r\n");
+	fprintf(ldf_file, "    ");
 	master->ToLdfFile(ldf_file);
-	fprintf(ldf_file, "Slaves: ");
+	fprintf(ldf_file, "    Slaves: ");
 	for (uint32_t i = 0; i < slaves_count; i++)
 	{
 		if (i != 0) fprintf(ldf_file, ", ");
 		fprintf(ldf_file, "%s", slaves[i]->GetName());
 	}
 	fprintf(ldf_file, ";\r\n");
+	fprintf(ldf_file, "}\r\n");
+	fprintf(ldf_file, "\r\n");
 
+	// Print ldf signals configuration
+	fprintf(ldf_file, "Signals {\r\n");
+	for (uint32_t i = 0; i < signals_count; i++)
+		signals[i]->ToLdfFile(ldf_file);
+	fprintf(ldf_file, "}\r\n");
+	fprintf(ldf_file, "\r\n");
 
 	// Close file and return true
 	fclose(ldf_file);

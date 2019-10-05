@@ -154,12 +154,12 @@ void VentanaInicio::ReloadDatabase()
 	// Fill log
 	if (db->GetValidationMessagesCount() == 0)
 	{
-		TextViewAddLine(g_PanelConfiguracionLog, "LIN database loaded without issues.\r\n");
+		LogViewAddLine(g_PanelConfiguracionLog, "LIN database loaded without issues.\r\n");
 	}
 	else
 	{
 		for (uint32_t i = 0; i < db->GetValidationMessagesCount(); i++)
-			TextViewAddLine(g_PanelConfiguracionLog, (const gchar *)db->GetValidationMessageByIndex(i));
+			LogViewAddLine(g_PanelConfiguracionLog, (const gchar *)db->GetValidationMessageByIndex(i));
 	}
 
 	// Database LIN protocol version
@@ -442,6 +442,8 @@ void VentanaInicio::OnPanelConfiguracionSaveAs_clicked(GtkButton *button, gpoint
 	const char *filename = ShowFileChooserSaveLdfDialog(v->handle, "Save ldf as", "LIN definition file", "*.ldf");
 	if (!v->db->Save(Str(filename)))
 		ShowErrorMessageBox(v->handle, "Database file could not be stored in '%s'", filename);
+	else
+		LogViewAddLine(v->g_PanelConfiguracionLog, GetStrPrintf("LIN ldf database file save as '%s'.", filename));
 }
 
 void VentanaInicio::OnPanelDatabaseLinProtocolVersion_changed(GtkComboBox *widget, gpointer user_data)

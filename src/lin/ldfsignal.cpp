@@ -180,6 +180,14 @@ void ldfsignal::UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name)
 	}
 }
 
+void ldfsignal::ToLdfFile(FILE *f)
+{
+	fprintf(f, "    %s: %d, 0x%X, %s", name, bit_size, default_value, publisher);
+	for (uint32_t i = 0; i < subscribers_count; i++)
+		fprintf(f, ", %s", subscribers[i]);
+	fprintf(f, ";\r\n");
+}
+
 int32_t ldfsignal::Compare(const ldfsignal *a, const ldfsignal *b)
 {
 	if (a->name == NULL) return -1;

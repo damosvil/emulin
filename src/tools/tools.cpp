@@ -323,7 +323,7 @@ bool Same(const char *a, int b)
 	return MultiParseInt(a) == b;
 }
 
-void TextViewAddLine(GObject *o, const char *line)
+void LogViewAddLine(GObject *o, const char *line)
 {
 	static GObject *oo = NULL;
 	static GtkTextBuffer *b = NULL;

@@ -76,7 +76,7 @@ void ldfmasternode::SetJitter(uint16_t jitter)
 
 void ldfmasternode::ToLdfFile(FILE *f)
 {
-	fprintf(f, "Master: %s, %0.4f ms, %0.4f ms;\r\n", GetName(), 1.0f * timebase / 10.0f, 1.0f * jitter / 10.0f);
+	fprintf(f, "Master: %s, %0.1f ms, %0.1f ms;\r\n", GetName(), 1.0f * timebase / 10.0f, 1.0f * jitter / 10.0f);
 }
 
 

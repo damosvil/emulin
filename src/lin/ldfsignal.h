@@ -41,6 +41,8 @@ public:
 	bool UsesSlave(const uint8_t *slave_name);
 	void UpdateNodeName(const uint8_t *old_name, const uint8_t *new_name);
 
+	void ToLdfFile(FILE *f);
+
 	static int32_t Compare(const ldfsignal *a, const ldfsignal *b);
 	static int32_t ComparePublisher(const ldfsignal *a, const ldfsignal *b);
 
