@@ -9,6 +9,7 @@
 #define LIN_LDFMASTERNODE_H_
 
 #include <stdint.h>
+#include <stdio.h>
 #include <ldfnode.h>
 
 namespace lin {
@@ -30,6 +31,8 @@ public:
 
 	uint16_t GetJitter();
 	void SetJitter(uint16_t jitter);
+
+	void ToLdfFile(FILE *f);
 
 };
 

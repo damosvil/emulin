@@ -440,8 +440,8 @@ void VentanaInicio::OnPanelConfiguracionSaveAs_clicked(GtkButton *button, gpoint
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 	const char *filename = ShowFileChooserSaveLdfDialog(v->handle, "Save ldf as", "LIN definition file", "*.ldf");
-
-	return;
+	if (!v->db->Save(Str(filename)))
+		ShowErrorMessageBox(v->handle, "Database file could not be stored in '%s'", filename);
 }
 
 void VentanaInicio::OnPanelDatabaseLinProtocolVersion_changed(GtkComboBox *widget, gpointer user_data)

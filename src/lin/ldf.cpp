@@ -1022,9 +1022,35 @@ const uint8_t *ldf::GetValidationMessageByIndex(uint32_t ix)
 	return validation_messages[ix];
 }
 
-void ldf::Save(const uint8_t *filename)
+bool ldf::Save(const uint8_t *filename)
 {
-	// TODO: Save database in file
+	// Open file
+	FILE *ldf_file = fopen((char *)filename, "wb");
+	if (!ldf_file)
+		return false;
+
+	// Print ldf master configuration
+	fprintf(ldf_file, "LIN_description_file;\r\n");
+	fprintf(ldf_file, "LIN_protocol_version = \"%s\";\r\n", (lin_protocol_version == LIN_PROTOCOL_VERSION_2_0) ? "2.0" : "2.1");
+	fprintf(ldf_file, "LIN_language_version = \"%s\";\r\n", (lin_language_version == LIN_LANGUAGE_VERSION_2_0) ? "2.0" : "2.1");
+	fprintf(ldf_file, "LIN_speed = %0.3f kbps;\r\n", 1.0f * lin_speed / 1000.0f);
+	fprintf(ldf_file, "\r\n");
+
+	// Print ldf nodes configuration
+	fprintf(ldf_file, "Nodes {\r\n");
+	master->ToLdfFile(ldf_file);
+	fprintf(ldf_file, "Slaves: ");
+	for (uint32_t i = 0; i < slaves_count; i++)
+	{
+		if (i != 0) fprintf(ldf_file, ", ");
+		fprintf(ldf_file, "%s", slaves[i]->GetName());
+	}
+	fprintf(ldf_file, ";\r\n");
+
+
+	// Close file and return true
+	fclose(ldf_file);
+	return true;
 }
 
 

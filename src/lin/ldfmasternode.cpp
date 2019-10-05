@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ldfcommon.h>
 #include <ldfmasternode.h>
 
@@ -72,6 +73,12 @@ void ldfmasternode::SetJitter(uint16_t jitter)
 {
 	this->jitter = jitter;
 }
+
+void ldfmasternode::ToLdfFile(FILE *f)
+{
+	fprintf(f, "Master: %s, %0.4f ms, %0.4f ms;\r\n", GetName(), 1.0f * timebase / 10.0f, 1.0f * jitter / 10.0f);
+}
+
 
 
 
