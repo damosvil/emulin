@@ -55,6 +55,8 @@ public:
 	static int32_t ComparePublisher(const ldfframe *a, const ldfframe *b);
 	void SortData();
 
+	void ToLdfFile(FILE *f);
+
 };
 
 } /* namespace lin */

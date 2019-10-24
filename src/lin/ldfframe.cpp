@@ -274,5 +274,13 @@ void ldfframe::SortData()
 	qsort(signals, signals_count, sizeof(signals[0]), ldfframesignal::SorterFrameSignals);
 }
 
+void ldfframe::ToLdfFile(FILE *f)
+{
+	fprintf(f, "    %s:0x%02x,%s,%d {\r\n", name, id, publisher, size);
+	for (uint32_t i = 0; i < signals_count; i++)
+		signals[i]->ToLdfFile(f);
+	fprintf(f, "    }\r\n");
+}
+
 
 } /* namespace lin */

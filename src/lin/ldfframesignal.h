@@ -30,6 +30,8 @@ public:
 	void SetName(const uint8_t *name);
 	void SetOffset(uint16_t offset);
 
+	void ToLdfFile(FILE *f);
+
 };
 
 } /* namespace lin */

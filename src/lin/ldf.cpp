@@ -1057,6 +1057,14 @@ bool ldf::Save(const uint8_t *filename)
 	fprintf(ldf_file, "}\r\n");
 	fprintf(ldf_file, "\r\n");
 
+	// Print ldf frames configuration
+	fprintf(ldf_file, "Frames {\r\n");
+	for (uint32_t i = 0; i < frames_count; i++)
+		frames[i]->ToLdfFile(ldf_file);
+	fprintf(ldf_file, "}\r\n");
+	fprintf(ldf_file, "\r\n");
+
+
 	// Close file and return true
 	fclose(ldf_file);
 	return true;

@@ -84,5 +84,9 @@ void ldfframesignal::SetOffset(uint16_t offset)
 	this->offset = offset;
 }
 
+void ldfframesignal::ToLdfFile(FILE *f)
+{
+	fprintf(f, "        %s,%d;\r\n", name, offset);
+}
 
 } /* namespace lin */
