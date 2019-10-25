@@ -88,6 +88,7 @@ public:
 	void DeleteConfigurableFramesByName(const uint8_t *frame_name);
 	void UpdateResponseErrorSignalName(const uint8_t *old_signal_name, const uint8_t *new_signal_name);
 
+	void ToLdfFile(FILE *f);
 
 };
 

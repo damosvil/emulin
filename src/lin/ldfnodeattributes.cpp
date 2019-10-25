@@ -96,22 +96,22 @@ void ldfnodeattributes::UpdateFromLdfStatement(uint8_t *statement)
 	else if (StrEq(p, "P2_min"))
 	{
 		p = strtok(NULL, "=,");
-		if (p) P2_min = atof(p) * 10;
+		if (p) P2_min = atof(p);
 	}
 	else if (StrEq(p, "ST_min"))
 	{
 		p = strtok(NULL, "=,");
-		if (p) ST_min = atof(p) * 10;
+		if (p) ST_min = atof(p);
 	}
 	else if (StrEq(p, "N_As_timeout"))
 	{
 		p = strtok(NULL, "=,");
-		if (p) N_As_timeout = atof(p) * 10;
+		if (p) N_As_timeout = atof(p);
 	}
 	else if (StrEq(p, "N_Cr_timeout"))
 	{
 		p = strtok(NULL, "=,");
-		if (p) N_Cr_timeout = atof(p) * 10;
+		if (p) N_Cr_timeout = atof(p);
 	}
 }
 
@@ -344,6 +344,43 @@ void ldfnodeattributes::UpdateResponseErrorSignalName(const uint8_t *old_signal_
 		delete response_error_signal_name;
 		response_error_signal_name = StrDup(new_signal_name);
 	}
+}
+
+void ldfnodeattributes::ToLdfFile(FILE *f)
+{
+	fprintf(f, "    %s {\r\n", name);
+	fprintf(f, "        LIN_protocol = \"%s\";\r\n", (protocol == LIN_PROTOCOL_VERSION_2_0) ? "2.0" : "2.1");
+	fprintf(f, "        configured_NAD = 0x%02X;\r\n", configured_NAD);
+	if (initial_NAD != 0xFF)
+		fprintf(f, "        initial_NAD = 0x%02X;\r\n", initial_NAD);
+
+	if (protocol >= LIN_PROTOCOL_VERSION_2_0)
+	{
+		fprintf(f, "        product_id = 0x%04X, 0x%04X, 0x%04X;\r\n", product_id.supplier_id, product_id.function_id, product_id.variant);
+		if (response_error_signal_name)
+			fprintf(f, "        response_error = %s;\r\n", response_error_signal_name);
+		fprintf(f, "        P2_min = %0.1f ms;\r\n", 1.0f * P2_min);
+		fprintf(f, "        ST_min = %0.1f ms;\r\n", 1.0f * ST_min);
+		fprintf(f, "        N_As_timeout = %0.1f ms;\r\n", 1.0f * N_As_timeout);
+		fprintf(f, "        N_Cr_timeout = %0.1f ms;\r\n", 1.0f * N_Cr_timeout);
+		fprintf(f, "\r\n");
+
+		fprintf(f, "        configurable_frames {\r\n");
+		for (uint32_t i = 0; i < configurable_frames_count; i++)
+		{
+			if (protocol == LIN_PROTOCOL_VERSION_2_0)
+			{
+				fprintf(f, "            %s = 0x%02X;\r\n", configurable_frames[i]->GetName(), configurable_frames[i]->GetId());
+			}
+			else if (protocol == LIN_PROTOCOL_VERSION_2_1)
+			{
+				fprintf(f, "            %s;\r\n", configurable_frames[i]->GetName());
+			}
+		}
+		fprintf(f, "        }\r\n");
+	}
+
+	fprintf(f, "    }\r\n");
 }
 
 

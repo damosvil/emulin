@@ -1064,6 +1064,12 @@ bool ldf::Save(const uint8_t *filename)
 	fprintf(ldf_file, "}\r\n");
 	fprintf(ldf_file, "\r\n");
 
+	// Print ldf node attributes configuration
+	fprintf(ldf_file, "Node_attributes {\r\n");
+	for (uint32_t i = 0; i < node_attributes_count; i++)
+		node_attributes[i]->ToLdfFile(ldf_file);
+	fprintf(ldf_file, "}\r\n");
+	fprintf(ldf_file, "\r\n");
 
 	// Close file and return true
 	fclose(ldf_file);
