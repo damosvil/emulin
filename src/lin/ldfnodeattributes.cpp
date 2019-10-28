@@ -359,10 +359,10 @@ void ldfnodeattributes::ToLdfFile(FILE *f)
 		fprintf(f, "        product_id = 0x%04X, 0x%04X, 0x%04X;\r\n", product_id.supplier_id, product_id.function_id, product_id.variant);
 		if (response_error_signal_name)
 			fprintf(f, "        response_error = %s;\r\n", response_error_signal_name);
-		fprintf(f, "        P2_min = %0.1f ms;\r\n", 1.0f * P2_min);
-		fprintf(f, "        ST_min = %0.1f ms;\r\n", 1.0f * ST_min);
-		fprintf(f, "        N_As_timeout = %0.1f ms;\r\n", 1.0f * N_As_timeout);
-		fprintf(f, "        N_Cr_timeout = %0.1f ms;\r\n", 1.0f * N_Cr_timeout);
+		fprintf(f, "        P2_min = %d ms;\r\n", P2_min);
+		fprintf(f, "        ST_min = %d ms;\r\n", ST_min);
+		fprintf(f, "        N_As_timeout = %d ms;\r\n", N_As_timeout);
+		fprintf(f, "        N_Cr_timeout = %d ms;\r\n", N_Cr_timeout);
 		fprintf(f, "\r\n");
 
 		fprintf(f, "        configurable_frames {\r\n");

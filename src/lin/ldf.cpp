@@ -1071,6 +1071,13 @@ bool ldf::Save(const uint8_t *filename)
 	fprintf(ldf_file, "}\r\n");
 	fprintf(ldf_file, "\r\n");
 
+	// Print ldf schedule tables configuration
+	fprintf(ldf_file, "Schedule_tables {\r\n");
+	for (uint32_t i = 0; i < schedule_tables_count; i++)
+		schedule_tables[i]->ToLdfFile(ldf_file, this);
+	fprintf(ldf_file, "}\r\n");
+	fprintf(ldf_file, "\r\n");
+
 	// Close file and return true
 	fclose(ldf_file);
 	return true;

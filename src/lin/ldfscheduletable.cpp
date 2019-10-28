@@ -126,4 +126,12 @@ void ldfscheduletable::ValidateFrames(ldfframe **frames, uint32_t frames_count, 
 	}
 }
 
+void ldfscheduletable::ToLdfFile(FILE *f, ldf *db)
+{
+	fprintf(f, "    %s {\r\n", name);
+	for (uint32_t i = 0; i < commands_count; i++)
+		fprintf(f, "        %s delay %d ms;\r\n", commands[i]->GetStrCommand(db), commands[i]->GetTimeoutMs());
+	fprintf(f, "    }\r\n");
+}
+
 }

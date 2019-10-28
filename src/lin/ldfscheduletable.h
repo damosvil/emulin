@@ -16,6 +16,8 @@
 namespace lin
 {
 
+class ldf;	/* ldf predefined to avoid header collision */
+
 class ldfscheduletable {
 
 private:
@@ -41,6 +43,8 @@ public:
 	void AddCommand(ldfschedulecommand *command);
 	void ValidateUnicity(ldfscheduletable *table, uint8_t **validation_messages, uint32_t *validation_messages_count);
 	void ValidateFrames(ldfframe **frames, uint32_t frames_count, uint8_t **validation_messages, uint32_t *validation_messages_count);
+
+	void ToLdfFile(FILE *f, ldf *db);
 
 };
 
