@@ -154,7 +154,7 @@ void VentanaInicio::ReloadDatabase()
 	// Fill log
 	if (db->GetValidationMessagesCount() == 0)
 	{
-		LogViewAddLine(g_PanelConfiguracionLog, "LIN database loaded without issues.\r\n");
+		LogViewAddLine(g_PanelConfiguracionLog, "LIN database loaded without issues.");
 	}
 	else
 	{
@@ -429,17 +429,32 @@ void VentanaInicio::OnPanelConfiguracionDatabase_file_set(GtkFileChooserButton *
 void VentanaInicio::OnPanelConfiguracionSave_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
-	char *database_filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(v->g_PanelConfiguracionDatabase));
+	char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(v->g_PanelConfiguracionDatabase));
 
-	if (!ShowChooseMessageBox(v->handle, "Overwrite existing LIN ldf database file '%s'?", database_filename))
+	// Ask for user confirmation
+	if (!ShowChooseMessageBox(v->handle, "Overwrite existing LIN ldf database file '%s'?", filename))
 		return;
 
+	// Save ldf database file
+	if (!v->db->Save(Str(filename)))
+		ShowErrorMessageBox(v->handle, "Database file could not be stored in '%s'", filename);
+	else
+		LogViewAddLine(v->g_PanelConfiguracionLog, GetStrPrintf("LIN ldf database file save as '%s'.", filename));
 }
 
 void VentanaInicio::OnPanelConfiguracionSaveAs_clicked(GtkButton *button, gpointer user_data)
 {
 	VentanaInicio *v = (VentanaInicio *)user_data;
 	const char *filename = ShowFileChooserSaveLdfDialog(v->handle, "Save ldf as", "LIN definition file", "*.ldf");
+
+	// Update database file name in file chooser
+	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(v->g_PanelConfiguracionDatabase), filename);
+
+	// Update database file name in ManagerConfig
+	ManagerConfig::GetManager()->SetDatabasePath(Str(filename));
+	ManagerConfig::GetManager()->Store();
+
+	// Save ldf database file
 	if (!v->db->Save(Str(filename)))
 		ShowErrorMessageBox(v->handle, "Database file could not be stored in '%s'", filename);
 	else

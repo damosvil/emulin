@@ -340,7 +340,7 @@ void LogViewAddLine(GObject *o, const char *line)
 
 	gtk_text_buffer_get_end_iter(b, &it);
 	gtk_text_buffer_insert(b, &it,
-			GetStrPrintf("%04d-%02d-%02d %02d:%02d:%02d: %s",
+			GetStrPrintf("%04d-%02d-%02d %02d:%02d:%02d: %s\r\n",
 					tt.tm_year + 1900, tt.tm_mon + 1, tt.tm_mday,
 					tt.tm_hour, tt.tm_min, tt.tm_sec,
 					line),
